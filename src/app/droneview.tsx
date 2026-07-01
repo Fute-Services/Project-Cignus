@@ -1,26 +1,23 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
 
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/intial/bg_img.png');
-const fallbackVideo = require('../../assets/Home/Masterplan page vdo.mp4');
+const droneVideo2K = require('../../assets/Home/drone_view.mp4');
 const logo1 = require('../../assets/Home/cignus updated logo.png');
 const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 export default function Droneview() {
   const router = useRouter();
-  const [useOfflineVideo, setUseOfflineVideo] = useState(false);
-  const [webViewLoading, setWebViewLoading] = useState(true);
 
-  // Initialize loop player for offline fallback
-  const player = useVideoPlayer(fallbackVideo, (playerInstance) => {
+  // Initialize loop player with local 2K video
+  const player = useVideoPlayer(droneVideo2K, (playerInstance) => {
     playerInstance.loop = true;
     playerInstance.muted = true;
     playerInstance.play();
@@ -47,42 +44,12 @@ export default function Droneview() {
         <Text style={styles.pageTitle}>Drone View</Text>
 
         <View style={styles.videoCard}>
-          {useOfflineVideo ? (
-            /* Offline fallback player */
-            <VideoView
-              player={player}
-              style={styles.videoView}
-              contentFit="cover"
-              nativeControls={true}
-            />
-          ) : (
-            /* Online Vimeo player loaded in WebView */
-            <View style={StyleSheet.absoluteFill}>
-              <WebView
-                source={{ uri: 'https://player.vimeo.com/video/1200124883?h=cfecb215c9&autoplay=1&muted=1&dnt=1&title=0&byline=0&portrait=0&quality=720p' }}
-                style={styles.webView}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                allowsInlineMediaPlayback={true}
-                mediaPlaybackRequiresUserAction={false}
-                onLoadStart={() => setWebViewLoading(true)}
-                onLoadEnd={() => setWebViewLoading(false)}
-                onError={() => {
-                  setUseOfflineVideo(true);
-                  setWebViewLoading(false);
-                }}
-                onHttpError={() => {
-                  setUseOfflineVideo(true);
-                  setWebViewLoading(false);
-                }}
-              />
-              {webViewLoading && (
-                <View style={styles.loadingWrapper}>
-                  <ActivityIndicator size="large" color="#FFCF77" />
-                </View>
-              )}
-            </View>
-          )}
+          <VideoView
+            player={player}
+            style={styles.videoView}
+            contentFit="cover"
+            nativeControls={true}
+          />
         </View>
       </View>
 
@@ -177,16 +144,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  webView: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
-  loadingWrapper: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   backButton: {
     position: 'absolute',
     bottom: 32,
