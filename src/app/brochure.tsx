@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
 import { Asset } from 'expo-asset';
+import * as Sharing from 'expo-sharing';
 
 const brochurePdf = require('../../assets/Broucher/Cignus Tower 2 1.pdf');
 
@@ -38,19 +39,39 @@ export default function Brochure() {
         <Text style={styles.headerText}>Project Brochure</Text>
       </View>
 
-      {/* 2. Offline Webview PDF Viewer Layer */}
+      {/* 2. Offline Webview PDF Viewer Layer with Android Fallback */}
       <View style={styles.webviewContainer}>
         {pdfUri ? (
-          <WebView
-            originWhitelist={['*']}
-            source={{
-              uri: pdfUri
-            }}
-            style={styles.webView}
-            allowFileAccess={true}
-            allowFileAccessFromFileURLs={true}
-            allowUniversalAccessFromFileURLs={true}
-          />
+          Platform.OS === 'android' ? (
+            <View style={styles.fallbackContainer}>
+              <Text style={styles.fallbackText}>Android does not support inline PDF viewing offline.</Text>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={async () => {
+                  const isAvailable = await Sharing.isAvailableAsync();
+                  if (isAvailable) {
+                    await Sharing.shareAsync(pdfUri);
+                  } else {
+                    alert("No PDF viewer application found on this device.");
+                  }
+                }}
+                style={styles.openButton}
+              >
+                <Text style={styles.openButtonText}>Open Brochure</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <WebView
+              originWhitelist={['*']}
+              source={{
+                uri: pdfUri
+              }}
+              style={styles.webView}
+              allowFileAccess={true}
+              allowFileAccessFromFileURLs={true}
+              allowUniversalAccessFromFileURLs={true}
+            />
+          )
         ) : null}
       </View>
 
@@ -104,6 +125,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     overflow: 'hidden',
+  },
+  fallbackContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0c1219',
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  fallbackText: {
+    fontSize: 18,
+    color: '#A0AEC0',
+    textAlign: 'center',
+    marginBottom: 24,
+    letterSpacing: 0.5,
+  },
+  openButton: {
+    backgroundColor: '#FFCF77',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+  openButtonText: {
+    color: '#483E2D',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   backButton: {
     position: 'absolute',
