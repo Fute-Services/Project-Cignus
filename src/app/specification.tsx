@@ -1,0 +1,299 @@
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import Animated, { FadeInLeft, FadeInRight, FadeInUp, FadeOut } from 'react-native-reanimated';
+import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+
+// Shared Components
+import LeftNavbar from '../components/LeftNavbar';
+import RightNavbar from '../components/RightNavbar';
+
+const bgImage = require('../../assets/Home/Project-Info.png');
+const logo = require('../../assets/Home/cignus updated logo.png');
+const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
+const imgTop = require('../../assets/Home/Project-Info-Img1.png');
+const imgBottom = require('../../assets/Home/Project-Info-Img2.png');
+
+const specifications = [
+  { label: "BUILDING SIZE:", value: "1.11 Mn sq ft GFA" },
+  { label: "EFFICIENCY:", value: "65 %" },
+  { label: "USAGE:", value: "Grade A Commercial Office" },
+  { label: "NUMBER OF ELEVATORS:", value: "16 Passenger • 2 Service • 4 Jump" },
+  { label: "STRUCTURE:", value: "2 Basements + Ground + 6 Parking + 19 Office Floors" },
+  { label: "HANDOVER CONDITION:", value: "Warm Shell • 100% DG backup • HVAC Type" },
+  { label: "CAR PARK RATIO:", value: "1 per 1000 sq ft" },
+  { label: "AMENITIES:", value: "Westin • Convention Centre • Marriott • Green terraces • EV charging" },
+  { label: "TYPICAL FLOOR PLATE:", value: "~ 40,000 sq ft carpet area" },
+  { label: "FLOOR TO CEILING:", value: "~ 4.2 m" },
+  { label: "FACADE GLAZING:", value: "Double Glazing Units (DGU)" },
+];
+
+export default function Specification() {
+  const router = useRouter();
+  const [showLogo, setShowLogo] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLogo(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      {/* 1. Background image layer */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <Image source={bgImage} style={styles.backgroundImage} contentFit="cover" />
+        <View style={styles.overlay} />
+      </View>
+
+      {/* INITIAL LOGO TRANSITION */}
+      {showLogo && (
+        <Animated.View exiting={FadeOut.duration(800)} style={styles.initialLogoWrapper}>
+          <Image source={logo} style={styles.initialLogo} contentFit="contain" />
+        </Animated.View>
+      )}
+
+      {/* MAIN LAYOUT CONTENT */}
+      {!showLogo && (
+        <Animated.View style={StyleSheet.absoluteFill} entering={FadeInUp.duration(1000)}>
+          {/* Side Navbars overlays */}
+          <LeftNavbar />
+          <RightNavbar />
+
+          {/* Main content grid */}
+          <View style={styles.contentWrapper}>
+            {/* Left Column: Round and capsule images (Slides up) */}
+            <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
+              <Image source={imgTop} style={styles.imgRound} contentFit="cover" />
+              <Image source={imgBottom} style={styles.imgCapsule} contentFit="cover" />
+            </Animated.View>
+
+            {/* Right Column: Spec list (Slides right) */}
+            <Animated.View entering={FadeInRight.delay(200).duration(800)} style={styles.rightColumn}>
+              <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                
+                {/* Header titles */}
+                <Text style={styles.pageTitle}>Building Specifications</Text>
+
+                {/* Decorative gold lines with subtitle */}
+                <View style={styles.subtitleRow}>
+                  <Svg width="180" height="8" viewBox="0 0 731 7" fill="none" style={styles.decorativeLine}>
+                    <Path d="M730 6C693.555 6 693.555 1 657.109 1C620.663 1 620.663 6 584.205 6C547.747 6 547.759 1 511.314 1C474.868 1 474.868 6 438.41 6C401.952 6 401.964 1 365.506 1C329.048 1 329.061 6 292.615 6C256.169 6 256.169 1 219.711 1C183.253 1 183.266 6 146.807 6C110.349 6 110.349 1 73.9039 1C37.4579 1 37.4453 6 1 6" stroke="url(#paint0_linear)" strokeWidth="3" strokeLinecap="round" />
+                    <Defs>
+                      <LinearGradient id="paint0_linear" x1="730" y1="3.5" x2="451.5" y2="4.8" gradientUnits="userSpaceOnUse">
+                        <Stop stopColor="#FFEFA8" />
+                        <Stop offset="1" stopColor="#998F65" stopOpacity="0" />
+                      </LinearGradient>
+                    </Defs>
+                  </Svg>
+                  
+                  <Text style={styles.subtitleText}>Every number that matters</Text>
+
+                  <Svg width="180" height="8" viewBox="0 0 731 7" fill="none" style={styles.decorativeLine}>
+                    <Path d="M1 1C37.4453 1 37.4453 6 73.8913 6C110.337 6 110.337 1 146.795 1C183.253 1 183.241 6 219.686 6C256.132 6 256.132 1 292.59 1C329.048 1 329.036 6 365.494 6C401.952 6 401.939 1 438.385 1C474.831 1 474.831 6 511.289 6C547.747 6 547.734 1 584.193 1C620.651 1 620.651 6 657.096 6C693.542 6 693.555 1 730 1" stroke="url(#paint1_linear)" strokeWidth="3" strokeLinecap="round" />
+                    <Defs>
+                      <LinearGradient id="paint1_linear" x1="1" y1="3.5" x2="279.5" y2="2.1" gradientUnits="userSpaceOnUse">
+                        <Stop stopColor="#FFEFA8" />
+                        <Stop offset="1" stopColor="#998F65" stopOpacity="0" />
+                      </LinearGradient>
+                    </Defs>
+                  </Svg>
+                </View>
+
+                {/* Bullet list of specs */}
+                <View style={styles.specsBlock}>
+                  {specifications.map((item, idx) => (
+                    <View key={idx} style={styles.specRow}>
+                      <View style={styles.bulletPoint}>
+                        <Svg width="16" height="16" viewBox="0 0 30 30" fill="none">
+                          <Circle cx="15" cy="15" r="14" stroke="#A1A1AA" strokeWidth="1.5" />
+                          <Path d="M10 15l4 4 8-8" stroke="#A1A1AA" strokeWidth="2.5" strokeLinecap="round" />
+                        </Svg>
+                      </View>
+                      <Text style={styles.specContent}>
+                        <Text style={styles.specLabel}>{item.label} </Text>
+                        <Text style={styles.specVal}>{item.value}</Text>
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+              </ScrollView>
+            </Animated.View>
+          </View>
+
+          {/* Bottom Left Back Button */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.replace('/project-info')}
+            style={styles.backButton}
+          >
+            <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
+              <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
+            </Svg>
+          </TouchableOpacity>
+
+          {/* Branding Logo overlays */}
+          <View style={styles.headerLogos}>
+            <Image source={logo} style={styles.logo1Img} contentFit="contain" />
+            <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
+          </View>
+
+        </Animated.View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0c0f12',
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFill,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+  initialLogoWrapper: {
+    ...StyleSheet.absoluteFill,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  initialLogo: {
+    width: 200,
+    height: 80,
+  },
+  contentWrapper: {
+    ...StyleSheet.absoluteFill,
+    flexDirection: 'row',
+    paddingHorizontal: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 80,
+  },
+  leftColumn: {
+    width: '30%',
+    height: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  imgRound: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  imgCapsule: {
+    width: 140,
+    height: 220,
+    borderRadius: 70,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  rightColumn: {
+    width: '70%',
+    height: '90%',
+    paddingLeft: 32,
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    paddingVertical: 16,
+    paddingRight: 40,
+    gap: 12,
+  },
+  pageTitle: {
+    fontSize: 26,
+    fontWeight: '300',
+    color: '#ffffff',
+    textTransform: 'uppercase',
+    letterSpacing: 3,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+  },
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  decorativeLine: {
+    opacity: 0.8,
+  },
+  subtitleText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    fontWeight: '300',
+    color: '#E5E7EB',
+  },
+  specsBlock: {
+    gap: 10,
+    marginTop: 12,
+  },
+  specRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  bulletPoint: {
+    marginTop: 1,
+  },
+  specContent: {
+    flex: 1,
+    lineHeight: 18,
+  },
+  specLabel: {
+    fontSize: 12,
+    color: '#E5E7EB',
+    fontWeight: '300',
+    letterSpacing: 0.5,
+  },
+  specVal: {
+    fontSize: 12.5,
+    fontWeight: 'bold',
+    color: '#ffce75',
+    letterSpacing: 0.5,
+  },
+  backButton: {
+    position: 'absolute',
+    bottom: 32,
+    left: 80,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFCF77',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 6,
+    zIndex: 100,
+  },
+  headerLogos: {
+    position: 'absolute',
+    top: 24,
+    left: 80,
+    right: 80,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 90,
+  },
+  logo1Img: {
+    height: 48,
+    width: 120,
+  },
+  logo2Img: {
+    height: 56,
+    width: 110,
+  },
+});

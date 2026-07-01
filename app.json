@@ -3,12 +3,13 @@
     "name": "cignus",
     "slug": "cignus",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/images/icon.png",
     "scheme": "cignus",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.gautam-jha.cignus"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +33,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-video",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
