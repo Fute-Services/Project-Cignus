@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
+import { Asset } from 'expo-asset';
 import { 
   useFonts,
   Outfit_300Light,
@@ -18,7 +19,16 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
+// Pre-cache critical offline images to prevent visual flashes
+const criticalImages = [
+  require('../../assets/intial/bg_img.png'),
+  require('../../assets/Home/cignus updated logo.png'),
+  require('../../assets/Home/K_Raheja_Corp 1.png'),
+  require('../../assets/Project_Details/Amenities cover page updated image (1).png'),
+];
+
 export default function RootLayout() {
+  const [assetsPreloaded, setAssetsPreloaded] = useState(false);
   const [fontsLoaded, error] = useFonts({
     Outfit_300Light,
     Outfit_400Regular,
@@ -36,13 +46,28 @@ export default function RootLayout() {
     }
     lockOrientation();
 
-    // 2. Hide Expo's native splash screen once app and fonts mount
-    if (fontsLoaded || error) {
+    // 2. Pre-cache offline visual assets on boot
+    async function preloadAssets() {
+      try {
+        const cacheImages = criticalImages.map(image => Asset.fromModule(image).downloadAsync());
+        await Promise.all(cacheImages);
+      } catch (e) {
+        console.warn("Asset preloading failed:", e);
+      } finally {
+        setAssetsPreloaded(true);
+      }
+    }
+    preloadAssets();
+  }, []);
+
+  useEffect(() => {
+    // Hide native splash screen once fonts and critical assets mount
+    if ((fontsLoaded && assetsPreloaded) || error) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded, assetsPreloaded, error]);
 
-  if (!fontsLoaded && !error) {
+  if (!fontsLoaded && !assetsPreloaded && !error) {
     return null; // Or a custom loading fallback
   }
 

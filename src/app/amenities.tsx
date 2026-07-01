@@ -178,6 +178,9 @@ export default function Amenities() {
           allowUniversalAccessFromFileURLs={true}
           javaScriptEnabled={true}
           domStorageEnabled={true}
+          cacheEnabled={true}
+          mixedContentMode="always"
+          androidHardwareAccelerationDisabled={false}
         />
       </View>
 
