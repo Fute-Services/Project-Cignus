@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image as RNImage } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
+import { Asset } from 'expo-asset';
 
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
@@ -12,15 +13,15 @@ const bgImg = require('../../assets/Project_Details/Amenities cover page updated
 const logo = require('../../assets/Home/cignus updated logo.png');
 
 // Resolve the panorama assets dynamically
-const dropoffUri = RNImage.resolveAssetSource(require('../../assets/vr/DropOff.jpg')).uri;
-const dropoffLeftUri = RNImage.resolveAssetSource(require('../../assets/vr/drop off  left side1.jpg')).uri;
-const dropoffRightUri = RNImage.resolveAssetSource(require('../../assets/vr/drop off right side1.jpg')).uri;
-const receptionUri = RNImage.resolveAssetSource(require('../../assets/vr/Reception1.jpg')).uri;
-const cafeteriaUri = RNImage.resolveAssetSource(require('../../assets/vr/Cafeteria1.jpg')).uri;
-const liftlobbyUri = RNImage.resolveAssetSource(require('../../assets/vr/Liftlobby1.jpg')).uri;
-const topUri = RNImage.resolveAssetSource(require('../../assets/vr/top1.jpg')).uri;
+const dropoffUri = Asset.fromModule(require('../../assets/vr/dropoff.webp')).uri;
+const dropoffLeftUri = Asset.fromModule(require('../../assets/vr/dropoff_left.webp')).uri;
+const dropoffRightUri = Asset.fromModule(require('../../assets/vr/dropoff_right.webp')).uri;
+const receptionUri = Asset.fromModule(require('../../assets/vr/reception.webp')).uri;
+const cafeteriaUri = Asset.fromModule(require('../../assets/vr/cafeteria.webp')).uri;
+const liftlobbyUri = Asset.fromModule(require('../../assets/vr/liftlobby.webp')).uri;
+const topUri = Asset.fromModule(require('../../assets/vr/top.webp')).uri;
 
-const htmlContent = `
+const getHtmlContent = (firstScene: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +51,7 @@ const htmlContent = `
 <script>
     var viewer = pannellum.viewer('panorama', {
         "default": {
-            "firstScene": "dropoff",
+            "firstScene": "${firstScene || 'dropoff'}",
             "autoLoad": true,
             "sceneFadeDuration": 500,
             "showControls": false,
@@ -115,17 +116,20 @@ const navItems = [
 
 export default function Amenities() {
   const router = useRouter();
-  const [currentScene, setCurrentScene] = useState<string>('');
-  const [is360Active, setIs360Active] = useState<boolean>(false);
+  const [currentScene, setCurrentScene] = useState<string>('dropoff');
+  const [initialScene, setInitialScene] = useState<string>('dropoff');
+  const [is360Active, setIs360Active] = useState<boolean>(true);
   const webViewRef = useRef<WebView>(null);
 
   const handleSceneChange = (sceneId: string) => {
-    setIs360Active(true);
     setCurrentScene(sceneId);
-    
-    // Switch scene in Pannellum inside the WebView
-    if (webViewRef.current) {
-      webViewRef.current.postMessage(sceneId);
+    if (!is360Active) {
+      setInitialScene(sceneId);
+      setIs360Active(true);
+    } else {
+      if (webViewRef.current) {
+        webViewRef.current.postMessage(sceneId);
+      }
     }
   };
 
@@ -146,7 +150,7 @@ export default function Amenities() {
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
-          source={{ html: htmlContent }}
+          source={{ html: getHtmlContent(initialScene) }}
           style={styles.webView}
           allowFileAccess={true}
           allowFileAccessFromFileURLs={true}
@@ -211,7 +215,9 @@ export default function Amenities() {
                 activeOpacity={0.8}
                 style={[styles.bottomNavBtn, isActive && styles.activeBottomNavBtn]}
               >
-                <Text style={styles.bottomNavBtnText}>{item.label}</Text>
+                <Text style={[styles.bottomNavBtnText, isActive && styles.activeBottomNavBtnText]}>
+                  {item.label}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -336,5 +342,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '500',
     letterSpacing: 1,
+  },
+  activeBottomNavBtnText: {
+    color: '#FFCF77',
+    fontWeight: '600',
   },
 });
