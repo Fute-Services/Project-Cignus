@@ -59,10 +59,12 @@ export default function Droneview() {
             /* Online Vimeo player loaded in WebView */
             <View style={StyleSheet.absoluteFill}>
               <WebView
-                source={{ uri: 'https://player.vimeo.com/video/1200124883?h=cfecb215c9&autoplay=1' }}
+                source={{ uri: 'https://player.vimeo.com/video/1200124883?h=cfecb215c9&autoplay=1&muted=1' }}
                 style={styles.webView}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
+                allowsInlineMediaPlayback={true}
+                mediaPlaybackRequiresUserAction={false}
                 onLoadStart={() => setWebViewLoading(true)}
                 onLoadEnd={() => setWebViewLoading(false)}
                 onError={() => {
