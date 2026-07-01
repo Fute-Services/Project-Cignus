@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   bottomLogoContainer: {
     position: 'absolute',
     bottom: 40,
-    left: 64,
+    left: 100,
     zIndex: 90,
   },
   bottomLogoBtn: {
