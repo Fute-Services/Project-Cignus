@@ -57,8 +57,6 @@ export default function Specification() {
 
       {/* MAIN LAYOUT CONTENT */}
       {!showLogo && (
-      {/* MAIN LAYOUT CONTENT */}
-      {!showLogo && (
         <Animated.View style={StyleSheet.absoluteFill} entering={FadeInUp.duration(1000)}>
           {/* Side Navbars overlays */}
           <LeftNavbar />
