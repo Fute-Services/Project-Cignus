@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-nati
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 const logo = require('../../assets/Home/cignus updated logo.png');
@@ -59,23 +59,48 @@ export default function LocationScreen() {
     
     const isJvlr = activeTab === 'road' && activeNetworkVideo === 'jvlr';
     opacityJvlr.value = withTiming(isJvlr ? 1 : 0, { duration: 400 });
-    if (isJvlr) jvlrPlayer.play(); else jvlrPlayer.pause();
+    if (isJvlr) {
+      jvlrPlayer.seekTo(0);
+      jvlrPlayer.play();
+    } else {
+      jvlrPlayer.pause();
+    }
 
     const isRambaug = activeTab === 'road' && activeNetworkVideo === 'rambaug';
     opacityRambaug.value = withTiming(isRambaug ? 1 : 0, { duration: 400 });
-    if (isRambaug) rambaugPlayer.play(); else rambaugPlayer.pause();
+    if (isRambaug) {
+      rambaugPlayer.seekTo(0);
+      rambaugPlayer.play();
+    } else {
+      rambaugPlayer.pause();
+    }
 
     const isSakanaka = activeTab === 'road' && activeNetworkVideo === 'sakanaka';
     opacitySakanaka.value = withTiming(isSakanaka ? 1 : 0, { duration: 400 });
-    if (isSakanaka) sakinakaPlayer.play(); else sakinakaPlayer.pause();
+    if (isSakanaka) {
+      sakinakaPlayer.seekTo(0);
+      sakinakaPlayer.play();
+    } else {
+      sakinakaPlayer.pause();
+    }
 
     const isLt = activeTab === 'road' && activeNetworkVideo === 'lt';
     opacityLt.value = withTiming(isLt ? 1 : 0, { duration: 400 });
-    if (isLt) aareyPlayer.play(); else aareyPlayer.pause();
+    if (isLt) {
+      aareyPlayer.seekTo(0);
+      aareyPlayer.play();
+    } else {
+      aareyPlayer.pause();
+    }
 
     const isTransport = activeTab === 'transport';
     opacityTransport.value = withTiming(isTransport ? 1 : 0, { duration: 400 });
-    if (isTransport) transportPlayer.play(); else transportPlayer.pause();
+    if (isTransport) {
+      transportPlayer.seekTo(0);
+      transportPlayer.play();
+    } else {
+      transportPlayer.pause();
+    }
   }, [activeTab, activeNetworkVideo]);
 
   const styleSite = useAnimatedStyle(() => ({ opacity: opacitySite.value }));
@@ -137,7 +162,8 @@ export default function LocationScreen() {
     return markersList.map((m, idx) => (
       <Animated.View
         key={m.id}
-        entering={FadeIn.delay(idx * 150).duration(500)}
+        entering={ZoomIn.duration(350).delay(idx * 80)}
+        exiting={ZoomOut.duration(200)}
         style={[styles.markerContainer, { top: m.top, left: m.left }]}
       >
         <View style={styles.markerContent}>
