@@ -14,6 +14,7 @@ const leftImage = require('../../assets/Project_info/ProjectInfoimage.png');
 const img1 = require('../../assets/Project_info/Projectinfo_left.png');
 const img2 = require('../../assets/Project_info/Projectinfo_right.png');
 const logo = require('../../assets/Home/cignus updated logo.png');
+const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 const specifications = [
   { label: "BUILDING SIZE:", value: "building, on this site, by this lake." },
@@ -56,27 +57,36 @@ export default function ProjectInfo() {
           <LeftNavbar />
           <RightNavbar />
 
+          {/* Top Branding Badges */}
+          <View style={styles.topLeftLogo}>
+            <Image source={logo} style={styles.logoImg} contentFit="contain" />
+          </View>
+          <View style={styles.topRightLogo}>
+            <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
+          </View>
+
+          {/* Header Title */}
+          <View style={styles.headerContainer}>
+            <Text style={styles.pageTitle}>Design Philosophy</Text>
+            <View style={styles.subheaderRow}>
+              <Image source={img1} style={styles.subLogoImg} contentFit="contain" />
+              <Text style={styles.subheaderText}>THE ARCHITECTURE</Text>
+              <Image source={img2} style={styles.subLogoImg} contentFit="contain" />
+            </View>
+          </View>
+
           {/* Main content grid */}
           <View style={styles.contentWrapper}>
-            {/* Left Tower blueprint render (Slides in left) */}
+            {/* Left Column: Image Card */}
             <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
-              <Image source={leftImage} style={styles.towerImg} contentFit="contain" />
+              <View style={styles.imageCard}>
+                <Image source={leftImage} style={styles.towerImg} contentFit="cover" />
+              </View>
             </Animated.View>
 
-            {/* Right details content text specifications (Slides in right) */}
+            {/* Right Column: Details & Specs */}
             <Animated.View entering={FadeInRight.delay(200).duration(800)} style={styles.rightColumn}>
               <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                
-                {/* Header design philosophy */}
-                <Text style={styles.pageTitle}>Design Philosophy</Text>
-                
-                {/* Architecture Subheader badges */}
-                <View style={styles.subheaderRow}>
-                  <Image source={img1} style={styles.subLogoImg} contentFit="contain" />
-                  <Text style={styles.subheaderText}>THE ARCHITECTURE</Text>
-                  <Image source={img2} style={styles.subLogoImg} contentFit="contain" />
-                </View>
-
                 {/* Subtext description rows */}
                 <View style={styles.descBlock}>
                   <Text style={styles.descText}>Designed to disappear into its surroundings...</Text>
@@ -94,8 +104,8 @@ export default function ProjectInfo() {
                     <View key={idx} style={styles.specRow}>
                       <View style={styles.bulletPoint}>
                         <Svg width="18" height="18" viewBox="0 0 30 30" fill="none">
-                          <Circle cx="15" cy="15" r="14" stroke="#A1A1AA" strokeWidth="1.5" />
-                          <Path d="M10 15l4 4 8-8" stroke="#A1A1AA" strokeWidth="2.5" strokeLinecap="round" />
+                          <Circle cx="15" cy="15" r="14" stroke="#FFCF77" strokeWidth="1.5" />
+                          <Path d="M10 15l4 4 8-8" stroke="#FFCF77" strokeWidth="2.5" strokeLinecap="round" />
                         </Svg>
                       </View>
                       <View style={styles.specTexts}>
@@ -105,7 +115,6 @@ export default function ProjectInfo() {
                     </View>
                   ))}
                 </View>
-
               </ScrollView>
             </Animated.View>
           </View>
@@ -129,7 +138,6 @@ export default function ProjectInfo() {
           >
             <Text style={styles.specBtnText}>Specifications</Text>
           </TouchableOpacity>
-
         </Animated.View>
       )}
     </View>
@@ -160,80 +168,127 @@ const styles = StyleSheet.create({
     width: 200,
     height: 80,
   },
-  contentWrapper: {
-    ...StyleSheet.absoluteFill,
-    flexDirection: 'row',
-    paddingHorizontal: 80,
+  topLeftLogo: {
+    position: 'absolute',
+    top: 24,
+    left: 24,
+    width: 120,
+    height: 50,
+    zIndex: 90,
+  },
+  topRightLogo: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    width: 90,
+    height: 50,
+    zIndex: 90,
+  },
+  logoImg: {
+    width: '100%',
+    height: '100%',
+  },
+  logo2Img: {
+    width: '100%',
+    height: '100%',
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 36,
+    left: 120,
+    right: 100,
     alignItems: 'center',
-    justifyContent: 'center',
+    zIndex: 90,
+  },
+  pageTitle: {
+    fontSize: 32,
+    fontWeight: '300',
+    color: '#ffffff',
+    textTransform: 'uppercase',
+    letterSpacing: 4,
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
+    textAlign: 'center',
+  },
+  subheaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 6,
+  },
+  subLogoImg: {
+    width: 24,
+    height: 24,
+  },
+  subheaderText: {
+    fontSize: 12,
+    fontWeight: '300',
+    color: 'rgba(255, 255, 255, 0.7)',
+    letterSpacing: 2,
+  },
+  contentWrapper: {
+    position: 'absolute',
+    top: 140, // Below header
+    left: 120, // Clear LeftNavbar
+    right: 100, // Clear RightNavbar
+    bottom: 100, // Space for bottom buttons
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   leftColumn: {
     width: '45%',
-    height: '90%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  imageCard: {
+    width: '100%',
+    height: '85%',
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   towerImg: {
     width: '100%',
     height: '100%',
   },
   rightColumn: {
-    width: '55%',
-    height: '90%',
-    paddingLeft: 24,
+    width: '52%',
+    height: '100%',
     justifyContent: 'center',
   },
   scrollContent: {
-    paddingVertical: 32,
-    paddingRight: 40,
-    gap: 16,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontWeight: '300',
-    color: '#ffffff',
-    textTransform: 'uppercase',
-    letterSpacing: 3,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
-  },
-  subheaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingVertical: 12,
     gap: 12,
-  },
-  subLogoImg: {
-    width: 32,
-    height: 32,
-  },
-  subheaderText: {
-    fontSize: 14,
-    fontWeight: '300',
-    color: '#ffffff',
-    letterSpacing: 2,
   },
   descBlock: {
     gap: 8,
-    marginVertical: 12,
+    marginBottom: 8,
   },
   descText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12.5,
+    color: 'rgba(255, 255, 255, 0.75)',
     fontWeight: '300',
     lineHeight: 18,
   },
   specsBlock: {
-    gap: 12,
-    marginTop: 8,
+    gap: 10,
     borderTopWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    paddingTop: 16,
+    borderColor: 'rgba(255,255,255,0.08)',
+    paddingTop: 14,
   },
   specRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
+    gap: 10,
   },
   bulletPoint: {
     marginTop: 2,
@@ -248,15 +303,15 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   specVal: {
-    fontSize: 11.5,
+    fontSize: 12,
     color: '#ffffff',
     marginTop: 1,
-    lineHeight: 15,
+    lineHeight: 16,
   },
   backButton: {
     position: 'absolute',
     bottom: 32,
-    left: 80,
+    left: 120, // Clear LeftNavbar
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -273,7 +328,7 @@ const styles = StyleSheet.create({
   specBtn: {
     position: 'absolute',
     bottom: 32,
-    right: 80,
+    right: 100, // Clear RightNavbar
     backgroundColor: '#FFEFA8',
     borderRadius: 22,
     paddingHorizontal: 24,
