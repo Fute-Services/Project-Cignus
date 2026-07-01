@@ -6,6 +6,9 @@ import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 
+// Offline Pannellum assets
+import { pannellumCss, pannellumJs } from '../data/pannellum_assets';
+
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 
@@ -41,9 +44,8 @@ const getHtmlContent = (firstScene: string) => `
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cignus VR Offline Tour</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <style>
+        ${pannellumCss}
         html, body, #panorama {
             width: 100%;
             height: 100%;
@@ -61,6 +63,9 @@ const getHtmlContent = (firstScene: string) => `
 
 <div id="panorama"></div>
 
+<script type="text/javascript">
+    ${pannellumJs}
+</script>
 <script>
     var viewer = pannellum.viewer('panorama', {
         "default": {
