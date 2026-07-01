@@ -150,9 +150,9 @@ export default function UnitPlanPage() {
               >
                 {selectedAreaObj && (
                   Array.isArray(selectedAreaObj.polygons) ? (
-                    selectedAreaObj.polygons.map((polyItem: any) => (
+                    selectedAreaObj.polygons.map((polyItem: any, idx: number) => (
                       <Polygon
-                        key={polyItem.id}
+                        key={polyItem.id ? `${polyItem.id}_${idx}` : idx}
                         points={polyItem.polygon}
                         fill="rgba(212, 175, 55, 0.35)"
                         stroke="#d4af37"
