@@ -17,6 +17,8 @@ import Animated, {
 import { floors } from '../../data/FloorData';
 import LeftNavbar from '../../components/LeftNavbar';
 
+const { width, height } = Dimensions.get('window');
+
 const bgImage = require('../../../assets/intial/bg_img.png');
 const logoImg = require('../../../assets/Home/cignus updated logo.png');
 const unitPlan2D = require('../../../assets/Project_info/ProjectInfoimage.png');
@@ -242,8 +244,6 @@ function getOrdinal(n: number) {
   return s[(v - 20) % 10] || s[v] || s[0];
 }
 
-const { width, height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -285,11 +285,10 @@ const styles = StyleSheet.create({
   },
   blueprintContainer: {
     position: 'absolute',
-    top: '52%',
-    left: '42%',
-    transform: [{ translateX: -width * 0.32 }, { translateY: -height * 0.42 }],
-    width: width * 0.65,
-    height: height * 0.85,
+    left: 120,
+    top: 60,
+    width: width - 380,
+    height: height - 120,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 20,
