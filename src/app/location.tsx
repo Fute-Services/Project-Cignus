@@ -38,7 +38,7 @@ export default function LocationScreen() {
 
   // Instantiate video players for smooth cross-fading
   const jvlrPlayer = useVideoPlayer(jvlrVideo, p => { p.loop = true; p.muted = true; p.play(); });
-  const rambaugPlayer = useVideoPlayer(rambaugVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  const rambaugPlayer = useVideoPlayer(rambaughVideo, p => { p.loop = true; p.muted = true; p.play(); });
   const sakinakaPlayer = useVideoPlayer(sakinakaVideo, p => { p.loop = true; p.muted = true; p.play(); });
   const aareyPlayer = useVideoPlayer(aareyVideo, p => { p.loop = true; p.muted = true; p.play(); });
   const transportPlayer = useVideoPlayer(transportVideo, p => { p.loop = true; p.muted = true; p.play(); });
