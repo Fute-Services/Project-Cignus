@@ -21,6 +21,19 @@ const cafeteriaUri = Asset.fromModule(require('../../assets/vr/cafeteria.webp'))
 const liftlobbyUri = Asset.fromModule(require('../../assets/vr/liftlobby.webp')).uri;
 const topUri = Asset.fromModule(require('../../assets/vr/top.webp')).uri;
 
+// Extract origin for WebView baseUrl to prevent CORS/WebKit local file errors
+const getOrigin = (uri: string) => {
+  if (!uri) return '';
+  if (uri.startsWith('http://') || uri.startsWith('https://')) {
+    const parts = uri.split('/');
+    return `${parts[0]}//${parts[2]}/`;
+  }
+  if (uri.startsWith('file://')) {
+    return 'file:///';
+  }
+  return '';
+};
+
 const getHtmlContent = (firstScene: string) => `
 <!DOCTYPE html>
 <html>
@@ -150,7 +163,10 @@ export default function Amenities() {
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
-          source={{ html: getHtmlContent(initialScene) }}
+          source={{ 
+            html: getHtmlContent(initialScene),
+            baseUrl: getOrigin(dropoffUri)
+          }}
           style={styles.webView}
           allowFileAccess={true}
           allowFileAccessFromFileURLs={true}
