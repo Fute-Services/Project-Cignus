@@ -10,18 +10,18 @@ import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/Project_info/project_info_bg_img.png');
-const leftImage = require('../../assets/Project_info/ProjectInfoimage.png');
+const leftImage = require('../../assets/Overview/overview_optimized.jpeg');
 const img1 = require('../../assets/Project_info/Projectinfo_left.png');
 const img2 = require('../../assets/Project_info/Projectinfo_right.png');
 const logo = require('../../assets/Home/cignus updated logo.png');
 const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 const specifications = [
-  { label: "BUILDING SIZE:", value: "building, on this site, by this lake." },
-  { label: "EFFICIENCY:", value: "Curved full-glass curtain wall" },
-  { label: "USAGE:", value: "Green-terraced podium" },
-  { label: "NUMBER OF ELEVATORS:", value: "Dedicated arrival court" },
-  { label: "STRUCTURE:", value: "IGBC Platinum & WELL Gold target100% DG backup" },
+  { label: "SITE & ARCHITECTURE", value: "Landmark building located directly by the lake" },
+  { label: "FACADE DESIGN", value: "Curved full-glass curtain wall" },
+  { label: "PODIUM SPACE", value: "Lush green-terraced podium levels" },
+  { label: "ARRIVAL EXPERIENCE", value: "Dedicated arrival court and grand entry" },
+  { label: "CERTIFICATIONS & POWER", value: "IGBC Platinum & WELL Gold target • 100% DG backup" },
 ];
 
 export default function ProjectInfo() {
@@ -89,13 +89,15 @@ export default function ProjectInfo() {
               <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Subtext description rows */}
                 <View style={styles.descBlock}>
-                  <Text style={styles.descText}>Designed to disappear into its surroundings...</Text>
-                  <Text style={styles.descText}>...and stand apart from everything else</Text>
+                  <Text style={styles.descQuote}>
+                    "Designed to disappear into its surroundings... and stand apart from everything else."
+                  </Text>
                   <Text style={styles.descText}>
                     The curved glass façade wasn't a stylistic choice. It was a response to the site — to the way light moves off the lake, and the way the building needed to sit in its setting without competing with it. At different hours and from different angles, it looks like a completely different building.
                   </Text>
-                  <Text style={[styles.descText, { fontWeight: '500', color: '#FFCF77' }]}>That's the point.</Text>
-                  <Text style={styles.descText}>A tower that belongs here. Not transplanted from a business district. Just this</Text>
+                  <Text style={styles.descTextEmphasis}>
+                    That's the point. A tower that belongs here — not transplanted from a business district.
+                  </Text>
                 </View>
 
                 {/* Specifications item checklist */}
@@ -115,6 +117,15 @@ export default function ProjectInfo() {
                     </View>
                   ))}
                 </View>
+
+                {/* Redirect Button */}
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => router.push('/specification')}
+                  style={styles.specBtnInline}
+                >
+                  <Text style={styles.specBtnTextInline}>Specifications</Text>
+                </TouchableOpacity>
               </ScrollView>
             </Animated.View>
           </View>
@@ -128,15 +139,6 @@ export default function ProjectInfo() {
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
             </Svg>
-          </TouchableOpacity>
-
-          {/* Bottom Right Specification Redirect Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/specification')}
-            style={styles.specBtn}
-          >
-            <Text style={styles.specBtnText}>Specifications</Text>
           </TouchableOpacity>
         </Animated.View>
       )}
@@ -229,84 +231,105 @@ const styles = StyleSheet.create({
   },
   contentWrapper: {
     position: 'absolute',
-    top: 140, // Below header
-    left: 120, // Clear LeftNavbar
-    right: 100, // Clear RightNavbar
+    top: 130, // Below header
+    left: 125, // Clear LeftNavbar
+    right: 105, // Clear RightNavbar
     bottom: 100, // Space for bottom buttons
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'space-between',
+    gap: 32,
   },
   leftColumn: {
-    width: '45%',
-    height: '100%',
+    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   imageCard: {
     width: '100%',
-    height: '85%',
-    borderRadius: 20,
+    height: '92%',
+    borderRadius: 16,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: '#16191c',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   towerImg: {
     width: '100%',
     height: '100%',
   },
   rightColumn: {
-    width: '52%',
-    height: '100%',
+    flex: 1.25,
     justifyContent: 'center',
   },
   scrollContent: {
-    paddingVertical: 12,
-    gap: 12,
+    paddingVertical: 8,
   },
   descBlock: {
-    gap: 8,
-    marginBottom: 8,
+    gap: 10,
+    marginBottom: 16,
+  },
+  descQuote: {
+    fontSize: 14.5,
+    fontWeight: '300',
+    color: '#FFCF77',
+    fontStyle: 'italic',
+    lineHeight: 20,
+    letterSpacing: 0.5,
   },
   descText: {
-    fontSize: 12.5,
-    color: 'rgba(255, 255, 255, 0.75)',
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.8)',
     fontWeight: '300',
-    lineHeight: 18,
+    lineHeight: 19,
+  },
+  descTextEmphasis: {
+    fontSize: 13,
+    color: '#FFCF77',
+    fontWeight: '500',
+    lineHeight: 19,
   },
   specsBlock: {
-    gap: 10,
+    gap: 0,
     borderTopWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
     paddingTop: 14,
   },
   specRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    gap: 12,
   },
   bulletPoint: {
-    marginTop: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   specTexts: {
     flex: 1,
+    gap: 2,
   },
   specLabel: {
     fontSize: 9.5,
     fontWeight: '700',
     color: '#FFCF77',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   specVal: {
-    fontSize: 12,
+    fontSize: 12.5,
     color: '#ffffff',
-    marginTop: 1,
-    lineHeight: 16,
+    fontWeight: '400',
   },
   backButton: {
     position: 'absolute',
@@ -325,25 +348,27 @@ const styles = StyleSheet.create({
     elevation: 6,
     zIndex: 100,
   },
-  specBtn: {
-    position: 'absolute',
-    bottom: 32,
-    right: 100, // Clear RightNavbar
+  specBtnInline: {
     backgroundColor: '#FFEFA8',
-    borderRadius: 22,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    borderRadius: 26,
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 6,
-    zIndex: 100,
+    alignSelf: 'center',
   },
-  specBtnText: {
-    fontSize: 12.5,
+  specBtnTextInline: {
+    fontSize: 13.5,
     fontWeight: 'bold',
     color: '#000000',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 });

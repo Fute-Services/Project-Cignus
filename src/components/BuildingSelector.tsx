@@ -67,6 +67,11 @@ export default function BuildingSelector({
 }: BuildingSelectorProps) {
   const router = useRouter();
 
+  // Deduplicate gradient IDs to prevent duplicate React key warnings and SVG ID collisions
+  const uniqueGradientIds = React.useMemo(() => {
+    return Array.from(new Set(floors.map((f) => f.gradientId)));
+  }, [floors]);
+
   // Keep track of the active floor for the tooltip content separately so it doesn't instantly vanish on fade-out
   const [activeTooltipFloor, setActiveTooltipFloor] = useState<FloorData | null>(null);
 
@@ -128,10 +133,10 @@ export default function BuildingSelector({
           style={StyleSheet.absoluteFill}
         >
           <Defs>
-            {floors.map((f) => (
+            {uniqueGradientIds.map((gradientId) => (
               <LinearGradient
-                key={f.gradientId}
-                id={f.gradientId}
+                key={gradientId}
+                id={gradientId}
                 x1="0%"
                 y1="0%"
                 x2="100%"

@@ -24,11 +24,11 @@ const Amenity1       = require('../../assets/Gallery/Amenities View.jpeg');
 const Amenity2       = require('../../assets/Gallery/Amenties View 2.jpeg');
 const Amenity3       = require('../../assets/Gallery/Amenities View 31.jpeg');   // JPEG 939KB ✓
 
-const Reception2     = require('../../assets/Gallery/Reception (2).png');
-const Reception1     = require('../../assets/Gallery/Reception (3).png');
-const SeatingArea    = require('../../assets/Gallery/Seating Area.jpg.jpeg');
-const Cafetaria      = require('../../assets/Gallery/Cafeteria (2).png');
-const LiftLobby      = require('../../assets/Gallery/Lift Lobby.png');
+const Reception2     = require('../../assets/Gallery/Reception (2).jpeg');
+const Reception1     = require('../../assets/Gallery/Reception (3).jpeg');
+const SeatingArea    = require('../../assets/Gallery/Seating Area.jpeg');
+const Cafetaria      = require('../../assets/Gallery/Cafeteria (2).jpeg');
+const LiftLobby      = require('../../assets/Gallery/Lift Lobby.jpeg');
 
 type GalleryImage = { image: number; title: string };
 
@@ -55,50 +55,15 @@ export default function Gallery() {
 
   const [viewMode, setViewMode] = useState<'exterior' | 'interior'>('exterior');
   const [activeIndex, setActiveIndex] = useState(0);
-  // displayIndex is the index shown in the image — updated only after the fade-out completes
-  const [displayIndex, setDisplayIndex] = useState(0);
-  // displayMode mirrors viewMode but only changes during the fade-out to prevent flicker
-  const [displayMode, setDisplayMode] = useState<'exterior' | 'interior'>('exterior');
-
-  const imageOpacity = useSharedValue(1);
 
   const activeImages = viewMode === 'exterior' ? EXTERIOR_IMAGES : INTERIOR_IMAGES;
-  const displayImages = displayMode === 'exterior' ? EXTERIOR_IMAGES : INTERIOR_IMAGES;
-
-  // Safe version that can be called from Reanimated worklets
-  const applyNewIndex = useCallback((idx: number) => {
-    setDisplayIndex(idx);
-  }, []);
-
-  const applyNewCategory = useCallback((mode: 'exterior' | 'interior') => {
-    setDisplayMode(mode);
-    setDisplayIndex(0);
-  }, []);
-
-  const crossfadeTo = (newIdx: number) => {
-    imageOpacity.value = withTiming(0, { duration: 220 }, () => {
-      runOnJS(applyNewIndex)(newIdx);
-      imageOpacity.value = withTiming(1, { duration: 220 });
-    });
-  };
-
-  const crossfadeToCategory = (mode: 'exterior' | 'interior') => {
-    imageOpacity.value = withTiming(0, { duration: 220 }, () => {
-      runOnJS(applyNewCategory)(mode);
-      imageOpacity.value = withTiming(1, { duration: 220 });
-    });
-  };
 
   const handlePrev = () => {
-    const nextIdx = activeIndex === 0 ? activeImages.length - 1 : activeIndex - 1;
-    setActiveIndex(nextIdx);
-    crossfadeTo(nextIdx);
+    setActiveIndex((prev) => (prev === 0 ? activeImages.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    const nextIdx = activeIndex === activeImages.length - 1 ? 0 : activeIndex + 1;
-    setActiveIndex(nextIdx);
-    crossfadeTo(nextIdx);
+    setActiveIndex((prev) => (prev === activeImages.length - 1 ? 0 : prev + 1));
   };
 
   const changeCategory = (mode: 'exterior' | 'interior') => {
@@ -106,29 +71,22 @@ export default function Gallery() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setViewMode(mode);
     setActiveIndex(0);
-    crossfadeToCategory(mode);
   };
 
-  const animatedImageStyle = useAnimatedStyle(() => ({
-    opacity: imageOpacity.value,
-  }));
-
-  const currentImage = displayImages[displayIndex]?.image;
-  const currentTitle = displayImages[displayIndex]?.title;
+  const currentImage = activeImages[activeIndex]?.image;
+  const currentTitle = activeImages[activeIndex]?.title;
 
   return (
     <View style={styles.container}>
       {/* Background Image with Cross-fade Transition */}
       <View style={StyleSheet.absoluteFill}>
         {currentImage != null && (
-          <Animated.View style={[StyleSheet.absoluteFill, animatedImageStyle]}>
-            <Image
-              source={currentImage}
-              style={styles.backgroundImage}
-              contentFit="cover"
-              recyclingKey={`${displayMode}-${displayIndex}`}
-            />
-          </Animated.View>
+          <Image
+            source={currentImage}
+            style={styles.backgroundImage}
+            contentFit="contain"
+            transition={{ duration: 300, effect: 'cross-dissolve' }}
+          />
         )}
         {/* Dark overlay for readability */}
         <View style={styles.overlay} />
@@ -154,7 +112,7 @@ export default function Gallery() {
       {/* Image Title Overlay */}
       <View style={styles.titleContainer} pointerEvents="none">
         <Text style={styles.titleText}>{currentTitle}</Text>
-        <Text style={styles.counterText}>{displayIndex + 1} / {displayImages.length}</Text>
+        <Text style={styles.counterText}>{activeIndex + 1} / {activeImages.length}</Text>
       </View>
 
       {/* Bottom Controls Capsule */}
