@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-nati
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 const logo = require('../../assets/Home/cignus updated logo.png');
@@ -36,22 +36,55 @@ export default function LocationScreen() {
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
-  // Video players
-  const currentVideoAsset = activeTab === 'transport'
-    ? transportVideo
-    : connectivityVideos.find(v => v.id === activeNetworkVideo)?.src || jvlrVideo;
+  // Instantiate video players for smooth cross-fading
+  const jvlrPlayer = useVideoPlayer(jvlrVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  const rambaugPlayer = useVideoPlayer(rambaugVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  const sakinakaPlayer = useVideoPlayer(sakinakaVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  const aareyPlayer = useVideoPlayer(aareyVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  const transportPlayer = useVideoPlayer(transportVideo, p => { p.loop = true; p.muted = true; p.play(); });
 
-  const player = useVideoPlayer(currentVideoAsset, (playerInstance) => {
-    playerInstance.loop = true;
-    playerInstance.muted = true;
-    playerInstance.play();
-  });
+  // Shared values for cross-fade opacities
+  const opacitySite = useSharedValue(1);
+  const opacityNeighbourhood = useSharedValue(0);
+  const opacityJvlr = useSharedValue(0);
+  const opacityRambaug = useSharedValue(0);
+  const opacitySakanaka = useSharedValue(0);
+  const opacityLt = useSharedValue(0);
+  const opacityTransport = useSharedValue(0);
 
-  // Re-play video whenever tab/video changes
+  // Transition opacities and playback state smoothly
   useEffect(() => {
-    player.replace(currentVideoAsset);
-    player.play();
-  }, [activeTab, activeNetworkVideo, currentVideoAsset]);
+    opacitySite.value = withTiming(activeTab === 'site' ? 1 : 0, { duration: 400 });
+    opacityNeighbourhood.value = withTiming(activeTab === 'neighbourhood' ? 1 : 0, { duration: 400 });
+    
+    const isJvlr = activeTab === 'road' && activeNetworkVideo === 'jvlr';
+    opacityJvlr.value = withTiming(isJvlr ? 1 : 0, { duration: 400 });
+    if (isJvlr) jvlrPlayer.play(); else jvlrPlayer.pause();
+
+    const isRambaug = activeTab === 'road' && activeNetworkVideo === 'rambaug';
+    opacityRambaug.value = withTiming(isRambaug ? 1 : 0, { duration: 400 });
+    if (isRambaug) rambaugPlayer.play(); else rambaugPlayer.pause();
+
+    const isSakanaka = activeTab === 'road' && activeNetworkVideo === 'sakanaka';
+    opacitySakanaka.value = withTiming(isSakanaka ? 1 : 0, { duration: 400 });
+    if (isSakanaka) sakinakaPlayer.play(); else sakinakaPlayer.pause();
+
+    const isLt = activeTab === 'road' && activeNetworkVideo === 'lt';
+    opacityLt.value = withTiming(isLt ? 1 : 0, { duration: 400 });
+    if (isLt) aareyPlayer.play(); else aareyPlayer.pause();
+
+    const isTransport = activeTab === 'transport';
+    opacityTransport.value = withTiming(isTransport ? 1 : 0, { duration: 400 });
+    if (isTransport) transportPlayer.play(); else transportPlayer.pause();
+  }, [activeTab, activeNetworkVideo]);
+
+  const styleSite = useAnimatedStyle(() => ({ opacity: opacitySite.value }));
+  const styleNeighbourhood = useAnimatedStyle(() => ({ opacity: opacityNeighbourhood.value }));
+  const styleJvlr = useAnimatedStyle(() => ({ opacity: opacityJvlr.value }));
+  const styleRambaug = useAnimatedStyle(() => ({ opacity: opacityRambaug.value }));
+  const styleSakanaka = useAnimatedStyle(() => ({ opacity: opacitySakanaka.value }));
+  const styleLt = useAnimatedStyle(() => ({ opacity: opacityLt.value }));
+  const styleTransport = useAnimatedStyle(() => ({ opacity: opacityTransport.value }));
 
   const renderMarkers = () => {
     let markersList: any[] = [];
@@ -125,20 +158,40 @@ export default function LocationScreen() {
     <View style={styles.container}>
       {/* 1. MAP BACKGROUND / VIDEO LAYER */}
       <View style={StyleSheet.absoluteFill}>
-        {activeTab === 'site' || activeTab === 'neighbourhood' ? (
-          <Image
-            source={activeTab === 'site' ? siteLocation : neighborhood}
-            style={styles.backgroundImage}
-            contentFit="contain"
-          />
-        ) : (
-          <VideoView
-            player={player}
-            style={styles.backgroundImage}
-            contentFit="contain"
-            nativeControls={false}
-          />
-        )}
+        {/* Site Location Image */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleSite]}>
+          <Image source={siteLocation} style={styles.backgroundImage} contentFit="contain" />
+        </Animated.View>
+
+        {/* Neighbourhood Image */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleNeighbourhood]}>
+          <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
+        </Animated.View>
+
+        {/* JVLR Video */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleJvlr]}>
+          <VideoView player={jvlrPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        </Animated.View>
+
+        {/* Rambaug Video */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleRambaug]}>
+          <VideoView player={rambaugPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        </Animated.View>
+
+        {/* Saki-Naka Video */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleSakanaka]}>
+          <VideoView player={sakinakaPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        </Animated.View>
+
+        {/* Aarey Video */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleLt]}>
+          <VideoView player={aareyPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        </Animated.View>
+
+        {/* Airport Connectivity Video */}
+        <Animated.View style={[StyleSheet.absoluteFill, styleTransport]}>
+          <VideoView player={transportPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        </Animated.View>
 
         {/* 2. OVERLAY INTERACTIVE MARKERS */}
         {renderMarkers()}
