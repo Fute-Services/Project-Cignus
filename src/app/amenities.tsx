@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
 import { Asset } from 'expo-asset';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Offline Pannellum assets
 import { pannellumCss, pannellumJs } from '../data/pannellum_assets';
@@ -134,6 +135,7 @@ const navItems = [
 
 export default function Amenities() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [currentScene, setCurrentScene] = useState<string>('dropoff');
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
@@ -180,7 +182,6 @@ export default function Amenities() {
           domStorageEnabled={true}
           cacheEnabled={true}
           mixedContentMode="always"
-          androidHardwareAccelerationDisabled={false}
         />
       </View>
 
@@ -189,7 +190,7 @@ export default function Amenities() {
 
       {/* 4. Brand Logo (Top Left, hidden when 360 is active) */}
       {!is360Active && (
-        <View style={styles.logoWrapper}>
+        <View style={[styles.logoWrapper, { top: 24 + insets.top, left: 24 + insets.left }]}>
           <Image source={logo} style={styles.logoImg} contentFit="contain" />
         </View>
       )}
@@ -199,7 +200,7 @@ export default function Amenities() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => router.push('/home')}
-          style={styles.homeButton}
+          style={[styles.homeButton, { bottom: 32 + insets.bottom, left: 100 + insets.left }]}
         >
           <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
             <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -212,7 +213,7 @@ export default function Amenities() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleResetScene}
-          style={styles.backButton}
+          style={[styles.backButton, { top: 24 + insets.top, left: 24 + insets.left }]}
         >
           <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
             <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -228,7 +229,7 @@ export default function Amenities() {
       )}
 
       {/* 7. Bottom Navigation Capsule */}
-      <View style={styles.bottomNavContainer}>
+      <View style={[styles.bottomNavContainer, { bottom: 32 + insets.bottom }]}>
         <View style={styles.bottomNavCapsule}>
           {navItems.map((item) => {
             const isActive = currentScene === item.id;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { usePathname, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const navItems = [
   { path: '/circulation', label: 'Circulation' },
@@ -12,9 +13,10 @@ const navItems = [
 export default function ProjectBottomNav() {
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { bottom: 24 + insets.bottom }]}>
       <View style={styles.capsule}>
         {navItems.map((item) => {
           const isActive = pathname === item.path;

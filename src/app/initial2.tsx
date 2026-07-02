@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { FadeInUp, FadeIn, FadeOut } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
 const cignusLogo = require('../../assets/Home/cignus updated logo.png');
@@ -16,6 +17,7 @@ const bgVideoAsset = require('../../assets/Home/Masterplan page vdo.mp4');
 
 export default function Initial2() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Initialize expo-video player
@@ -66,7 +68,7 @@ export default function Initial2() {
       </View>
 
       {/* 3. Top Right K Raheja Corp Logo */}
-      <Animated.View entering={FadeInUp.delay(200).duration(800)} style={styles.topRightLogo}>
+      <Animated.View entering={FadeInUp.delay(200).duration(800)} style={[styles.topRightLogo, { top: 24 + insets.top, right: 32 + insets.right }]}>
         <Image source={rightLogo} style={styles.brandLogo} contentFit="contain" />
       </Animated.View>
 

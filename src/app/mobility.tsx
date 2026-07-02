@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS, cancelAnimation } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -27,6 +28,7 @@ const staticData = [
 
 export default function Mobility() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // Transition values
@@ -54,6 +56,9 @@ export default function Mobility() {
   }, []);
 
   const triggerTransition = (newIdx: number) => {
+    // Reanimated shared values are designed to be mutated via `.value`; the React
+    // Compiler's immutability check doesn't model this, so suppress the false positive.
+    // eslint-disable-next-line react-hooks/immutability
     contentOpacity.value = withTiming(0, { duration: 250 }, (finished) => {
       if (finished && isMounted.current) {
         runOnJS(applyNewIndex)(newIdx);
@@ -87,7 +92,7 @@ export default function Mobility() {
       </View>
 
       {/* 2. Top Title Header */}
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { top: 40 + insets.top }]}>
         <View style={styles.titleLine} />
         <Text style={styles.titleText}>{selectedItem?.title}</Text>
         <View style={styles.titleLine} />
@@ -133,7 +138,7 @@ export default function Mobility() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/project-details')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

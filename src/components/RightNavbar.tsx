@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { usePathname, useRouter } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInRight } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 
 const infoIcon = require('../../assets/Home/icons/project_inco_icon.svg');
@@ -25,9 +26,10 @@ const navItems = [
 export default function RightNavbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
 
   return (
-    <Animated.View entering={FadeInRight.duration(800).delay(300).springify()} style={styles.container}>
+    <Animated.View entering={FadeInRight.duration(800).delay(300).springify()} style={[styles.container, { right: 16 + insets.right }]}>
       <BlurView intensity={20} tint="dark" style={styles.blurContainer}>
         {navItems.map((item) => {
           const isActive = pathname === item.path;

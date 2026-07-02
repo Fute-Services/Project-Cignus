@@ -90,6 +90,9 @@ export default function BuildingSelector({
 
   useEffect(() => {
     if (hoveredFloor) {
+      // Persist the hovered floor as tooltip content so it stays visible through
+      // the fade-out animation below (cleared via runOnJS once fade completes).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTooltipFloor(hoveredFloor);
       const { x, y } = getPercentCoords(hoveredFloor.anchorX, hoveredFloor.anchorY);
       

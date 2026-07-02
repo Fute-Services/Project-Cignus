@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInLeft, FadeInRight, FadeInUp, FadeOut } from 'react-native-reanimated';
 import Svg, { Path, Circle } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
@@ -26,6 +27,7 @@ const specifications = [
 
 export default function ProjectInfo() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [showLogo, setShowLogo] = useState(true);
 
   useEffect(() => {
@@ -58,15 +60,15 @@ export default function ProjectInfo() {
           <RightNavbar />
 
           {/* Top Branding Badges */}
-          <View style={styles.topLeftLogo}>
+          <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
             <Image source={logo} style={styles.logoImg} contentFit="contain" />
           </View>
-          <View style={styles.topRightLogo}>
+          <View style={[styles.topRightLogo, { top: 24 + insets.top, right: 24 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
           </View>
 
           {/* Header Title */}
-          <View style={styles.headerContainer}>
+          <View style={[styles.headerContainer, { top: 36 + insets.top, left: 120 + insets.left, right: 100 + insets.right }]}>
             <Text style={styles.pageTitle}>Design Philosophy</Text>
             <View style={styles.subheaderRow}>
               <Image source={img1} style={styles.subLogoImg} contentFit="contain" />
@@ -76,7 +78,7 @@ export default function ProjectInfo() {
           </View>
 
           {/* Main content grid */}
-          <View style={styles.contentWrapper}>
+          <View style={[styles.contentWrapper, { left: 125 + insets.left, right: 105 + insets.right, bottom: 100 + insets.bottom }]}>
             {/* Left Column: Image Card */}
             <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
               <View style={styles.imageCard}>
@@ -90,13 +92,13 @@ export default function ProjectInfo() {
                 {/* Subtext description rows */}
                 <View style={styles.descBlock}>
                   <Text style={styles.descQuote}>
-                    "Designed to disappear into its surroundings... and stand apart from everything else."
+                    &quot;Designed to disappear into its surroundings... and stand apart from everything else.&quot;
                   </Text>
                   <Text style={styles.descText}>
-                    The curved glass façade wasn't a stylistic choice. It was a response to the site — to the way light moves off the lake, and the way the building needed to sit in its setting without competing with it. At different hours and from different angles, it looks like a completely different building.
+                    The curved glass façade wasn&apos;t a stylistic choice. It was a response to the site — to the way light moves off the lake, and the way the building needed to sit in its setting without competing with it. At different hours and from different angles, it looks like a completely different building.
                   </Text>
                   <Text style={styles.descTextEmphasis}>
-                    That's the point. A tower that belongs here — not transplanted from a business district.
+                    That&apos;s the point. A tower that belongs here — not transplanted from a business district.
                   </Text>
                 </View>
 
@@ -134,7 +136,7 @@ export default function ProjectInfo() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.replace('/home')}
-            style={styles.backButton}
+            style={[styles.backButton, { bottom: 32 + insets.bottom, left: 120 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -145,8 +147,6 @@ export default function ProjectInfo() {
     </View>
   );
 }
-
-const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

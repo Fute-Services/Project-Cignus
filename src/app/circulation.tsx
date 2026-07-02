@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
@@ -14,6 +15,7 @@ const circulationVideo = require('../../assets/Circulation/Powai-Site-plan Circu
 
 export default function Circulation() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   // Initialize loop play
   const player = useVideoPlayer(circulationVideo, (playerInstance) => {
@@ -35,7 +37,7 @@ export default function Circulation() {
       </View>
 
       {/* 2. Top Title Section */}
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { top: 40 + insets.top }]}>
         <Text style={styles.titleText}>Circulation</Text>
       </View>
 
@@ -55,7 +57,7 @@ export default function Circulation() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/project-details')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

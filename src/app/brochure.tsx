@@ -5,16 +5,20 @@ import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 import * as Sharing from 'expo-sharing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const brochurePdf = require('../../assets/Broucher/Cignus Tower 2 1.pdf');
 
 export default function Brochure() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [pdfUri, setPdfUri] = useState<string | null>(null);
 
   useEffect(() => {
     const asset = Asset.fromModule(brochurePdf);
     if (asset.localUri) {
+      // One-time sync from the bundled asset's cached uri into state on mount.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPdfUri(asset.localUri);
     } else {
       asset.downloadAsync()
@@ -35,7 +39,7 @@ export default function Brochure() {
   return (
     <View style={styles.container}>
       {/* 1. Header Title Overlay */}
-      <View style={styles.header}>
+      <View style={[styles.header, { top: 0 + insets.top }]}>
         <Text style={styles.headerText}>Project Brochure</Text>
       </View>
 
@@ -79,7 +83,7 @@ export default function Brochure() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

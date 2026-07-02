@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -52,6 +53,7 @@ const INTERIOR_IMAGES: GalleryImage[] = [
 
 export default function Gallery() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [viewMode, setViewMode] = useState<'exterior' | 'interior'>('exterior');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -93,7 +95,7 @@ export default function Gallery() {
       </View>
 
       {/* Top Branding Logos */}
-      <View style={styles.logosContainer}>
+      <View style={[styles.logosContainer, { top: 24 + insets.top, left: 24 + insets.left, right: 24 + insets.right }]}>
         <Image source={leftLogo} style={styles.leftLogoImg} contentFit="contain" />
         <Image source={rightLogo} style={styles.rightLogoImg} contentFit="contain" />
       </View>
@@ -102,7 +104,7 @@ export default function Gallery() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -110,13 +112,13 @@ export default function Gallery() {
       </TouchableOpacity>
 
       {/* Image Title Overlay */}
-      <View style={styles.titleContainer} pointerEvents="none">
+      <View style={[styles.titleContainer, { bottom: 100 + insets.bottom }]} pointerEvents="none">
         <Text style={styles.titleText}>{currentTitle}</Text>
         <Text style={styles.counterText}>{activeIndex + 1} / {activeImages.length}</Text>
       </View>
 
       {/* Bottom Controls Capsule */}
-      <View style={styles.controlsCapsule}>
+      <View style={[styles.controlsCapsule, { bottom: 32 + insets.bottom }]}>
         {/* Prev Button */}
         <TouchableOpacity onPress={handlePrev} activeOpacity={0.7} style={styles.arrowButton}>
           <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { 
   useFonts,
   Outfit_300Light,
@@ -72,7 +73,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" hidden={true} />
       <Stack
         screenOptions={{
@@ -102,6 +103,6 @@ export default function RootLayout() {
         <Stack.Screen name="specification" />
         <Stack.Screen name="vr" />
       </Stack>
-    </>
+    </ErrorBoundary>
   );
 }

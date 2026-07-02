@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Svg, { Polygon, Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,8 +17,6 @@ import Animated, {
 // Data & Assets
 import { floors } from '../../data/FloorData';
 import LeftNavbar from '../../components/LeftNavbar';
-
-const { width, height } = Dimensions.get('window');
 
 const bgImage = require('../../../assets/intial/bg_img.png');
 const logoImg = require('../../../assets/Home/cignus updated logo.png');
@@ -34,6 +33,8 @@ const floorImageMap: Record<string, any> = {
 export default function UnitPlanPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   // Find the selected floor
   const selectedFloor = floors.find(
@@ -69,10 +70,25 @@ export default function UnitPlanPage() {
     centerScale.value = withTiming(isZoomed ? 0.9 : 0.75, { duration: 400 });
   }, [isZoomed]);
 
-  // Reset active area when floor changes
+  // Reset active area when floor changes (expo-router reuses this instance across ids)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveAreaId(null);
   }, [id]);
+
+  // Animated styles — declared before any early return so hook order stays stable
+  const centerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: centerScale.value }],
+  }));
+
+  const mainContentAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: mainContentY.value }],
+  }));
+
+  const leftNavAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: leftNavX.value }],
+    opacity: leftNavOpacity.value,
+  }));
 
   if (!selectedFloor) {
     return (
@@ -95,20 +111,6 @@ export default function UnitPlanPage() {
   const layoutAreas = selectedFloor.unitplan?.sideContent || [];
   const selectedAreaObj = layoutAreas.find((area: any) => area.id === activeAreaId);
 
-  // Animated styles
-  const centerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: centerScale.value }],
-  }));
-
-  const mainContentAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: mainContentY.value }],
-  }));
-
-  const leftNavAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: leftNavX.value }],
-    opacity: leftNavOpacity.value,
-  }));
-
   return (
     <View style={styles.container}>
       {/* Background Graphic */}
@@ -125,17 +127,17 @@ export default function UnitPlanPage() {
       {!showLogo && (
         <Animated.View style={[StyleSheet.absoluteFill, mainContentAnimatedStyle]}>
           {/* Top Left logo badge */}
-          <View style={styles.topLeftLogo}>
+          <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
             <Image source={logoImg} style={styles.logoImg} contentFit="contain" />
           </View>
 
           {/* Left Navbar Overlay */}
-          <Animated.View style={[styles.leftNavOverlay, leftNavAnimatedStyle]}>
+          <Animated.View style={[styles.leftNavOverlay, { left: 0 + insets.left }, leftNavAnimatedStyle]}>
             <LeftNavbar />
           </Animated.View>
 
           {/* ── 3D Blueprint Interactive Canvas ── */}
-          <Animated.View style={[styles.blueprintContainer, centerAnimatedStyle]}>
+          <Animated.View style={[styles.blueprintContainer, { width: Math.max(width - 380, 240), height: Math.max(height - 120, 200) }, centerAnimatedStyle]}>
             {/* Ghost layout helper image */}
             <Image source={unitPlan2D} style={styles.ghostImage} contentFit="contain" pointerEvents="none" />
 
@@ -225,7 +227,7 @@ export default function UnitPlanPage() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/project-details')}
-            style={styles.backButton}
+            style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -287,8 +289,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 120,
     top: 60,
-    width: width - 380,
-    height: height - 120,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 20,

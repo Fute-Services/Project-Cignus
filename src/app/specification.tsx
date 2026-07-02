@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInLeft, FadeInRight, FadeInUp, FadeOut } from 'react-native-reanimated';
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
@@ -31,6 +32,7 @@ const specifications = [
 
 export default function Specification() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [showLogo, setShowLogo] = useState(true);
 
   useEffect(() => {
@@ -63,15 +65,15 @@ export default function Specification() {
           <RightNavbar />
 
           {/* Top Branding Logos */}
-          <View style={styles.topLeftLogo}>
+          <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
             <Image source={logo} style={styles.logo1Img} contentFit="contain" />
           </View>
-          <View style={styles.topRightLogo}>
+          <View style={[styles.topRightLogo, { top: 24 + insets.top, right: 24 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
           </View>
 
           {/* Header titles */}
-          <View style={styles.headerContainer}>
+          <View style={[styles.headerContainer, { top: 36 + insets.top, left: 120 + insets.left, right: 100 + insets.right }]}>
             <Text style={styles.pageTitle}>Building Specifications</Text>
 
             {/* Decorative gold lines with subtitle */}
@@ -101,7 +103,7 @@ export default function Specification() {
           </View>
 
           {/* Main content grid */}
-          <View style={styles.contentWrapper}>
+          <View style={[styles.contentWrapper, { left: 120 + insets.left, right: 100 + insets.right, bottom: 100 + insets.bottom }]}>
             {/* Left Column: Round and capsule images */}
             <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
               <View style={styles.imageCardRound}>
@@ -140,7 +142,7 @@ export default function Specification() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.replace('/project-info')}
-            style={styles.backButton}
+            style={[styles.backButton, { bottom: 32 + insets.bottom, left: 120 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

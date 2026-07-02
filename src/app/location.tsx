@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const logo = require('../../assets/Home/cignus updated logo.png');
 const siteLocation = require('../../assets/Location/NEW FINAL SITE LOCATION IMG.jpeg');
@@ -33,6 +34,7 @@ const connectivityVideos = [
 
 export default function LocationScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
@@ -60,8 +62,7 @@ export default function LocationScreen() {
     const isJvlr = activeTab === 'road' && activeNetworkVideo === 'jvlr';
     opacityJvlr.value = withTiming(isJvlr ? 1 : 0, { duration: 400 });
     if (isJvlr) {
-      jvlrPlayer.seekTo(0);
-      jvlrPlayer.play();
+      jvlrPlayer.replay();
     } else {
       jvlrPlayer.pause();
     }
@@ -69,8 +70,7 @@ export default function LocationScreen() {
     const isRambaug = activeTab === 'road' && activeNetworkVideo === 'rambaug';
     opacityRambaug.value = withTiming(isRambaug ? 1 : 0, { duration: 400 });
     if (isRambaug) {
-      rambaugPlayer.seekTo(0);
-      rambaugPlayer.play();
+      rambaugPlayer.replay();
     } else {
       rambaugPlayer.pause();
     }
@@ -78,8 +78,7 @@ export default function LocationScreen() {
     const isSakanaka = activeTab === 'road' && activeNetworkVideo === 'sakanaka';
     opacitySakanaka.value = withTiming(isSakanaka ? 1 : 0, { duration: 400 });
     if (isSakanaka) {
-      sakinakaPlayer.seekTo(0);
-      sakinakaPlayer.play();
+      sakinakaPlayer.replay();
     } else {
       sakinakaPlayer.pause();
     }
@@ -87,8 +86,7 @@ export default function LocationScreen() {
     const isLt = activeTab === 'road' && activeNetworkVideo === 'lt';
     opacityLt.value = withTiming(isLt ? 1 : 0, { duration: 400 });
     if (isLt) {
-      aareyPlayer.seekTo(0);
-      aareyPlayer.play();
+      aareyPlayer.replay();
     } else {
       aareyPlayer.pause();
     }
@@ -96,8 +94,7 @@ export default function LocationScreen() {
     const isTransport = activeTab === 'transport';
     opacityTransport.value = withTiming(isTransport ? 1 : 0, { duration: 400 });
     if (isTransport) {
-      transportPlayer.seekTo(0);
-      transportPlayer.play();
+      transportPlayer.replay();
     } else {
       transportPlayer.pause();
     }
@@ -227,7 +224,7 @@ export default function LocationScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
-        style={styles.backButton}
+        style={[styles.backButton, { top: 24 + insets.top, left: 24 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -235,7 +232,7 @@ export default function LocationScreen() {
       </TouchableOpacity>
 
       {/* 4. TOP NAVIGATION BAR OVERLAY */}
-      <View style={styles.bottomTabContainer}>
+      <View style={[styles.bottomTabContainer, { bottom: 24 + insets.bottom }]}>
         <View style={styles.tabsCapsule}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -257,7 +254,7 @@ export default function LocationScreen() {
 
       {/* 5. RIGHT SIDE MULTI-VIDEO NAVIGATION OVERLAY (Connectivity only) */}
       {activeTab === 'road' && (
-        <Animated.View entering={FadeIn.duration(300)} style={styles.rightMenuContainer}>
+        <Animated.View entering={FadeIn.duration(300)} style={[styles.rightMenuContainer, { right: 0 + insets.right }]}>
           {connectivityVideos.map((vid) => {
             const isActiveVid = activeNetworkVideo === vid.id;
             return (

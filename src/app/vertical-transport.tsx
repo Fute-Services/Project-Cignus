@@ -4,14 +4,15 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Shared Components
+import ProjectBottomNav from '../components/ProjectBottomNav';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-// Shared Components
-import ProjectBottomNav from '../components/ProjectBottomNav';
 
 const bgImage = require('../../assets/Project_Details/bg-image.png');
 const bgVideo = require('../../assets/Project_Details/bg_video.mp4');
@@ -25,6 +26,7 @@ const sections = [
 
 export default function VerticalTransport() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [activeSection, setActiveSection] = useState(sections[0]);
 
   // Video view controllers
@@ -55,7 +57,7 @@ export default function VerticalTransport() {
       </View>
 
       {/* 2. Top Title Section */}
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, { top: 40 + insets.top }]}>
         <View style={styles.titleLine} />
         <Text style={styles.titleText}>{activeSection.label}</Text>
         <View style={styles.titleLine} />
@@ -98,7 +100,7 @@ export default function VerticalTransport() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/project-details')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

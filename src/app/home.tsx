@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import Header from '../components/Header';
@@ -14,6 +15,7 @@ const bottomLogoBtn = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 export default function Home() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleBottomLogoPress = () => {
     // Navigate back to the initial dashboard splash page
@@ -43,7 +45,7 @@ export default function Home() {
       <RightNavbar />
 
       {/* 5. Bottom Left K Raheja logo button to reset/home */}
-      <Animated.View entering={FadeInUp.duration(800).delay(400).springify()} style={styles.bottomLogoContainer} pointerEvents="box-none">
+      <Animated.View entering={FadeInUp.duration(800).delay(400).springify()} style={[styles.bottomLogoContainer, { bottom: 40 + insets.bottom, left: 64 + insets.left }]} pointerEvents="box-none">
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleBottomLogoPress}

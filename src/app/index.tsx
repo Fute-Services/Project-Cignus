@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Modal, Dimensions, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Modal, useWindowDimensions, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Svg, { Path, Defs, RadialGradient, Stop, Ellipse } from 'react-native-svg';
@@ -7,6 +7,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withDel
 import { WebView } from 'react-native-webview';
 import { Asset } from 'expo-asset';
 import * as Sharing from 'expo-sharing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Images
 const leftLogo = require('../../assets/Home/cignus updated logo.png');
@@ -120,6 +121,8 @@ const portfolioCards = [
 
 export default function InitialPage() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [phase, setPhase] = useState<'splash' | 'dashboard'>('splash');
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
@@ -128,6 +131,8 @@ export default function InitialPage() {
     if (selectedCard?.pdf) {
       const asset = Asset.fromModule(selectedCard.pdf);
       if (asset.localUri) {
+        // Sync the selected card's cached asset uri into state when it changes.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPdfUri(asset.localUri);
       } else {
         asset.downloadAsync()
@@ -224,7 +229,7 @@ export default function InitialPage() {
 
       {/* ================= DASHBOARD PHASE CONTENT ================= */}
       {phase === 'dashboard' && (
-        <Animated.View style={[StyleSheet.absoluteFill, styles.dashboardContent, dashboardAnimatedStyle]}>
+        <Animated.View style={[StyleSheet.absoluteFill, styles.dashboardContent, { paddingTop: 24 + insets.top, paddingBottom: 24 + insets.bottom, paddingLeft: 24 + insets.left, paddingRight: 24 + insets.right }, dashboardAnimatedStyle]}>
           
           {/* Header Logos */}
           <View style={styles.header}>
@@ -349,8 +354,6 @@ export default function InitialPage() {
     </View>
   );
 }
-
-const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

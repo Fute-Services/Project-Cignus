@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
@@ -15,6 +16,7 @@ const leftLogo = require('../../assets/Home/cignus updated logo.png');
 
 export default function ProjectDetails() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [hoveredFloor, setHoveredFloor] = useState<FloorData | null>(null);
 
   const handleLogoPress = () => {
@@ -33,7 +35,7 @@ export default function ProjectDetails() {
       </View>
 
       {/* 2. Left Navbar sidebar (Fades in slowly) */}
-      <Animated.View entering={FadeInLeft.delay(500).duration(1000)} style={styles.leftNavWrapper}>
+      <Animated.View entering={FadeInLeft.delay(500).duration(1000)} style={[styles.leftNavWrapper, { left: 0 + insets.left, top: 0 + insets.top, bottom: 0 + insets.bottom }]}>
         <LeftNavbar />
       </Animated.View>
 
@@ -41,13 +43,13 @@ export default function ProjectDetails() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleLogoPress}
-        style={styles.logoBtn}
+        style={[styles.logoBtn, { top: 24 + insets.top, left: 24 + insets.left }]}
       >
         <Image source={leftLogo} style={styles.logoImg} contentFit="contain" />
       </TouchableOpacity>
 
       {/* 4. Interactive right sidebar table panel */}
-      <Animated.View entering={FadeInRight.delay(500).duration(1000)} style={styles.rightTableWrapper}>
+      <Animated.View entering={FadeInRight.delay(500).duration(1000)} style={[styles.rightTableWrapper, { right: 24 + insets.right, top: 0 + insets.top, bottom: 0 + insets.bottom }]}>
         <RightTable
           floors={floors}
           hoveredFloor={hoveredFloor}

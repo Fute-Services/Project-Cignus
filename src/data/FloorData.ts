@@ -1921,6 +1921,7 @@
 // import image1 from '../assets/../assets/Project_Details/animated.png';
 // import image2 from '../assets/Project_info/ProjectInfoimage.png';
 
+import type { ImageSourcePropType } from 'react-native';
 import floorGround from '../../assets/UnitPlan/2-d-floorplans/Ground_Floor.png';
 import floor7 from '../../assets/UnitPlan/2-d-floorplans/7th_Floor_Refuge.png';
 import floor8 from '../../assets/UnitPlan/2-d-floorplans/8_13&13_15_Typical.png';
@@ -1955,8 +1956,8 @@ export interface FloorData {
     area1: string;
     area2: string;
     unitplan: {
-        image_2d: string;
-        image_3d: string;
+        image_2d: ImageSourcePropType;
+        image_3d: ImageSourcePropType;
         sideContent: SideContentItem[];
     };
 }

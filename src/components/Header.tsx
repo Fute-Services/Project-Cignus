@@ -2,14 +2,18 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const leftLogo = require('../../assets/Home/cignus updated logo.png');
 const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 export default function Header() {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.header} pointerEvents="box-none">
+    <View
+      style={[styles.header, { paddingTop: 24 + insets.top, paddingLeft: 40 + insets.left, paddingRight: 40 + insets.right }]}
+      pointerEvents="box-none"
+    >
       {/* Left Logo (Cignus) */}
       <Animated.View entering={FadeInDown.duration(800).delay(100).springify()} style={styles.logoWrapper}>
         <Image

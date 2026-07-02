@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { usePathname, useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const homeIcon = require('../../assets/Home/icons/home.icon.svg');
 const amenitiesIcon = require('../../assets/Home/icons/amenities_icon.svg');
@@ -40,6 +41,7 @@ const brochureItem: NavItem = { key: 'brochure', path: '/brochure', label: 'Broc
 export default function LeftNavbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const insets = useSafeAreaInsets();
 
   const renderLink = (item: NavItem, isBrochure = false) => {
     const isActive = pathname === item.path;
@@ -87,7 +89,7 @@ export default function LeftNavbar() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { left: 16 + insets.left }]}>
       <View style={styles.navContainer}>
         {navItems.map((item) => renderLink(item))}
       </View>

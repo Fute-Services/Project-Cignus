@@ -13,6 +13,7 @@ import Animated, {
   cancelAnimation
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -50,6 +51,7 @@ const sections = [
 
 export default function Overview() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const drawerWidth = width * 0.42;
   const [showLogo, setShowLogo] = useState(true);
@@ -89,6 +91,9 @@ export default function Overview() {
 
   // Animate drawer in/out when state toggles
   useEffect(() => {
+    // Reanimated shared-value mutation; React Compiler immutability check doesn't
+    // model shared values, so suppress the false positive.
+    // eslint-disable-next-line react-hooks/immutability
     drawerX.value = withTiming(showContent ? 0 : drawerWidth + 80, {
       duration: 600,
       easing: Easing.bezier(0.25, 1, 0.5, 1)
@@ -100,6 +105,7 @@ export default function Overview() {
     // Animate color/background changes
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setViewMode(mode);
+    // eslint-disable-next-line react-hooks/immutability
     overlayOpacity.value = withTiming(mode === 'map' ? 1 : 0, { duration: 500 });
   };
 
@@ -143,10 +149,10 @@ export default function Overview() {
           <LeftNavbar />
 
           {/* Top Branding Badge */}
-          <View style={styles.topLeftLogo}>
+          <View style={[styles.topLeftLogo, { top: 32 + insets.top, left: 32 + insets.left }]}>
             <Image source={logo} style={styles.logoImg} contentFit="contain" />
           </View>
-          <View style={styles.topRightLogo}>
+          <View style={[styles.topRightLogo, { top: 32 + insets.top, right: 32 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
           </View>
 
@@ -154,7 +160,7 @@ export default function Overview() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setShowContent(!showContent)}
-            style={[styles.toggleBtn, showContent && styles.toggleBtnActive]}
+            style={[styles.toggleBtn, { right: 0 + insets.right }, showContent && styles.toggleBtnActive]}
           >
             <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               {showContent ? (
@@ -166,7 +172,7 @@ export default function Overview() {
           </TouchableOpacity>
 
           {/* ── Expandable Side Content Drawer ── */}
-          <Animated.View style={[styles.drawer, drawerAnimatedStyle, { width: drawerWidth }]}>
+          <Animated.View style={[styles.drawer, { top: 24 + insets.top, bottom: 96 + insets.bottom, right: 56 + insets.right }, drawerAnimatedStyle, { width: drawerWidth }]}>
             <ScrollView contentContainerStyle={styles.drawerScroll} showsVerticalScrollIndicator={false}>
               
               {/* View Mode Switcher inside Drawer */}
@@ -210,7 +216,7 @@ export default function Overview() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/project-details')}
-            style={styles.backButton}
+            style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

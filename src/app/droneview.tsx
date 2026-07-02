@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
@@ -15,6 +16,7 @@ const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 export default function Droneview() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   // Initialize loop player with local 2K video
   const player = useVideoPlayer(droneVideo2K, (playerInstance) => {
@@ -32,10 +34,10 @@ export default function Droneview() {
       </View>
 
       {/* 2. Top Branding Badges */}
-      <View style={styles.topLeftLogo}>
+      <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
         <Image source={logo1} style={styles.logoImg} contentFit="contain" />
       </View>
-      <View style={styles.topRightLogo}>
+      <View style={[styles.topRightLogo, { top: 24 + insets.top, right: 24 + insets.right }]}>
         <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
       </View>
 
@@ -57,7 +59,7 @@ export default function Droneview() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />

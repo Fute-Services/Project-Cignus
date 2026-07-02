@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, useWindowDimensions, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -11,6 +11,7 @@ import Animated, {
   Easing
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const bgVideo = require('../../assets/Project_Details/animated_Video.mp4');
 const linesImg = require('../../assets/Project_Details/lines.png');
@@ -24,6 +25,7 @@ interface SustainBaseProps {
 export default function SustainBase({ initialMode }: SustainBaseProps) {
   const router = useRouter();
   const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [mode, setMode] = useState<'sustainability' | 'concept'>(initialMode);
 
   // Initialize loop player
@@ -67,7 +69,7 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       sustainabilityOpacity.value = withDelay(400, withTiming(1, { duration: 800 }));
       logoOpacity.value = withTiming(1, { duration: 800 });
     }
-  }, [mode]);
+  }, [mode, width, height]);
 
   // Animated styles
   const buildingAnimatedStyle = useAnimatedStyle(() => ({
@@ -112,7 +114,7 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/overview')}
-        style={styles.backButton}
+        style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
@@ -120,17 +122,17 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       </TouchableOpacity>
 
       {/* ── 4. Floating Logo ── */}
-      <Animated.View style={[styles.brandLogo, logoAnimatedStyle]} pointerEvents="none">
+      <Animated.View style={[styles.brandLogo, { top: 32 + insets.top, left: 32 + insets.left }, logoAnimatedStyle]} pointerEvents="none">
         <Image source={logo} style={styles.brandLogoImg} contentFit="contain" />
       </Animated.View>
 
       {/* ── 5. The Shifting/Animated Building ── */}
-      <Animated.View style={[styles.buildingContainer, buildingAnimatedStyle]} pointerEvents="none">
+      <Animated.View style={[styles.buildingContainer, { width: width * 0.48, height: height * 0.9 }, buildingAnimatedStyle]} pointerEvents="none">
         <Image source={buildingImg} style={styles.buildingImg} contentFit="contain" />
       </Animated.View>
 
       {/* ── 6. Sustainability content panel (Right side) ── */}
-      <Animated.View style={[styles.rightContentPanel, sustainAnimatedStyle]} pointerEvents={mode === 'sustainability' ? 'auto' : 'none'}>
+      <Animated.View style={[styles.rightContentPanel, { width: width * 0.42 }, sustainAnimatedStyle]} pointerEvents={mode === 'sustainability' ? 'auto' : 'none'}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Text style={styles.panelTitle}>Sustainability Initiatives</Text>
 
@@ -183,7 +185,7 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       </Animated.View>
 
       {/* ── 7. Concept/Superstructure content panel (Left side) ── */}
-      <Animated.View style={[styles.leftContentPanel, conceptAnimatedStyle]} pointerEvents={mode === 'concept' ? 'auto' : 'none'}>
+      <Animated.View style={[styles.leftContentPanel, { width: width * 0.38 }, conceptAnimatedStyle]} pointerEvents={mode === 'concept' ? 'auto' : 'none'}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Text style={styles.panelTitle}>Superstructure</Text>
 
@@ -220,7 +222,7 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       </Animated.View>
 
       {/* ── 8. Mode Toggle Switch (Bottom Center) ── */}
-      <View style={styles.toggleNavbar}>
+      <View style={[styles.toggleNavbar, { bottom: 24 + insets.bottom }]}>
         <View style={styles.toggleCapsule}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -246,7 +248,6 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
     </View>
   );
 }
-const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -304,8 +305,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
-    width: width * 0.48,
-    height: height * 0.9,
     zIndex: 20,
   },
   buildingImg: {
@@ -316,7 +315,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '12%',
     right: '6%',
-    width: width * 0.42,
     height: '70%',
     zIndex: 30,
   },
@@ -324,7 +322,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '12%',
     left: '6%',
-    width: width * 0.38,
     height: '70%',
     zIndex: 30,
   },
