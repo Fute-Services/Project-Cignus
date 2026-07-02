@@ -16,6 +16,49 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+## Requirements & versions
+
+This app targets **Expo SDK 57** (React Native 0.86). Every machine that runs it
+**and every device's Expo Go must also be SDK 57** — mixing SDK versions is the #1
+cause of the worklets crash documented below. Confirm your local packages match the
+SDK with:
+
+```bash
+npx expo install --check
+```
+
+No `babel.config.js` is required — `babel-preset-expo` auto-configures the
+reanimated / worklets Babel plugin on SDK 57.
+
+## Troubleshooting
+
+### `WorkletsError: Mismatch between JavaScript part and native part of Worklets (x.y.z vs a.b.c)`
+
+Usually accompanied by a flood of `Route "./<screen>.tsx" is missing the required
+default export` warnings for almost every screen.
+
+**Cause:** the installed packages are from a *different* Expo SDK than the Expo Go
+app (or dev client) running the bundle — e.g. the project is on SDK 54 while Expo Go
+is SDK 57. `src/components/RightNavbar.tsx` imports `react-native-reanimated`, which
+fails to initialize on the version mismatch; every screen that imports `RightNavbar`
+then fails to load, which is what produces all the "missing default export" warnings.
+**Those warnings are a symptom, not real bugs** — they disappear once the versions
+align.
+
+**Fix — align everything to SDK 57:**
+
+```bash
+npx expo install expo@^57.0.0
+npx expo install --fix        # bumps reanimated / worklets / RN / etc. to matching versions
+rm -rf node_modules package-lock.json
+npm install
+npx expo start -c             # -c clears the stale Metro cache (important)
+```
+
+Then reopen in Expo Go 57. To avoid Expo Go version-matching entirely, build a dev
+client instead: `npx expo run:ios` (or `run:android`) — the native worklets version
+is compiled from this project's `package.json`, so it can never mismatch.
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
