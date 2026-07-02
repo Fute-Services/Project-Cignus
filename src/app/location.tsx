@@ -191,30 +191,46 @@ export default function LocationScreen() {
           <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
         </Animated.View>
 
+        {/*
+          Only the active video's VideoView is mounted. Tablets allow a limited
+          number of simultaneous hardware video decoders, so mounting all five
+          VideoViews at once made the later panels (Connectivity + Airport) fail
+          to render. The opacity fade-in on mount is preserved via the shared values.
+        */}
         {/* JVLR Video */}
-        <Animated.View style={[StyleSheet.absoluteFill, styleJvlr]}>
-          <VideoView player={jvlrPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-        </Animated.View>
+        {activeTab === 'road' && activeNetworkVideo === 'jvlr' && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleJvlr]}>
+            <VideoView player={jvlrPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        )}
 
         {/* Rambaug Video */}
-        <Animated.View style={[StyleSheet.absoluteFill, styleRambaug]}>
-          <VideoView player={rambaugPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-        </Animated.View>
+        {activeTab === 'road' && activeNetworkVideo === 'rambaug' && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleRambaug]}>
+            <VideoView player={rambaugPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        )}
 
         {/* Saki-Naka Video */}
-        <Animated.View style={[StyleSheet.absoluteFill, styleSakanaka]}>
-          <VideoView player={sakinakaPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-        </Animated.View>
+        {activeTab === 'road' && activeNetworkVideo === 'sakanaka' && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleSakanaka]}>
+            <VideoView player={sakinakaPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        )}
 
         {/* Aarey Video */}
-        <Animated.View style={[StyleSheet.absoluteFill, styleLt]}>
-          <VideoView player={aareyPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-        </Animated.View>
+        {activeTab === 'road' && activeNetworkVideo === 'lt' && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleLt]}>
+            <VideoView player={aareyPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        )}
 
         {/* Airport Connectivity Video */}
-        <Animated.View style={[StyleSheet.absoluteFill, styleTransport]}>
-          <VideoView player={transportPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-        </Animated.View>
+        {activeTab === 'transport' && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleTransport]}>
+            <VideoView player={transportPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        )}
 
         {/* 2. OVERLAY INTERACTIVE MARKERS */}
         {renderMarkers()}
