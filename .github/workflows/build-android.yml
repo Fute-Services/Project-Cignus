@@ -5,12 +5,24 @@ on:
       - main
   workflow_dispatch: # Allows you to manually trigger the build from GitHub UI
 
+permissions:
+  contents: write # needed to upload the APK to a GitHub Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      # The repo carries ~800 MB of video assets and the build needs ~15 GB
+      # more for gradle + Metro; the stock runner disk overflowed without
+      # this ("No space left on device").
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/.ghcup /opt/ghc /usr/local/share/boost /usr/share/swift "$AGENT_TOOLSDIRECTORY/CodeQL"
+          sudo docker image prune --all --force > /dev/null
+          df -h /
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,13 +45,24 @@ jobs:
       - name: Generate Android Native Directory
         run: npx expo prebuild --platform android --clean
 
-      - name: Build Android Debug APK (Auto-Signed & Installable)
+      # assembleRelease, not assembleDebug: a debug APK does not embed the JS
+      # bundle (it needs a Metro dev server), so it cannot run standalone.
+      # The Expo template signs release builds with the debug keystore, so
+      # the output APK is directly installable.
+      - name: Build Android Release APK
         run: |
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+      # The APK is ~450 MB (bundled videos) — uploading it as an Actions
+      # artifact would exhaust the 500 MB artifact quota of a private repo,
+      # so publish it as a GitHub Release asset instead.
+      - name: Upload APK to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "build-${{ github.run_number }}" \
+            "android/app/build/outputs/apk/release/app-release.apk" \
+            --target "${{ github.sha }}" \
+            --title "Cignus APK build ${{ github.run_number }}" \
+            --notes "Automated build of commit ${{ github.sha }}"
