@@ -9,6 +9,8 @@ import { useIsFocused } from '@react-navigation/native';
 
 // Shared Components
 import ProjectBottomNav from '../components/ProjectBottomNav';
+import VideoStatusOverlay from '../components/VideoStatusOverlay';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -36,6 +38,8 @@ export default function VerticalTransport() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const { isReady, hasError } = useVideoStatus(player);
 
   const isFocused = useIsFocused();
 
@@ -85,6 +89,7 @@ export default function VerticalTransport() {
             contentFit="cover"
             nativeControls={false}
           />
+          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
         </View>
       </View>
 

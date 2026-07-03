@@ -25,6 +25,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 import ProjectBottomNav from '../components/ProjectBottomNav';
+import VideoStatusOverlay from '../components/VideoStatusOverlay';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 import { theme } from '../theme';
 
 const bgVideo = require('../../assets/Overview/overview.mp4');
@@ -70,6 +72,8 @@ export default function Overview() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const { isReady, hasError } = useVideoStatus(player);
 
   const isFocused = useIsFocused();
 
@@ -141,6 +145,7 @@ export default function Overview() {
           contentFit="cover"
           nativeControls={false}
         />
+        <VideoStatusOverlay isReady={isReady} hasError={hasError} />
         <View style={styles.videoOverlay} />
       </View>
 

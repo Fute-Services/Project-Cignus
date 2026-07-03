@@ -224,9 +224,11 @@ export default function InitialPage() {
   const [phase, setPhase] = useState<'splash' | 'dashboard'>('splash');
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
+  const [webViewError, setWebViewError] = useState(false);
   const [{ pdfJsUri, pdfWorkerUri }] = useState(() => getLocalPdfJsUris());
 
   useEffect(() => {
+    setWebViewError(false);
     if (selectedCard?.pdf) {
       const asset = Asset.fromModule(selectedCard.pdf);
       if (asset.localUri) {
@@ -415,7 +417,7 @@ export default function InitialPage() {
               </TouchableOpacity>
             </View>
             
-            {pdfUri && (
+            {pdfUri ? (
               Platform.OS === 'android' ? (
                 <WebView
                   originWhitelist={['*']}
@@ -429,6 +431,8 @@ export default function InitialPage() {
                   allowUniversalAccessFromFileURLs={true}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
+                  onError={() => setWebViewError(true)}
+                  onHttpError={() => setWebViewError(true)}
                 />
               ) : (
                 <WebView
@@ -440,8 +444,19 @@ export default function InitialPage() {
                   allowFileAccess={true}
                   allowFileAccessFromFileURLs={true}
                   allowUniversalAccessFromFileURLs={true}
+                  onError={() => setWebViewError(true)}
+                  onHttpError={() => setWebViewError(true)}
                 />
               )
+            ) : (
+              <View style={styles.pdfLoadingContainer}>
+                <ActivityIndicator size="large" color="#FFCF77" />
+              </View>
+            )}
+            {webViewError && (
+              <View style={styles.pdfErrorOverlay} pointerEvents="none">
+                <Text style={styles.pdfErrorText}>This document couldn't be loaded</Text>
+              </View>
             )}
           </View>
         </View>
@@ -694,6 +709,26 @@ const styles = StyleSheet.create({
   pdfWebView: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  pdfLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0c1219',
+  },
+  pdfErrorOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0c1219',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
+  },
+  pdfErrorText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 24,
   },
   fallbackContainer: {
     flex: 1,

@@ -10,6 +10,8 @@ import { useIsFocused } from '@react-navigation/native';
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
+import VideoStatusOverlay from '../components/VideoStatusOverlay';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const bgImage = require('../../assets/intial/bg_img.png');
 const walkthroughVideo = require('../../assets/Circulation/Powai-Site-plan Circulation.mp4');
@@ -36,6 +38,8 @@ export default function Walkthrough() {
     player.volume = nextMuted ? 0 : 1;
     setIsMuted(nextMuted);
   };
+
+  const { isReady, hasError } = useVideoStatus(player);
 
   const isFocused = useIsFocused();
 
@@ -89,6 +93,7 @@ export default function Walkthrough() {
               nativeControls={true}
               allowsFullscreen={false}
             />
+            <VideoStatusOverlay isReady={isReady} hasError={hasError} />
             {/* Custom Mute/Unmute Overlay Button */}
             <TouchableOpacity
               activeOpacity={0.8}
@@ -154,6 +159,7 @@ export default function Walkthrough() {
             nativeControls={true}
             allowsFullscreen={false}
           />
+          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
           {/* Floating sound toggle in fullscreen */}
           <TouchableOpacity
             activeOpacity={0.8}

@@ -142,6 +142,7 @@ export default function Amenities() {
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
   const [loadingAssets, setLoadingAssets] = useState(true);
+  const [webViewError, setWebViewError] = useState(false);
   const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
@@ -206,7 +207,7 @@ export default function Amenities() {
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
-          source={{ 
+          source={{
             html: getHtmlContent(initialScene),
             baseUrl: getOrigin(dropoffUri)
           }}
@@ -218,7 +219,14 @@ export default function Amenities() {
           domStorageEnabled={true}
           cacheEnabled={true}
           mixedContentMode="always"
+          onError={() => setWebViewError(true)}
+          onHttpError={() => setWebViewError(true)}
         />
+        {webViewError && (
+          <View style={styles.webViewErrorOverlay} pointerEvents="none">
+            <Text style={styles.webViewErrorText}>The VR tour couldn't be loaded</Text>
+          </View>
+        )}
       </View>
 
       {/* 3. Left Navbar Sidebar (Hidden when 360 is active to make space) */}
@@ -301,6 +309,20 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     backgroundColor: 'transparent',
+  },
+  webViewErrorOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
+  },
+  webViewErrorText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 24,
   },
   logoWrapper: {
     position: 'absolute',

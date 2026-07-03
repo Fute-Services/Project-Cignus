@@ -111,6 +111,7 @@ export default function Brochure() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [pdfUri, setPdfUri] = useState<string | null>(null);
+  const [webViewError, setWebViewError] = useState(false);
   const [{ pdfJsUri, pdfWorkerUri }] = useState(() => getLocalPdfJsUris());
 
   useEffect(() => {
@@ -158,6 +159,8 @@ export default function Brochure() {
               allowUniversalAccessFromFileURLs={true}
               javaScriptEnabled={true}
               domStorageEnabled={true}
+              onError={() => setWebViewError(true)}
+              onHttpError={() => setWebViewError(true)}
             />
           ) : (
             <WebView
@@ -169,9 +172,20 @@ export default function Brochure() {
               allowFileAccess={true}
               allowFileAccessFromFileURLs={true}
               allowUniversalAccessFromFileURLs={true}
+              onError={() => setWebViewError(true)}
+              onHttpError={() => setWebViewError(true)}
             />
           )
-        ) : null}
+        ) : (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FFCF77" />
+          </View>
+        )}
+        {webViewError && (
+          <View style={styles.webViewErrorOverlay} pointerEvents="none">
+            <Text style={styles.webViewErrorText}>The brochure couldn't be loaded</Text>
+          </View>
+        )}
       </View>
 
       {/* 3. Back Button (Bottom Left) */}
@@ -224,6 +238,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     overflow: 'hidden',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0c1219',
+    borderRadius: 16,
+  },
+  webViewErrorOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0c1219',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 16,
+    zIndex: 5,
+  },
+  webViewErrorText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 24,
   },
   fallbackContainer: {
     flex: 1,

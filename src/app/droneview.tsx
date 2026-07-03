@@ -9,6 +9,8 @@ import { useIsFocused } from '@react-navigation/native';
 
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
+import VideoStatusOverlay from '../components/VideoStatusOverlay';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const bgImage = require('../../assets/intial/bg_img.png');
 const droneVideo2K = require('../../assets/Home/construction_progress.mp4');
@@ -35,6 +37,8 @@ export default function Droneview() {
     player.volume = nextMuted ? 0 : 1;
     setIsMuted(nextMuted);
   };
+
+  const { isReady, hasError } = useVideoStatus(player);
 
   const isFocused = useIsFocused();
 
@@ -88,6 +92,7 @@ export default function Droneview() {
               nativeControls={true}
               allowsFullscreen={false}
             />
+            <VideoStatusOverlay isReady={isReady} hasError={hasError} />
             {/* Custom Mute/Unmute Overlay Button */}
             <TouchableOpacity
               activeOpacity={0.8}
@@ -148,6 +153,7 @@ export default function Droneview() {
             nativeControls={true}
             allowsFullscreen={false}
           />
+          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
           {/* Floating sound toggle in fullscreen */}
           <TouchableOpacity
             activeOpacity={0.8}

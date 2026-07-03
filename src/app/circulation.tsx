@@ -10,6 +10,8 @@ import { useIsFocused } from '@react-navigation/native';
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
 import ProjectBottomNav from '../components/ProjectBottomNav';
+import VideoStatusOverlay from '../components/VideoStatusOverlay';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const bgImage = require('../../assets/intial/bg_img.png');
 const circulationVideo = require('../../assets/Circulation/Powai-Site-plan Circulation.mp4');
@@ -24,6 +26,8 @@ export default function Circulation() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const { isReady, hasError } = useVideoStatus(player);
 
   const isFocused = useIsFocused();
 
@@ -63,6 +67,7 @@ export default function Circulation() {
             contentFit="cover"
             nativeControls={false}
           />
+          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
         </View>
       </View>
 

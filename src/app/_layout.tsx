@@ -20,11 +20,19 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
-// Pre-cache critical offline images to prevent visual flashes
+// Pre-cache critical offline images to prevent visual flashes. Kept small and
+// fast so first paint isn't held up — anything only needed deeper in the app
+// (like the Amenities cover image) is warmed separately, in the background.
 const criticalImages = [
   require('../../assets/intial/bg_img.png'),
   require('../../assets/Home/cignus updated logo.png'),
   require('../../assets/Home/K_Raheja_Corp 1.png'),
+];
+
+// Not on the startup-blocking critical path: this 10MB image isn't shown
+// until the Amenities screen is opened, so it's cached in the background
+// after first paint instead of delaying app startup for every launch.
+const backgroundImages = [
   require('../../assets/Project_Details/Amenities cover page updated image (1).png'),
 ];
 
@@ -63,6 +71,13 @@ export default function RootLayout() {
       }
     }
     preloadAssets();
+
+    // 3. Warm non-critical images in the background, without blocking startup
+    backgroundImages.forEach(image => {
+      Asset.fromModule(image).downloadAsync().catch((e) => {
+        console.warn("Background asset preloading failed:", e);
+      });
+    });
   }, []);
 
   useEffect(() => {
