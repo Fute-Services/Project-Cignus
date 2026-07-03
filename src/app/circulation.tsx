@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 // Shared Components
 import RightNavbar from '../components/RightNavbar';
@@ -23,6 +24,18 @@ export default function Circulation() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const isFocused = useIsFocused();
+
+  React.useEffect(() => {
+    if (player) {
+      if (!isFocused) {
+        player.pause();
+      } else {
+        player.play();
+      }
+    }
+  }, [isFocused, player]);
 
   return (
     <View style={styles.container}>
@@ -67,8 +80,6 @@ export default function Circulation() {
       {/* 5. Right Sidebar navbar menu */}
       <RightNavbar />
 
-      {/* 6. Subpages bottom layout navigation */}
-      <ProjectBottomNav />
     </View>
   );
 }

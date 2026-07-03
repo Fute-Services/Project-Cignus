@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
@@ -110,13 +110,15 @@ const getHtmlContent = (firstScene: string) => `
         }
     });
 
-    // Handle messages from React Native to switch scenes
-    window.addEventListener('message', function(event) {
+    // Handle messages from React Native to switch scenes (listening on both window and document for cross-platform Android/iOS support)
+    function handleSceneMessage(event) {
         var sceneId = event.data;
         if (sceneId && typeof sceneId === 'string') {
             viewer.loadScene(sceneId);
         }
-    });
+    }
+    window.addEventListener('message', handleSceneMessage);
+    document.addEventListener('message', handleSceneMessage);
 </script>
 
 </body>
@@ -139,7 +141,30 @@ export default function Amenities() {
   const [currentScene, setCurrentScene] = useState<string>('dropoff');
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
+  const [loadingAssets, setLoadingAssets] = useState(true);
   const webViewRef = useRef<WebView>(null);
+
+  useEffect(() => {
+    async function preloadVR() {
+      try {
+        const assets = [
+          require('../../assets/vr/dropoff.webp'),
+          require('../../assets/vr/dropoff_left.webp'),
+          require('../../assets/vr/dropoff_right.webp'),
+          require('../../assets/vr/reception.webp'),
+          require('../../assets/vr/cafeteria.webp'),
+          require('../../assets/vr/liftlobby.webp'),
+          require('../../assets/vr/top.webp'),
+        ];
+        await Asset.loadAsync(assets);
+      } catch (e) {
+        console.warn("Failed to preload VR assets:", e);
+      } finally {
+        setLoadingAssets(false);
+      }
+    }
+    preloadVR();
+  }, []);
 
   const handleSceneChange = (sceneId: string) => {
     setCurrentScene(sceneId);
@@ -157,6 +182,17 @@ export default function Amenities() {
     setIs360Active(false);
     setCurrentScene('');
   };
+
+  if (loadingAssets) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#FFCF77" />
+        <Text style={{ color: '#ffffff', marginTop: 12, fontSize: 13, fontWeight: '500', letterSpacing: 0.5 }}>
+          Loading 360 VR Tour...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -229,25 +265,27 @@ export default function Amenities() {
       )}
 
       {/* 7. Bottom Navigation Capsule */}
-      <View style={[styles.bottomNavContainer, { bottom: 32 + insets.bottom }]}>
-        <View style={styles.bottomNavCapsule}>
-          {navItems.map((item) => {
-            const isActive = currentScene === item.id;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => handleSceneChange(item.id)}
-                activeOpacity={0.8}
-                style={[styles.bottomNavBtn, isActive && styles.activeBottomNavBtn]}
-              >
-                <Text style={[styles.bottomNavBtnText, isActive && styles.activeBottomNavBtnText]}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+      {is360Active && (
+        <View style={[styles.bottomNavContainer, { bottom: 32 + insets.bottom }]}>
+          <View style={styles.bottomNavCapsule}>
+            {navItems.map((item) => {
+              const isActive = currentScene === item.id;
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => handleSceneChange(item.id)}
+                  activeOpacity={0.8}
+                  style={[styles.bottomNavBtn, isActive && styles.activeBottomNavBtn]}
+                >
+                  <Text style={[styles.bottomNavBtnText, isActive && styles.activeBottomNavBtnText]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 }

@@ -43,7 +43,11 @@ export default function RootLayout() {
   useEffect(() => {
     // 1. Lock screen orientation to landscape for tablet-first experience
     async function lockOrientation() {
-      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      try {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      } catch (e) {
+        console.warn("Orientation lock failed:", e);
+      }
     }
     lockOrientation();
 
@@ -64,7 +68,9 @@ export default function RootLayout() {
   useEffect(() => {
     // Hide native splash screen once fonts and critical assets mount
     if ((fontsLoaded && assetsPreloaded) || error) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch((e) => {
+        console.warn("Failed to hide splash screen:", e);
+      });
     }
   }, [fontsLoaded, assetsPreloaded, error]);
 

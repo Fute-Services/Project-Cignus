@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, ScrollView, useWindowDimensio
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { BlurView } from 'expo-blur';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -55,7 +57,7 @@ export default function Overview() {
   const { width } = useWindowDimensions();
   const drawerWidth = width * 0.42;
   const [showLogo, setShowLogo] = useState(true);
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(true);
   const [viewMode, setViewMode] = useState<'map' | 'cinematic'>('map');
 
   // Reanimated values
@@ -68,6 +70,18 @@ export default function Overview() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const isFocused = useIsFocused();
+
+  React.useEffect(() => {
+    if (player) {
+      if (!isFocused) {
+        player.pause();
+      } else {
+        player.play();
+      }
+    }
+  }, [isFocused, player]);
 
   const isMounted = useRef(true);
 
@@ -173,6 +187,7 @@ export default function Overview() {
 
           {/* ── Expandable Side Content Drawer ── */}
           <Animated.View style={[styles.drawer, { top: 24 + insets.top, bottom: 96 + insets.bottom, right: 56 + insets.right }, drawerAnimatedStyle, { width: drawerWidth }]}>
+            <BlurView intensity={35} tint="dark" style={StyleSheet.absoluteFill} />
             <ScrollView contentContainerStyle={styles.drawerScroll} showsVerticalScrollIndicator={false}>
               
               {/* View Mode Switcher inside Drawer */}
@@ -222,9 +237,6 @@ export default function Overview() {
               <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
             </Svg>
           </TouchableOpacity>
-
-          {/* Subpages bottom navigation menu */}
-          <ProjectBottomNav />
         </Animated.View>
       )}
     </View>
@@ -310,9 +322,9 @@ const styles = StyleSheet.create({
     top: 24,
     bottom: 96,
     right: 56,
-    backgroundColor: 'rgba(12, 15, 18, 0.88)',
+    backgroundColor: 'rgba(12, 15, 18, 0.55)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 16,
     zIndex: 110,
     overflow: 'hidden',

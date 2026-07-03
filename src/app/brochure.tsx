@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
@@ -8,6 +8,91 @@ import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const brochurePdf = require('../../assets/Broucher/Cignus Tower 2 1.pdf');
+
+const getPdfHtml = (pdfPath: string) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+          }
+          #container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            gap: 12px;
+          }
+          canvas {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            max-width: 95%;
+            height: auto !important;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: white;
+          }
+          #loading {
+            color: #FFCF77;
+            font-family: sans-serif;
+            margin-top: 100px;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+        <script>
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        </script>
+      </head>
+      <body>
+        <div id="loading">Rendering PDF Pages...</div>
+        <div id="container"></div>
+        <script>
+          try {
+            pdfjsLib.getDocument("${pdfPath}").promise.then(function(pdf) {
+              const loadingEl = document.getElementById('loading');
+              if (loadingEl) loadingEl.style.display = 'none';
+              const container = document.getElementById('container');
+              
+              for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const canvas = document.createElement('canvas');
+                container.appendChild(canvas);
+                
+                pdf.getPage(pageNum).then(function(page) {
+                  const context = canvas.getContext('2d');
+                  const viewport = page.getViewport({scale: 2.0});
+                  canvas.height = viewport.height;
+                  canvas.width = viewport.width;
+                  
+                  page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                  });
+                });
+              }
+            }).catch(function(err) {
+              document.getElementById('loading').innerText = 'Error: ' + err.message;
+            });
+          } catch(e) {
+            document.getElementById('loading').innerText = 'Loading error: ' + e.message;
+          }
+        </script>
+      </body>
+    </html>
+  `;
+};
 
 export default function Brochure() {
   const router = useRouter();
@@ -47,23 +132,19 @@ export default function Brochure() {
       <View style={styles.webviewContainer}>
         {pdfUri ? (
           Platform.OS === 'android' ? (
-            <View style={styles.fallbackContainer}>
-              <Text style={styles.fallbackText}>Android does not support inline PDF viewing offline.</Text>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={async () => {
-                  const isAvailable = await Sharing.isAvailableAsync();
-                  if (isAvailable) {
-                    await Sharing.shareAsync(pdfUri);
-                  } else {
-                    alert("No PDF viewer application found on this device.");
-                  }
-                }}
-                style={styles.openButton}
-              >
-                <Text style={styles.openButtonText}>Open Brochure</Text>
-              </TouchableOpacity>
-            </View>
+            <WebView
+              originWhitelist={['*']}
+              source={{
+                html: getPdfHtml(pdfUri),
+                baseUrl: 'file:///'
+              }}
+              style={styles.webView}
+              allowFileAccess={true}
+              allowFileAccessFromFileURLs={true}
+              allowUniversalAccessFromFileURLs={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+            />
           ) : (
             <WebView
               originWhitelist={['*']}

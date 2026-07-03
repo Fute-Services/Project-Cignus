@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 // Shared Components
 import ProjectBottomNav from '../components/ProjectBottomNav';
@@ -35,6 +36,18 @@ export default function VerticalTransport() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  const isFocused = useIsFocused();
+
+  React.useEffect(() => {
+    if (player) {
+      if (!isFocused) {
+        player.pause();
+      } else {
+        player.play();
+      }
+    }
+  }, [isFocused, player]);
 
   const handleSelect = (section: typeof sections[0]) => {
     if (section.id === activeSection.id) return;
@@ -106,9 +119,6 @@ export default function VerticalTransport() {
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
         </Svg>
       </TouchableOpacity>
-
-      {/* 6. Subpages bottom layout navigation */}
-      <ProjectBottomNav />
     </View>
   );
 }

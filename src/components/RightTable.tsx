@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
@@ -17,6 +17,19 @@ export default function RightTable({
   setHoveredFloor,
 }: RightTableProps) {
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (hoveredFloor) {
+      const index = floors.findIndex((f) => f.id === hoveredFloor.id);
+      if (index !== -1) {
+        const rowHeight = 36;
+        const containerHeight = 280;
+        const targetY = Math.max(0, index * rowHeight - containerHeight / 2 + rowHeight / 2);
+        scrollViewRef.current?.scrollTo({ y: targetY, animated: true });
+      }
+    }
+  }, [hoveredFloor, floors]);
 
   const handleRowPress = (row: FloorData) => {
     // If the floor is tapped again, navigate to unit plan
@@ -42,7 +55,11 @@ export default function RightTable({
         </View>
 
         {/* Scrollable Rows */}
-        <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={true}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scrollContainer}
+          showsVerticalScrollIndicator={true}
+        >
           {floors.map((row) => {
             const isActive = hoveredFloor?.id === row.id;
             return (

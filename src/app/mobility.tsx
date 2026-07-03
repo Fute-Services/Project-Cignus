@@ -144,9 +144,6 @@ export default function Mobility() {
           <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
         </Svg>
       </TouchableOpacity>
-
-      {/* 6. Subpages bottom layout navigation */}
-      <ProjectBottomNav />
     </View>
   );
 }

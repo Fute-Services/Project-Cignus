@@ -6,6 +6,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 const logo = require('../../assets/Home/cignus updated logo.png');
 const siteLocation = require('../../assets/Location/NEW FINAL SITE LOCATION IMG.jpeg');
@@ -54,6 +55,8 @@ export default function LocationScreen() {
   const opacityLt = useSharedValue(0);
   const opacityTransport = useSharedValue(0);
 
+  const isFocused = useIsFocused();
+
   // Transition opacities and playback state smoothly
   useEffect(() => {
     opacitySite.value = withTiming(activeTab === 'site' ? 1 : 0, { duration: 400 });
@@ -61,44 +64,49 @@ export default function LocationScreen() {
     
     const isJvlr = activeTab === 'road' && activeNetworkVideo === 'jvlr';
     opacityJvlr.value = withTiming(isJvlr ? 1 : 0, { duration: 400 });
-    if (isJvlr) {
-      jvlrPlayer.replay();
+    if (isJvlr && isFocused) {
+      jvlrPlayer.currentTime = 0;
+      jvlrPlayer.play();
     } else {
       jvlrPlayer.pause();
     }
 
     const isRambaug = activeTab === 'road' && activeNetworkVideo === 'rambaug';
     opacityRambaug.value = withTiming(isRambaug ? 1 : 0, { duration: 400 });
-    if (isRambaug) {
-      rambaugPlayer.replay();
+    if (isRambaug && isFocused) {
+      rambaugPlayer.currentTime = 0;
+      rambaugPlayer.play();
     } else {
       rambaugPlayer.pause();
     }
 
     const isSakanaka = activeTab === 'road' && activeNetworkVideo === 'sakanaka';
     opacitySakanaka.value = withTiming(isSakanaka ? 1 : 0, { duration: 400 });
-    if (isSakanaka) {
-      sakinakaPlayer.replay();
+    if (isSakanaka && isFocused) {
+      sakinakaPlayer.currentTime = 0;
+      sakinakaPlayer.play();
     } else {
       sakinakaPlayer.pause();
     }
 
     const isLt = activeTab === 'road' && activeNetworkVideo === 'lt';
     opacityLt.value = withTiming(isLt ? 1 : 0, { duration: 400 });
-    if (isLt) {
-      aareyPlayer.replay();
+    if (isLt && isFocused) {
+      aareyPlayer.currentTime = 0;
+      aareyPlayer.play();
     } else {
       aareyPlayer.pause();
     }
 
     const isTransport = activeTab === 'transport';
     opacityTransport.value = withTiming(isTransport ? 1 : 0, { duration: 400 });
-    if (isTransport) {
-      transportPlayer.replay();
+    if (isTransport && isFocused) {
+      transportPlayer.currentTime = 0;
+      transportPlayer.play();
     } else {
       transportPlayer.pause();
     }
-  }, [activeTab, activeNetworkVideo]);
+  }, [activeTab, activeNetworkVideo, isFocused]);
 
   const styleSite = useAnimatedStyle(() => ({ opacity: opacitySite.value }));
   const styleNeighbourhood = useAnimatedStyle(() => ({ opacity: opacityNeighbourhood.value }));
