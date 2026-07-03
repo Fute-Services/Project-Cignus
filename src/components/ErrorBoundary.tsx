@@ -43,7 +43,13 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           <Text style={styles.subtitle}>
             The screen ran into an unexpected problem. You can return to it and continue.
           </Text>
-          <TouchableOpacity style={styles.button} onPress={this.handleReset} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={this.handleReset}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Try again"
+          >
             <Text style={styles.buttonText}>Try again</Text>
           </TouchableOpacity>
         </View>

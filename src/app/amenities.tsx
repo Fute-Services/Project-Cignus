@@ -13,7 +13,7 @@ import { pannellumCss, pannellumJs } from '../data/pannellum_assets';
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 
-const bgImg = require('../../assets/Project_Details/Amenities cover page updated image (1).png');
+const bgImg = require('../../assets/Project_Details/Amenities cover page updated image (1).jpg');
 const logo = require('../../assets/Home/cignus updated logo.png');
 
 // Resolve the panorama assets dynamically
@@ -70,7 +70,7 @@ const getHtmlContent = (firstScene: string) => `
 <script>
     var viewer = pannellum.viewer('panorama', {
         "default": {
-            "firstScene": "${firstScene || 'dropoff'}",
+            "firstScene": ${JSON.stringify(firstScene || 'dropoff')},
             "autoLoad": true,
             "sceneFadeDuration": 500,
             "showControls": false,
@@ -80,31 +80,31 @@ const getHtmlContent = (firstScene: string) => `
         },
         "scenes": {
             "dropoff": {
-                "panorama": "${dropoffUri}",
+                "panorama": ${JSON.stringify(dropoffUri)},
                 "yaw": -140
             },
             "dropoff_left": {
-                "panorama": "${dropoffLeftUri}",
+                "panorama": ${JSON.stringify(dropoffLeftUri)},
                 "yaw": 60
             },
             "dropoff_right": {
-                "panorama": "${dropoffRightUri}",
+                "panorama": ${JSON.stringify(dropoffRightUri)},
                 "yaw": -90
             },
             "reception": {
-                "panorama": "${receptionUri}",
+                "panorama": ${JSON.stringify(receptionUri)},
                 "pitch": -10
             },
             "cafeteria": {
-                "panorama": "${cafeteriaUri}",
+                "panorama": ${JSON.stringify(cafeteriaUri)},
                 "pitch": -25
             },
             "liftlobby": {
-                "panorama": "${liftlobbyUri}",
+                "panorama": ${JSON.stringify(liftlobbyUri)},
                 "pitch": 0
             },
             "top": {
-                "panorama": "${topUri}",
+                "panorama": ${JSON.stringify(topUri)},
                 "pitch": -10
             }
         }
@@ -119,11 +119,24 @@ const getHtmlContent = (firstScene: string) => `
     }
     window.addEventListener('message', handleSceneMessage);
     document.addEventListener('message', handleSceneMessage);
+
+    // Tell React Native once the first panorama has actually rendered,
+    // so the native side can swap away from the static cover image
+    // without a black flash while the panorama texture decodes.
+    viewer.on('load', function () {
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage('vr_ready');
+        }
+    });
 </script>
 
 </body>
 </html>
 `;
+
+// Set once the VR panoramas have been preloaded for the first time this app
+// session, so revisiting this screen doesn't re-show the full loading screen.
+let vrAssetsPreloaded = false;
 
 const navItems = [
   { id: 'dropoff', label: 'Drop Off' },
@@ -141,11 +154,14 @@ export default function Amenities() {
   const [currentScene, setCurrentScene] = useState<string>('dropoff');
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
-  const [loadingAssets, setLoadingAssets] = useState(true);
+  const [loadingAssets, setLoadingAssets] = useState(!vrAssetsPreloaded);
   const [webViewError, setWebViewError] = useState(false);
+  const [vrReady, setVrReady] = useState(false);
   const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
+    if (vrAssetsPreloaded) return;
+
     async function preloadVR() {
       try {
         const assets = [
@@ -158,6 +174,7 @@ export default function Amenities() {
           require('../../assets/vr/top.webp'),
         ];
         await Asset.loadAsync(assets);
+        vrAssetsPreloaded = true;
       } catch (e) {
         console.warn("Failed to preload VR assets:", e);
       } finally {
@@ -197,16 +214,18 @@ export default function Amenities() {
 
   return (
     <View style={styles.container}>
-      {/* 1. Static Cover Image Background (Fades or hides when 360 is active) */}
-      {!is360Active && (
+      {/* 1. Static Cover Image Background. Stays visible while not in 360 mode,
+          and also while the 360 view is still loading its first panorama, so
+          there's never a black gap before the VR texture is ready. */}
+      {(!is360Active || !vrReady) && (
         <Image source={bgImg} style={styles.backgroundImage} contentFit="cover" />
       )}
 
       {/* 2. Pannellum Offline VR WebView Layer */}
-      <View style={[StyleSheet.absoluteFill, { zIndex: is360Active ? 10 : -1, opacity: is360Active ? 1 : 0 }]}>
+      <View style={[StyleSheet.absoluteFill, { zIndex: is360Active ? 10 : -1, opacity: is360Active && vrReady ? 1 : 0 }]}>
         <WebView
           ref={webViewRef}
-          originWhitelist={['*']}
+          originWhitelist={['file://*']}
           source={{
             html: getHtmlContent(initialScene),
             baseUrl: getOrigin(dropoffUri)
@@ -219,6 +238,11 @@ export default function Amenities() {
           domStorageEnabled={true}
           cacheEnabled={true}
           mixedContentMode="always"
+          onMessage={(event) => {
+            if (event.nativeEvent.data === 'vr_ready') {
+              setVrReady(true);
+            }
+          }}
           onError={() => setWebViewError(true)}
           onHttpError={() => setWebViewError(true)}
         />
@@ -244,6 +268,8 @@ export default function Amenities() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => router.push('/home')}
+          accessibilityRole="button"
+          accessibilityLabel="Back to home"
           style={[styles.homeButton, { bottom: 32 + insets.bottom, left: 100 + insets.left }]}
         >
           <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
@@ -257,6 +283,8 @@ export default function Amenities() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleResetScene}
+          accessibilityRole="button"
+          accessibilityLabel="Exit VR tour"
           style={[styles.backButton, { top: 24 + insets.top, left: 24 + insets.left }]}
         >
           <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
@@ -283,6 +311,9 @@ export default function Amenities() {
                   key={item.id}
                   onPress={() => handleSceneChange(item.id)}
                   activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label}
+                  accessibilityState={{ selected: isActive }}
                   style={[styles.bottomNavBtn, isActive && styles.activeBottomNavBtn]}
                 >
                   <Text style={[styles.bottomNavBtnText, isActive && styles.activeBottomNavBtnText]}>

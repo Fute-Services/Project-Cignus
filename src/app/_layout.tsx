@@ -5,6 +5,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import ErrorBoundary from '../components/ErrorBoundary';
+import { reportError } from '../utils/crashReporting';
 import { 
   useFonts,
   Outfit_300Light,
@@ -29,11 +30,11 @@ const criticalImages = [
   require('../../assets/Home/K_Raheja_Corp 1.png'),
 ];
 
-// Not on the startup-blocking critical path: this 10MB image isn't shown
-// until the Amenities screen is opened, so it's cached in the background
-// after first paint instead of delaying app startup for every launch.
+// Not on the startup-blocking critical path: this image isn't shown until
+// the Amenities screen is opened, so it's cached in the background after
+// first paint instead of delaying app startup for every launch.
 const backgroundImages = [
-  require('../../assets/Project_Details/Amenities cover page updated image (1).png'),
+  require('../../assets/Project_Details/Amenities cover page updated image (1).jpg'),
 ];
 
 export default function RootLayout() {
@@ -66,6 +67,7 @@ export default function RootLayout() {
         await Promise.all(cacheImages);
       } catch (e) {
         console.warn("Asset preloading failed:", e);
+        reportError(e instanceof Error ? e : new Error(String(e)), { stage: 'criticalAssetPreload' });
       } finally {
         setAssetsPreloaded(true);
       }
@@ -76,6 +78,7 @@ export default function RootLayout() {
     backgroundImages.forEach(image => {
       Asset.fromModule(image).downloadAsync().catch((e) => {
         console.warn("Background asset preloading failed:", e);
+        reportError(e instanceof Error ? e : new Error(String(e)), { stage: 'backgroundAssetPreload' });
       });
     });
   }, []);

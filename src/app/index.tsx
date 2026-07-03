@@ -9,6 +9,7 @@ import { Asset } from 'expo-asset';
 import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLocalPdfJsUris } from '../utils/localPdfJs';
+import { escapeHtmlAttribute } from '../utils/htmlEscape';
 
 const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => {
   return `
@@ -43,9 +44,9 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
             background-color: white;
           }
         </style>
-        <script src="${pdfJsUri}"></script>
+        <script src="${escapeHtmlAttribute(pdfJsUri)}"></script>
         <script>
-          pdfjsLib.GlobalWorkerOptions.workerSrc = "${pdfWorkerUri}";
+          pdfjsLib.GlobalWorkerOptions.workerSrc = ${JSON.stringify(pdfWorkerUri)};
         </script>
       </head>
       <body>
@@ -62,7 +63,7 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
           }
 
           try {
-            pdfjsLib.getDocument("${pdfPath}").promise.then(function(pdf) {
+            pdfjsLib.getDocument(${JSON.stringify(pdfPath)}).promise.then(function(pdf) {
               const container = document.getElementById('container');
               const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
@@ -369,6 +370,8 @@ export default function InitialPage() {
                   key={idx}
                   activeOpacity={0.9}
                   onPress={() => setSelectedCard(card)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Open ${card.title} brochure`}
                   style={styles.card}
                 >
                   <Image source={card.image} style={styles.cardImage} contentFit="cover" />
@@ -389,7 +392,13 @@ export default function InitialPage() {
               <View style={styles.badgeWrapper}>
                 <Image source={rightLogo} style={styles.badgeLogo} contentFit="contain" />
               </View>
-              <TouchableOpacity onPress={handleExplore} activeOpacity={0.8} style={styles.exploreBtnWrapper}>
+              <TouchableOpacity
+                onPress={handleExplore}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Explore"
+                style={styles.exploreBtnWrapper}
+              >
                 <Image source={exploreBtn} style={styles.exploreBtnImg} contentFit="contain" />
               </TouchableOpacity>
             </View>
@@ -412,7 +421,12 @@ export default function InitialPage() {
           <View style={styles.pdfContainer}>
             <View style={styles.pdfHeader}>
               <Text style={styles.pdfTitle}>{selectedCard?.pdfName || selectedCard?.title}</Text>
-              <TouchableOpacity onPress={() => setSelectedCard(null)} style={styles.closeBtn}>
+              <TouchableOpacity
+                onPress={() => setSelectedCard(null)}
+                accessibilityRole="button"
+                accessibilityLabel="Close"
+                style={styles.closeBtn}
+              >
                 <Text style={styles.closeBtnText}>CLOSE</Text>
               </TouchableOpacity>
             </View>
@@ -420,7 +434,7 @@ export default function InitialPage() {
             {pdfUri ? (
               Platform.OS === 'android' ? (
                 <WebView
-                  originWhitelist={['*']}
+                  originWhitelist={['file://*']}
                   source={{
                     html: getPdfHtml(pdfUri, pdfJsUri, pdfWorkerUri),
                     baseUrl: 'file:///'
@@ -436,7 +450,7 @@ export default function InitialPage() {
                 />
               ) : (
                 <WebView
-                  originWhitelist={['*']}
+                  originWhitelist={['file://*']}
                   source={{
                     uri: pdfUri
                   }}

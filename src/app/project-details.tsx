@@ -43,6 +43,8 @@ export default function ProjectDetails() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleLogoPress}
+        accessibilityRole="button"
+        accessibilityLabel="Back to home"
         style={[styles.logoBtn, { top: 24 + insets.top, left: 24 + insets.left }]}
       >
         <Image source={leftLogo} style={styles.logoImg} contentFit="contain" />

@@ -114,6 +114,8 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/overview')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
@@ -227,6 +229,9 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setMode('sustainability')}
+            accessibilityRole="button"
+            accessibilityLabel="Sustainability"
+            accessibilityState={{ selected: mode === 'sustainability' }}
             style={[styles.toggleBtn, mode === 'sustainability' ? styles.activeToggle : styles.inactiveToggle]}
           >
             <Text style={[styles.toggleBtnText, mode === 'sustainability' ? styles.activeToggleText : styles.inactiveToggleText]}>
@@ -237,6 +242,9 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setMode('concept')}
+            accessibilityRole="button"
+            accessibilityLabel="Concept Summary"
+            accessibilityState={{ selected: mode === 'concept' }}
             style={[styles.toggleBtn, mode === 'concept' ? styles.activeToggle : styles.inactiveToggle]}
           >
             <Text style={[styles.toggleBtnText, mode === 'concept' ? styles.activeToggleText : styles.inactiveToggleText]}>

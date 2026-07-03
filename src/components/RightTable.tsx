@@ -67,6 +67,9 @@ export default function RightTable({
                 key={row.id}
                 activeOpacity={0.8}
                 onPress={() => handleRowPress(row)}
+                accessibilityRole="button"
+                accessibilityLabel={`Floor ${row.floorname}, ${row.area1}${isActive ? ', tap again to view unit plan' : ''}`}
+                accessibilityState={{ selected: isActive }}
                 style={[styles.tableRow, isActive && styles.activeRow]}
               >
                 <Text style={[styles.rowCell, styles.borderRight, isActive && styles.activeText]}>
@@ -85,6 +88,8 @@ export default function RightTable({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleOverviewPress}
+        accessibilityRole="button"
+        accessibilityLabel="Overview"
         style={styles.overviewBtn}
       >
         <Text style={styles.overviewBtnText}>Overview</Text>

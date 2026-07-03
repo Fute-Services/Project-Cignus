@@ -124,6 +124,8 @@ export default function ProjectInfo() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => router.push('/specification')}
+                  accessibilityRole="button"
+                  accessibilityLabel="View specifications"
                   style={styles.specBtnInline}
                 >
                   <Text style={styles.specBtnTextInline}>Specifications</Text>
@@ -136,6 +138,8 @@ export default function ProjectInfo() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.replace('/home')}
+            accessibilityRole="button"
+            accessibilityLabel="Back to home"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 120 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

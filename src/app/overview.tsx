@@ -179,6 +179,8 @@ export default function Overview() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setShowContent(!showContent)}
+            accessibilityRole="button"
+            accessibilityLabel={showContent ? 'Collapse panel' : 'Expand panel'}
             style={[styles.toggleBtn, { right: 0 + insets.right }, showContent && styles.toggleBtnActive]}
           >
             <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -200,6 +202,9 @@ export default function Overview() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => handleViewModeChange('map')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Map plan view"
+                  accessibilityState={{ selected: viewMode === 'map' }}
                   style={[styles.modeToggleBtn, viewMode === 'map' && styles.activeModeToggleBtn]}
                 >
                   <Text style={[styles.modeToggleText, viewMode === 'map' && styles.activeModeToggleText]}>
@@ -209,6 +214,9 @@ export default function Overview() {
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => handleViewModeChange('cinematic')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cinematic view"
+                  accessibilityState={{ selected: viewMode === 'cinematic' }}
                   style={[styles.modeToggleBtn, viewMode === 'cinematic' && styles.activeModeToggleBtn]}
                 >
                   <Text style={[styles.modeToggleText, viewMode === 'cinematic' && styles.activeModeToggleText]}>
@@ -236,6 +244,8 @@ export default function Overview() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/project-details')}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

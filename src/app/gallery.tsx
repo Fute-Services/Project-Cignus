@@ -15,13 +15,11 @@ const leftLogo = require('../../assets/Home/cignus updated logo.png');
 const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
 
 // ── Gallery Images ──
-// Use JPEG versions wherever available to avoid OOM crashes on device
-// (PNG alternatives like Night Aerial View.png are 13MB+ and will crash)
-const ElevationView  = require('../../assets/Gallery/Elevation With LakeView.jpeg');
-const AerialView     = require('../../assets/Gallery/Aerial View.jpeg');
+const ElevationView  = require('../../assets/Gallery/Elevation With LakeView.png');
+const AerialView     = require('../../assets/Gallery/Aerial View.png');
 const NightAerial    = require('../../assets/Gallery/Night Aerial View1.jpeg');   // JPEG 1.1MB ✓
-const FacadeView     = require('../../assets/Gallery/Facade View.jpeg');
-const Amenity1       = require('../../assets/Gallery/Amenities View.jpeg');
+const FacadeView     = require('../../assets/Gallery/Facade View.png');
+const Amenity1       = require('../../assets/Gallery/Amenities View.png');
 const Amenity2       = require('../../assets/Gallery/Amenties View 2.jpeg');
 const Amenity3       = require('../../assets/Gallery/Amenities View 31.jpeg');   // JPEG 939KB ✓
 
@@ -104,6 +102,8 @@ export default function Gallery() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
@@ -120,7 +120,13 @@ export default function Gallery() {
       {/* Bottom Controls Capsule */}
       <View style={[styles.controlsCapsule, { bottom: 32 + insets.bottom }]}>
         {/* Prev Button */}
-        <TouchableOpacity onPress={handlePrev} activeOpacity={0.7} style={styles.arrowButton}>
+        <TouchableOpacity
+          onPress={handlePrev}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Previous image"
+          style={styles.arrowButton}
+        >
           <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <Path d="M15 18l-6-6 6-6" />
           </Svg>
@@ -131,6 +137,9 @@ export default function Gallery() {
           <TouchableOpacity
             onPress={() => changeCategory('interior')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Interior"
+            accessibilityState={{ selected: viewMode === 'interior' }}
             style={[styles.toggleBtn, viewMode === 'interior' && styles.activeToggleBtn]}
           >
             <Text style={[styles.toggleText, viewMode === 'interior' && styles.activeToggleText]}>Interior</Text>
@@ -138,6 +147,9 @@ export default function Gallery() {
           <TouchableOpacity
             onPress={() => changeCategory('exterior')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Exterior"
+            accessibilityState={{ selected: viewMode === 'exterior' }}
             style={[styles.toggleBtn, viewMode === 'exterior' && styles.activeToggleBtn]}
           >
             <Text style={[styles.toggleText, viewMode === 'exterior' && styles.activeToggleText]}>Exterior</Text>
@@ -145,7 +157,13 @@ export default function Gallery() {
         </View>
 
         {/* Next Button */}
-        <TouchableOpacity onPress={handleNext} activeOpacity={0.7} style={styles.arrowButton}>
+        <TouchableOpacity
+          onPress={handleNext}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Next image"
+          style={styles.arrowButton}
+        >
           <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <Path d="M9 18l6-6-6-6" />
           </Svg>

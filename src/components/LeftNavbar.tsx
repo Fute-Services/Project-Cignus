@@ -55,6 +55,9 @@ export default function LeftNavbar() {
         key={item.key || item.path}
         activeOpacity={0.7}
         onPress={() => router.push(item.path as any)}
+        accessibilityRole="button"
+        accessibilityLabel={item.label.replace('\n', ' ')}
+        accessibilityState={{ selected: isThemeActive }}
         style={[
           styles.navLink,
           isBrochure ? styles.brochureLink : styles.standardLink,

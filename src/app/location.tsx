@@ -251,6 +251,8 @@ export default function LocationScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { top: 24 + insets.top, left: 24 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
@@ -268,6 +270,9 @@ export default function LocationScreen() {
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id)}
                 activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={tab.label}
+                accessibilityState={{ selected: isActive }}
                 style={[styles.tabButton, isActive && styles.activeTabButton]}
               >
                 <Text style={[styles.tabButtonText, isActive && styles.activeTabButtonText]}>
@@ -289,6 +294,9 @@ export default function LocationScreen() {
                 key={vid.id}
                 onPress={() => setActiveNetworkVideo(vid.id)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={vid.label}
+                accessibilityState={{ selected: isActiveVid }}
                 style={[styles.rightMenuBtn, isActiveVid && styles.activeRightMenuBtn]}
               >
                 <Text style={[styles.rightMenuText, isActiveVid && styles.activeRightMenuText]}>

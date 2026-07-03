@@ -142,6 +142,8 @@ export default function Specification() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.replace('/project-info')}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 120 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

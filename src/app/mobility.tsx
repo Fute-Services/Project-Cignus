@@ -119,6 +119,9 @@ export default function Mobility() {
                 key={idx}
                 activeOpacity={0.8}
                 onPress={() => handleSelect(idx)}
+                accessibilityRole="button"
+                accessibilityLabel={item.title}
+                accessibilityState={{ selected: isActive }}
                 style={[
                   styles.thumbnailCard,
                   isActive ? styles.activeThumbnailCard : styles.inactiveThumbnailCard
@@ -138,6 +141,8 @@ export default function Mobility() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/project-details')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

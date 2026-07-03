@@ -170,6 +170,8 @@ export default function BuildingSelector({
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => router.push(`/unitplan/${activeTooltipFloor.id}` as any)}
+              accessibilityRole="button"
+              accessibilityLabel={`View floor ${activeTooltipFloor.name} unit plan, ${activeTooltipFloor.area}`}
               style={styles.tooltipTouchable}
             >
               {/* Left-pointing Arrow Pointer */}

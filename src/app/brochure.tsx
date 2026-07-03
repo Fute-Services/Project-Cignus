@@ -7,6 +7,7 @@ import { Asset } from 'expo-asset';
 import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLocalPdfJsUris } from '../utils/localPdfJs';
+import { escapeHtmlAttribute } from '../utils/htmlEscape';
 
 const brochurePdf = require('../../assets/Broucher/Cignus Tower 2 1.pdf');
 
@@ -43,9 +44,9 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
             background-color: white;
           }
         </style>
-        <script src="${pdfJsUri}"></script>
+        <script src="${escapeHtmlAttribute(pdfJsUri)}"></script>
         <script>
-          pdfjsLib.GlobalWorkerOptions.workerSrc = "${pdfWorkerUri}";
+          pdfjsLib.GlobalWorkerOptions.workerSrc = ${JSON.stringify(pdfWorkerUri)};
         </script>
       </head>
       <body>
@@ -62,7 +63,7 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
           }
 
           try {
-            pdfjsLib.getDocument("${pdfPath}").promise.then(function(pdf) {
+            pdfjsLib.getDocument(${JSON.stringify(pdfPath)}).promise.then(function(pdf) {
               const container = document.getElementById('container');
               const observer = new IntersectionObserver(function(entries) {
                 entries.forEach(function(entry) {
@@ -148,7 +149,7 @@ export default function Brochure() {
         {pdfUri ? (
           Platform.OS === 'android' ? (
             <WebView
-              originWhitelist={['*']}
+              originWhitelist={['file://*']}
               source={{
                 html: getPdfHtml(pdfUri, pdfJsUri, pdfWorkerUri),
                 baseUrl: 'file:///'
@@ -164,7 +165,7 @@ export default function Brochure() {
             />
           ) : (
             <WebView
-              originWhitelist={['*']}
+              originWhitelist={['file://*']}
               source={{
                 uri: pdfUri
               }}
@@ -192,6 +193,8 @@ export default function Brochure() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/home')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

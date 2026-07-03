@@ -103,6 +103,9 @@ export default function VerticalTransport() {
                 key={section.id}
                 activeOpacity={0.8}
                 onPress={() => handleSelect(section)}
+                accessibilityRole="button"
+                accessibilityLabel={section.label}
+                accessibilityState={{ selected: isActive }}
                 style={[styles.menuBtn, isActive ? styles.activeMenuBtn : styles.inactiveMenuBtn]}
               >
                 <Text style={[styles.menuBtnText, isActive ? styles.activeMenuBtnText : styles.inactiveMenuBtnText]}>
@@ -118,6 +121,8 @@ export default function VerticalTransport() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => router.push('/project-details')}
+        accessibilityRole="button"
+        accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
       >
         <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

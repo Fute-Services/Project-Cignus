@@ -25,6 +25,9 @@ export default function ProjectBottomNav() {
               key={item.path}
               activeOpacity={0.8}
               onPress={() => router.push(item.path as any)}
+              accessibilityRole="button"
+              accessibilityLabel={item.label}
+              accessibilityState={{ selected: isActive }}
               style={[styles.btn, isActive ? styles.activeBtn : styles.inactiveBtn]}
             >
               <Text style={[styles.btnText, isActive ? styles.activeBtnText : styles.inactiveBtnText]}>

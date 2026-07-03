@@ -94,7 +94,12 @@ export default function UnitPlanPage() {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Floor blueprint not found</Text>
-        <TouchableOpacity onPress={() => router.push('/project-details')} style={styles.closeBtn}>
+        <TouchableOpacity
+          onPress={() => router.push('/project-details')}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          style={styles.closeBtn}
+        >
           <Text style={styles.closeBtnText}>Go Back</Text>
         </TouchableOpacity>
       </View>
@@ -194,6 +199,9 @@ export default function UnitPlanPage() {
                     key={area.id}
                     activeOpacity={0.8}
                     onPress={() => setActiveAreaId(isActive ? null : area.id)}
+                    accessibilityRole="button"
+                    accessibilityLabel={area.title}
+                    accessibilityState={{ selected: isActive }}
                     style={[styles.areaBtn, isActive && styles.activeAreaBtn]}
                   >
                     <Text style={[styles.areaBtnText, isActive && styles.activeAreaBtnText]}>
@@ -210,6 +218,8 @@ export default function UnitPlanPage() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => setIsZoomed(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Zoom out"
               style={styles.zoomBtn}
             >
               <Text style={styles.zoomText}>-</Text>
@@ -217,6 +227,8 @@ export default function UnitPlanPage() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => setIsZoomed(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Zoom in"
               style={styles.zoomBtn}
             >
               <Text style={styles.zoomText}>+</Text>
@@ -227,6 +239,8 @@ export default function UnitPlanPage() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/project-details')}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
           >
             <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">

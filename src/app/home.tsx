@@ -49,6 +49,8 @@ export default function Home() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleBottomLogoPress}
+          accessibilityRole="button"
+          accessibilityLabel="Restart from home"
           style={styles.bottomLogoBtn}
         >
           <Image

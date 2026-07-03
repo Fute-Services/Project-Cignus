@@ -38,6 +38,9 @@ export default function RightNavbar() {
               key={item.path}
               activeOpacity={0.7}
               onPress={() => router.push(item.path as any)}
+              accessibilityRole="button"
+              accessibilityLabel={item.label.replace('\n', ' ')}
+              accessibilityState={{ selected: isActive }}
               style={styles.navLink}
             >
               <View style={[styles.circle, isActive ? styles.goldenCircle : styles.darkCircle]}>

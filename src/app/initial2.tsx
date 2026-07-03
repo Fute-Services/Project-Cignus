@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { FadeInUp, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
 const cignusLogo = require('../../assets/Home/cignus updated logo.png');
@@ -27,13 +28,12 @@ export default function Initial2() {
     playerInstance.play();
   });
 
-  // Track video loading/playing to fade out the placeholder
+  // Fade out the placeholder once the video is actually ready to play,
+  // rather than guessing with a fixed timer.
+  const { isReady } = useVideoStatus(player);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVideoLoaded(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (isReady) setVideoLoaded(true);
+  }, [isReady]);
 
   const handleExplore = () => {
     router.replace('/home');
@@ -95,7 +95,13 @@ export default function Initial2() {
           <View style={styles.pillBadge}>
             <Image source={rightLogo} style={styles.pillBadgeLogo} contentFit="contain" />
           </View>
-          <TouchableOpacity onPress={handleExplore} activeOpacity={0.8} style={styles.exploreBtnWrapper}>
+          <TouchableOpacity
+            onPress={handleExplore}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Explore"
+            style={styles.exploreBtnWrapper}
+          >
             <Image source={exploreBtn} style={styles.exploreBtnImg} contentFit="contain" />
           </TouchableOpacity>
         </Animated.View>
@@ -155,20 +161,18 @@ const styles = StyleSheet.create({
   },
   titleLine1: {
     fontSize: 36,
-    fontWeight: '200',
     color: '#3990dc',
     textAlign: 'center',
     letterSpacing: 2,
-    fontFamily: 'Outfit',
+    fontFamily: 'Outfit_300Light',
   },
   titleLine2: {
     fontSize: 48,
-    fontWeight: '200',
     color: '#ffffff',
     textAlign: 'center',
     marginTop: 4,
     letterSpacing: 2,
-    fontFamily: 'Poppins',
+    fontFamily: 'Outfit_300Light',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
