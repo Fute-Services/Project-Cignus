@@ -15,11 +15,13 @@ const leftLogo = require('../../assets/home/cignus-updated-logo.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 
 // ── Gallery Images ──
-const ElevationView  = require('../../assets/gallery/elevation-with-lake-view.png');
-const AerialView     = require('../../assets/gallery/aerial-view.png');
-const NightAerial    = require('../../assets/gallery/night-aerial-view1.jpeg');   // JPEG 1.1MB ✓
-const FacadeView     = require('../../assets/gallery/facade-view.png');
-const Amenity1       = require('../../assets/gallery/amenities-view.png');
+// Use JPEG versions wherever available to avoid OOM crashes on device
+// (PNG alternatives like Night Aerial View.png are 13MB+ and will crash)
+const ElevationView  = require('../../assets/gallery/elevation-with-lake-view.jpeg');
+const AerialView     = require('../../assets/gallery/aerial-view.jpeg');
+const NightAerial    = require('../../assets/gallery/night-aerial-view1.jpeg');   // real JPEG 1.8MB ✓
+const FacadeView     = require('../../assets/gallery/facade-view.jpeg');
+const Amenity1       = require('../../assets/gallery/amenities-view.jpeg');
 const Amenity2       = require('../../assets/gallery/amenities-view-2.jpeg');
 const Amenity3       = require('../../assets/gallery/amenities-view-31.jpeg');   // JPEG 939KB ✓
 
