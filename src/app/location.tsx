@@ -39,12 +39,15 @@ export default function LocationScreen() {
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
-  // Instantiate video players for smooth cross-fading
-  const jvlrPlayer = useVideoPlayer(jvlrVideo, p => { p.loop = true; p.muted = true; p.play(); });
-  const rambaugPlayer = useVideoPlayer(rambaughVideo, p => { p.loop = true; p.muted = true; p.play(); });
-  const sakinakaPlayer = useVideoPlayer(sakinakaVideo, p => { p.loop = true; p.muted = true; p.play(); });
-  const aareyPlayer = useVideoPlayer(aareyVideo, p => { p.loop = true; p.muted = true; p.play(); });
-  const transportPlayer = useVideoPlayer(transportVideo, p => { p.loop = true; p.muted = true; p.play(); });
+  // Instantiate video players for smooth cross-fading. Playback is NOT started
+  // here — only the active tab's player is started, by the effect below, so at
+  // most one of these five decoders is ever running at a time (starting all
+  // five simultaneously on mount previously stressed the hardware decoder).
+  const jvlrPlayer = useVideoPlayer(jvlrVideo, p => { p.loop = true; p.muted = true; });
+  const rambaugPlayer = useVideoPlayer(rambaughVideo, p => { p.loop = true; p.muted = true; });
+  const sakinakaPlayer = useVideoPlayer(sakinakaVideo, p => { p.loop = true; p.muted = true; });
+  const aareyPlayer = useVideoPlayer(aareyVideo, p => { p.loop = true; p.muted = true; });
+  const transportPlayer = useVideoPlayer(transportVideo, p => { p.loop = true; p.muted = true; });
 
   // Shared values for cross-fade opacities
   const opacitySite = useSharedValue(1);

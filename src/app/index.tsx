@@ -8,8 +8,9 @@ import { WebView } from 'react-native-webview';
 import { Asset } from 'expo-asset';
 import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getLocalPdfJsUris } from '../utils/localPdfJs';
 
-const getPdfHtml = (pdfPath: string) => {
+const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -41,52 +42,64 @@ const getPdfHtml = (pdfPath: string) => {
             border-radius: 8px;
             background-color: white;
           }
-          #loading {
-            color: #FFCF77;
-            font-family: sans-serif;
-            margin-top: 100px;
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-          }
         </style>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+        <script src="${pdfJsUri}"></script>
         <script>
-          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+          pdfjsLib.GlobalWorkerOptions.workerSrc = "${pdfWorkerUri}";
         </script>
       </head>
       <body>
-        <div id="loading">Rendering PDF Pages...</div>
         <div id="container"></div>
         <script>
+          const RENDER_SCALE = 1.5;
+
+          function renderPage(page, canvas) {
+            const context = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: RENDER_SCALE });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            page.render({ canvasContext: context, viewport: viewport });
+          }
+
           try {
             pdfjsLib.getDocument("${pdfPath}").promise.then(function(pdf) {
-              const loadingEl = document.getElementById('loading');
-              if (loadingEl) loadingEl.style.display = 'none';
               const container = document.getElementById('container');
-              
-              for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                const canvas = document.createElement('canvas');
-                container.appendChild(canvas);
-                
-                pdf.getPage(pageNum).then(function(page) {
-                  const context = canvas.getContext('2d');
-                  const viewport = page.getViewport({scale: 2.0});
-                  canvas.height = viewport.height;
-                  canvas.width = viewport.width;
-                  
-                  page.render({
-                    canvasContext: context,
-                    viewport: viewport
+              const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                  if (!entry.isIntersecting) return;
+                  const canvas = entry.target;
+                  observer.unobserve(canvas);
+                  pdf.getPage(Number(canvas.dataset.pageNum)).then(function(page) {
+                    renderPage(page, canvas);
                   });
                 });
-              }
+              }, { rootMargin: '600px 0px' });
+
+              // First page renders immediately so the view isn't blank; the rest
+              // render lazily as they scroll into view to keep initial load fast.
+              pdf.getPage(1).then(function(firstPage) {
+                const viewport = firstPage.getViewport({ scale: RENDER_SCALE });
+                const canvas = document.createElement('canvas');
+                canvas.dataset.pageNum = '1';
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                container.appendChild(canvas);
+                renderPage(firstPage, canvas);
+
+                for (let pageNum = 2; pageNum <= pdf.numPages; pageNum++) {
+                  const placeholderCanvas = document.createElement('canvas');
+                  placeholderCanvas.dataset.pageNum = String(pageNum);
+                  placeholderCanvas.width = viewport.width;
+                  placeholderCanvas.height = viewport.height;
+                  container.appendChild(placeholderCanvas);
+                  observer.observe(placeholderCanvas);
+                }
+              });
             }).catch(function(err) {
-              document.getElementById('loading').innerText = 'Error: ' + err.message;
+              console.error('PDF load error:', err.message);
             });
           } catch(e) {
-            document.getElementById('loading').innerText = 'Loading error: ' + e.message;
+            console.error('PDF loading error:', e.message);
           }
         </script>
       </body>
@@ -211,6 +224,7 @@ export default function InitialPage() {
   const [phase, setPhase] = useState<'splash' | 'dashboard'>('splash');
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
+  const [{ pdfJsUri, pdfWorkerUri }] = useState(() => getLocalPdfJsUris());
 
   useEffect(() => {
     if (selectedCard?.pdf) {
@@ -406,7 +420,7 @@ export default function InitialPage() {
                 <WebView
                   originWhitelist={['*']}
                   source={{
-                    html: getPdfHtml(pdfUri),
+                    html: getPdfHtml(pdfUri, pdfJsUri, pdfWorkerUri),
                     baseUrl: 'file:///'
                   }}
                   style={styles.pdfWebView}

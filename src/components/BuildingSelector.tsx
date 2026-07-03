@@ -195,7 +195,6 @@ export default function BuildingSelector({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: '100%',
     overflow: 'hidden',
     backgroundColor: '#000000',
     aspectRatio: VIEWBOX_W / VIEWBOX_H,

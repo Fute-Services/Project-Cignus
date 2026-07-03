@@ -11,7 +11,7 @@ import { useIsFocused } from '@react-navigation/native';
 import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/intial/bg_img.png');
-const droneVideo2K = require('../../assets/Home/drone_view.mp4');
+const droneVideo2K = require('../../assets/Home/construction_progress.mp4');
 const logo1 = require('../../assets/Home/cignus updated logo.png');
 const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 

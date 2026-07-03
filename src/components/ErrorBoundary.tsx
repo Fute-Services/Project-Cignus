@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { reportError } from '../utils/crashReporting';
 
 interface Props {
   children: React.ReactNode;
@@ -15,8 +16,8 @@ interface State {
  * single bad component can never white-screen the whole kiosk in front of a
  * client. Shows a branded recovery screen with a "Try again" action.
  *
- * Hook a crash reporter (Sentry, Bugsnag, etc.) into componentDidCatch to get
- * visibility into failures happening on devices in the field.
+ * Crashes are also forwarded to Sentry via reportError() (src/utils/crashReporting.ts)
+ * when EXPO_PUBLIC_SENTRY_DSN is configured; otherwise that call is a no-op.
  */
 export default class ErrorBoundary extends React.Component<Props, State> {
   state: State = { hasError: false, error: null };
@@ -26,8 +27,8 @@ export default class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // TODO: forward to a crash-reporting service once one is configured.
     console.error('Uncaught error in component tree:', error, info.componentStack);
+    reportError(error, { componentStack: info.componentStack });
   }
 
   handleReset = () => {

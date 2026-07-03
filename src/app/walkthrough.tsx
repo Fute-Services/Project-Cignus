@@ -12,7 +12,7 @@ import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/intial/bg_img.png');
-const walkthroughVideo = require('../../assets/video/POWAI_walkthrough.mp4');
+const walkthroughVideo = require('../../assets/Circulation/Powai-Site-plan Circulation.mp4');
 const logo1 = require('../../assets/Home/cignus updated logo.png');
 const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
 
