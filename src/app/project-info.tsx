@@ -82,7 +82,11 @@ export default function ProjectInfo() {
             {/* Left Column: Image Card */}
             <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
               <View style={styles.imageCard}>
-                <Image source={leftImage} style={styles.towerImg} contentFit="cover" />
+                {/* Blurred cover fill so the tall card has no empty space... */}
+                <Image source={leftImage} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={18} />
+                <View style={styles.imageCardScrim} />
+                {/* ...while the full building render is shown sharp and un-cropped on top */}
+                <Image source={leftImage} style={styles.towerImg} contentFit="contain" />
               </View>
             </Animated.View>
 
@@ -250,17 +254,26 @@ const styles = StyleSheet.create({
   },
   imageCard: {
     width: '100%',
-    aspectRatio: 16 / 9,
+    height: '92%',
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.12)',
     backgroundColor: '#16191c',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 6,
+  },
+  imageCardScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(12, 15, 18, 0.35)',
   },
   towerImg: {
     width: '100%',
