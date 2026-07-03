@@ -14,6 +14,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 // Components & Assets
 import ProjectBottomNav from '../components/ProjectBottomNav';
 import { theme } from '../theme';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/project-details/bg-image.png');
 const lowerImg = require('../../assets/project-details/building-image.png');
@@ -140,7 +141,7 @@ export default function Mobility() {
       {/* 5. Left Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/project-details')}
+        onPress={() => safeNavigate(router, '/project-details')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

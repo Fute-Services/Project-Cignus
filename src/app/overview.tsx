@@ -28,6 +28,7 @@ import ProjectBottomNav from '../components/ProjectBottomNav';
 import VideoStatusOverlay from '../components/VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 import { theme } from '../theme';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgVideo = require('../../assets/overview/overview.mp4');
 const overviewImg = require('../../assets/overview/overview.png');
@@ -243,7 +244,7 @@ export default function Overview() {
           {/* ── Back Button (Bottom Left) ── */}
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push('/project-details')}
+            onPress={() => safeNavigate(router, '/project-details')}
             accessibilityRole="button"
             accessibilityLabel="Back"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

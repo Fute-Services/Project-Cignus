@@ -17,6 +17,7 @@ import Animated, {
 // Data & Assets
 import { floors } from '../../data/FloorData';
 import LeftNavbar from '../../components/LeftNavbar';
+import { safeNavigate } from '../../utils/safeNavigate';
 
 const bgImage = require('../../../assets/initial/bg-img.png');
 const logoImg = require('../../../assets/home/cignus-updated-logo.png');
@@ -95,7 +96,7 @@ export default function UnitPlanPage() {
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Floor blueprint not found</Text>
         <TouchableOpacity
-          onPress={() => router.push('/project-details')}
+          onPress={() => safeNavigate(router, '/project-details')}
           accessibilityRole="button"
           accessibilityLabel="Go back"
           style={styles.closeBtn}
@@ -238,7 +239,7 @@ export default function UnitPlanPage() {
           {/* ── Back Button (Bottom Left) ── */}
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push('/project-details')}
+            onPress={() => safeNavigate(router, '/project-details')}
             accessibilityRole="button"
             accessibilityLabel="Back"
             style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

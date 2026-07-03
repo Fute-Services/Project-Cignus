@@ -8,6 +8,7 @@ import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLocalPdfJsUris } from '../utils/localPdfJs';
 import { escapeHtmlAttribute } from '../utils/htmlEscape';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const brochurePdf = require('../../assets/brochure/cignus-tower-2-1.pdf');
 
@@ -192,7 +193,7 @@ export default function Brochure() {
       {/* 3. Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/home')}
+        onPress={() => safeNavigate(router, '/home')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

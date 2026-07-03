@@ -11,6 +11,7 @@ import { useIsFocused } from '@react-navigation/native';
 import ProjectBottomNav from '../components/ProjectBottomNav';
 import VideoStatusOverlay from '../components/VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
+import { safeNavigate } from '../utils/safeNavigate';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -120,7 +121,7 @@ export default function VerticalTransport() {
       {/* 5. Left Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/project-details')}
+        onPress={() => safeNavigate(router, '/project-details')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

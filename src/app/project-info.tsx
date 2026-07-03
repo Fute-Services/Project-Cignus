@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/project-info/project-info-bg-img.png');
 const leftImage = require('../../assets/overview/overview-optimized.jpeg');
@@ -127,7 +128,7 @@ export default function ProjectInfo() {
                 {/* Redirect Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => router.push('/specification')}
+                  onPress={() => safeNavigate(router, '/specification')}
                   accessibilityRole="button"
                   accessibilityLabel="View specifications"
                   style={styles.specBtnInline}

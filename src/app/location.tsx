@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -7,6 +7,7 @@ import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTimin
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const logo = require('../../assets/home/cignus-updated-logo.png');
 const siteLocation = require('../../assets/location/new-final-site-location-img.jpeg');
@@ -33,91 +34,59 @@ const connectivityVideos = [
   { id: 'lt', label: 'Aarey Metro Station', src: aareyVideo }
 ];
 
+const videoSources: Record<string, number> = {
+  jvlr: jvlrVideo,
+  rambaug: rambaughVideo,
+  sakanaka: sakinakaVideo,
+  lt: aareyVideo,
+  transport: transportVideo,
+};
+
 export default function LocationScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
-  // Instantiate video players for smooth cross-fading. Playback is NOT started
-  // here — only the active tab's player is started, by the effect below, so at
-  // most one of these five decoders is ever running at a time (starting all
-  // five simultaneously on mount previously stressed the hardware decoder).
-  const jvlrPlayer = useVideoPlayer(jvlrVideo, p => { p.loop = true; p.muted = true; });
-  const rambaugPlayer = useVideoPlayer(rambaughVideo, p => { p.loop = true; p.muted = true; });
-  const sakinakaPlayer = useVideoPlayer(sakinakaVideo, p => { p.loop = true; p.muted = true; });
-  const aareyPlayer = useVideoPlayer(aareyVideo, p => { p.loop = true; p.muted = true; });
-  const transportPlayer = useVideoPlayer(transportVideo, p => { p.loop = true; p.muted = true; });
+  // ONE shared player for all five tab/network videos. Only one video is ever
+  // visible at a time, and five parallel ExoPlayer instances (each holding
+  // tens of MB of playback buffer) exhausted the Java heap and crashed the
+  // app the moment this screen opened on lower-memory devices.
+  const player = useVideoPlayer(null, p => { p.loop = true; p.muted = true; });
+  const loadedVideoRef = useRef<string | null>(null);
 
   // Shared values for cross-fade opacities
   const opacitySite = useSharedValue(1);
   const opacityNeighbourhood = useSharedValue(0);
-  const opacityJvlr = useSharedValue(0);
-  const opacityRambaug = useSharedValue(0);
-  const opacitySakanaka = useSharedValue(0);
-  const opacityLt = useSharedValue(0);
-  const opacityTransport = useSharedValue(0);
+  const opacityVideo = useSharedValue(0);
 
   const isFocused = useIsFocused();
+
+  const activeVideoKey =
+    activeTab === 'road' ? activeNetworkVideo : activeTab === 'transport' ? 'transport' : null;
 
   // Transition opacities and playback state smoothly
   useEffect(() => {
     opacitySite.value = withTiming(activeTab === 'site' ? 1 : 0, { duration: 400 });
     opacityNeighbourhood.value = withTiming(activeTab === 'neighbourhood' ? 1 : 0, { duration: 400 });
-    
-    const isJvlr = activeTab === 'road' && activeNetworkVideo === 'jvlr';
-    opacityJvlr.value = withTiming(isJvlr ? 1 : 0, { duration: 400 });
-    if (isJvlr && isFocused) {
-      jvlrPlayer.currentTime = 0;
-      jvlrPlayer.play();
-    } else {
-      jvlrPlayer.pause();
-    }
+    opacityVideo.value = withTiming(activeVideoKey ? 1 : 0, { duration: 400 });
 
-    const isRambaug = activeTab === 'road' && activeNetworkVideo === 'rambaug';
-    opacityRambaug.value = withTiming(isRambaug ? 1 : 0, { duration: 400 });
-    if (isRambaug && isFocused) {
-      rambaugPlayer.currentTime = 0;
-      rambaugPlayer.play();
+    if (activeVideoKey && isFocused) {
+      if (loadedVideoRef.current !== activeVideoKey) {
+        player.replace(videoSources[activeVideoKey]);
+        loadedVideoRef.current = activeVideoKey;
+      } else {
+        player.currentTime = 0;
+      }
+      player.play();
     } else {
-      rambaugPlayer.pause();
+      player.pause();
     }
-
-    const isSakanaka = activeTab === 'road' && activeNetworkVideo === 'sakanaka';
-    opacitySakanaka.value = withTiming(isSakanaka ? 1 : 0, { duration: 400 });
-    if (isSakanaka && isFocused) {
-      sakinakaPlayer.currentTime = 0;
-      sakinakaPlayer.play();
-    } else {
-      sakinakaPlayer.pause();
-    }
-
-    const isLt = activeTab === 'road' && activeNetworkVideo === 'lt';
-    opacityLt.value = withTiming(isLt ? 1 : 0, { duration: 400 });
-    if (isLt && isFocused) {
-      aareyPlayer.currentTime = 0;
-      aareyPlayer.play();
-    } else {
-      aareyPlayer.pause();
-    }
-
-    const isTransport = activeTab === 'transport';
-    opacityTransport.value = withTiming(isTransport ? 1 : 0, { duration: 400 });
-    if (isTransport && isFocused) {
-      transportPlayer.currentTime = 0;
-      transportPlayer.play();
-    } else {
-      transportPlayer.pause();
-    }
-  }, [activeTab, activeNetworkVideo, isFocused]);
+  }, [activeTab, activeVideoKey, isFocused]);
 
   const styleSite = useAnimatedStyle(() => ({ opacity: opacitySite.value }));
   const styleNeighbourhood = useAnimatedStyle(() => ({ opacity: opacityNeighbourhood.value }));
-  const styleJvlr = useAnimatedStyle(() => ({ opacity: opacityJvlr.value }));
-  const styleRambaug = useAnimatedStyle(() => ({ opacity: opacityRambaug.value }));
-  const styleSakanaka = useAnimatedStyle(() => ({ opacity: opacitySakanaka.value }));
-  const styleLt = useAnimatedStyle(() => ({ opacity: opacityLt.value }));
-  const styleTransport = useAnimatedStyle(() => ({ opacity: opacityTransport.value }));
+  const styleVideo = useAnimatedStyle(() => ({ opacity: opacityVideo.value }));
 
   const renderMarkers = () => {
     let markersList: any[] = [];
@@ -202,44 +171,10 @@ export default function LocationScreen() {
           <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
         </Animated.View>
 
-        {/*
-          Only the active video's VideoView is mounted. Tablets allow a limited
-          number of simultaneous hardware video decoders, so mounting all five
-          VideoViews at once made the later panels (Connectivity + Airport) fail
-          to render. The opacity fade-in on mount is preserved via the shared values.
-        */}
-        {/* JVLR Video */}
-        {activeTab === 'road' && activeNetworkVideo === 'jvlr' && (
-          <Animated.View style={[StyleSheet.absoluteFill, styleJvlr]}>
-            <VideoView player={jvlrPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-          </Animated.View>
-        )}
-
-        {/* Rambaug Video */}
-        {activeTab === 'road' && activeNetworkVideo === 'rambaug' && (
-          <Animated.View style={[StyleSheet.absoluteFill, styleRambaug]}>
-            <VideoView player={rambaugPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-          </Animated.View>
-        )}
-
-        {/* Saki-Naka Video */}
-        {activeTab === 'road' && activeNetworkVideo === 'sakanaka' && (
-          <Animated.View style={[StyleSheet.absoluteFill, styleSakanaka]}>
-            <VideoView player={sakinakaPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-          </Animated.View>
-        )}
-
-        {/* Aarey Video */}
-        {activeTab === 'road' && activeNetworkVideo === 'lt' && (
-          <Animated.View style={[StyleSheet.absoluteFill, styleLt]}>
-            <VideoView player={aareyPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
-          </Animated.View>
-        )}
-
-        {/* Airport Connectivity Video */}
-        {activeTab === 'transport' && (
-          <Animated.View style={[StyleSheet.absoluteFill, styleTransport]}>
-            <VideoView player={transportPlayer} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+        {/* Active tab/network video — one shared player, one mounted view */}
+        {activeVideoKey && (
+          <Animated.View style={[StyleSheet.absoluteFill, styleVideo]}>
+            <VideoView player={player} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
           </Animated.View>
         )}
 
@@ -250,7 +185,7 @@ export default function LocationScreen() {
       {/* 3. BACK BUTTON (Top Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/home')}
+        onPress={() => safeNavigate(router, '/home')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { top: 24 + insets.top, left: 24 + insets.left }]}

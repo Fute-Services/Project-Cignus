@@ -10,6 +10,7 @@ import * as Sharing from 'expo-sharing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLocalPdfJsUris } from '../utils/localPdfJs';
 import { escapeHtmlAttribute } from '../utils/htmlEscape';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => {
   return `
@@ -283,7 +284,7 @@ export default function InitialPage() {
   }, []);
 
   const handleExplore = () => {
-    router.push('/initial2');
+    safeNavigate(router, '/initial2');
   };
 
   const watermarkAnimatedStyle = useAnimatedStyle(() => ({

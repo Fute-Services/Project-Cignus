@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeNavigate } from '../utils/safeNavigate';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -103,7 +104,7 @@ export default function Gallery() {
       {/* Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/home')}
+        onPress={() => safeNavigate(router, '/home')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

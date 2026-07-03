@@ -12,6 +12,7 @@ import RightNavbar from '../components/RightNavbar';
 import ProjectBottomNav from '../components/ProjectBottomNav';
 import VideoStatusOverlay from '../components/VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/initial/bg-img.png');
 const circulationVideo = require('../../assets/circulation/powai-site-plan-circulation.mp4');
@@ -74,7 +75,7 @@ export default function Circulation() {
       {/* 4. Left Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/project-details')}
+        onPress={() => safeNavigate(router, '/project-details')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}
