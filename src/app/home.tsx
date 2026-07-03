@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../components/Header';
 import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
+import MovingCars from '../components/MovingCars';
 
 const bgImage = require('../../assets/gallery/night-aerial-view1.jpeg'); // JPEG 1.1MB — avoids OOM crash from 13MB PNG
 const bottomLogoBtn = require('../../assets/home/k-raheja-corp-1.png');
@@ -33,6 +34,8 @@ export default function Home() {
         />
         {/* Dark overlay for contrast */}
         <View style={styles.overlay} />
+        {/* Animated car headlights moving along the lit roads */}
+        <MovingCars />
       </Animated.View>
 
       {/* 2. Top Header Branding Logos */}
@@ -74,7 +77,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFill as any,
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
   },
   bottomLogoContainer: {
     position: 'absolute',

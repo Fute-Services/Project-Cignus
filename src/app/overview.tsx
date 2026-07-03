@@ -38,11 +38,11 @@ const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 const sections = [
   {
     title: "Westin Hotel",
-    description: "When your counterpart flies in, you host them properly — dinner, a room, breakfast the next morning — without a single car journey. The hotel is across the courtyard."
+    description: "When your counterpart flies in, you host them properly. Dinner, a room, and breakfast the next morning, all without a single car journey. The hotel is across the courtyard."
   },
   {
     title: "Convention Centre",
-    description: "All hands meetings, investor days, large conferences — the venue is steps from your office. No booking a hotel ballroom months in advance. No shuttling people across the city."
+    description: "All hands meetings, investor days, large conferences. The venue is steps from your office, so there is no booking a hotel ballroom months in advance and no shuttling people across the city."
   },
   {
     title: "Marriott Residences",
@@ -50,7 +50,7 @@ const sections = [
   },
   {
     title: "Cignus Tower I",
-    description: "Tower I has been here long enough to build its own gravity. The companies, the people, the everyday rhythm of the campus - Tower II inherits all of that from day one."
+    description: "Tower I has been here long enough to build its own gravity. The companies, the people, and the everyday rhythm of the campus. Tower II inherits all of that from day one."
   }
 ];
 
@@ -195,7 +195,12 @@ export default function Overview() {
 
           {/* ── Expandable Side Content Drawer ── */}
           <Animated.View style={[styles.drawer, { top: 24 + insets.top, bottom: 96 + insets.bottom, right: 56 + insets.right }, drawerAnimatedStyle, { width: drawerWidth }]}>
-            <BlurView intensity={35} tint="dark" style={StyleSheet.absoluteFill} />
+            <BlurView
+              intensity={50}
+              tint="dark"
+              experimentalBlurMethod="dimezisBlurView"
+              style={StyleSheet.absoluteFill}
+            />
             <ScrollView contentContainerStyle={styles.drawerScroll} showsVerticalScrollIndicator={false}>
               
               {/* View Mode Switcher inside Drawer */}
@@ -338,9 +343,9 @@ const styles = StyleSheet.create({
     top: 24,
     bottom: 96,
     right: 56,
-    backgroundColor: 'rgba(12, 15, 18, 0.55)',
+    backgroundColor: 'rgba(20, 24, 28, 0.25)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.28)',
     borderRadius: 16,
     zIndex: 110,
     overflow: 'hidden',
@@ -392,13 +397,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   sectionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: 'rgba(255, 255, 255, 0.07)',
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.16)',
     padding: 16,
-    borderLeftWidth: 3.5,
-    borderLeftColor: '#FFCF77',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,

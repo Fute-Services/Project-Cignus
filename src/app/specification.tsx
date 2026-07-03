@@ -122,7 +122,7 @@ export default function Specification() {
                   {specifications.map((item, idx) => (
                     <View key={idx} style={styles.specRow}>
                       <View style={styles.bulletPoint}>
-                        <Svg width="16" height="16" viewBox="0 0 30 30" fill="none">
+                        <Svg width="18" height="18" viewBox="0 0 30 30" fill="none">
                           <Circle cx="15" cy="15" r="14" stroke="#FFCF77" strokeWidth="1.5" />
                           <Path d="M10 15l4 4 8-8" stroke="#FFCF77" strokeWidth="2.5" strokeLinecap="round" />
                         </Svg>
@@ -248,16 +248,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   leftColumn: {
-    width: '32%',
+    width: '30%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 20,
+    gap: 24,
   },
   imageCardRound: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -268,9 +268,9 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   imageCardCapsule: {
-    width: 150,
-    height: 220,
-    borderRadius: 75,
+    width: 160,
+    height: 250,
+    borderRadius: 80,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -285,9 +285,10 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   rightColumn: {
-    width: '64%',
+    width: '66%',
     height: '100%',
     justifyContent: 'center',
+    paddingRight: 24,
   },
   scrollContent: {
     flexGrow: 1,
@@ -296,28 +297,28 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   specsBlock: {
-    gap: 10,
+    gap: 15,
   },
   specRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
   },
   bulletPoint: {
     marginTop: 1,
   },
   specContent: {
     flex: 1,
-    lineHeight: 18,
+    lineHeight: 21,
   },
   specLabel: {
-    fontSize: 10.5,
+    fontSize: 12,
     color: '#FFCF77',
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   specVal: {
-    fontSize: 12.5,
+    fontSize: 14,
     color: '#ffffff',
     letterSpacing: 0.5,
   },
