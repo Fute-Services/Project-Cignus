@@ -61,6 +61,13 @@ const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
     ${pannellumJs}
 </script>
 <script>
+    // Surface any JS failure to the native side so it shows up in logs
+    // instead of silently leaving the cover image on screen forever.
+    window.onerror = function (message, source, line) {
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage('vr_error: ' + message + ' @' + line);
+        }
+    };
     var viewer = pannellum.viewer('panorama', {
         "default": {
             "firstScene": ${JSON.stringify(firstScene || 'dropoff')},
@@ -121,6 +128,11 @@ const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
             window.ReactNativeWebView.postMessage('vr_ready');
         }
     });
+    viewer.on('error', function (err) {
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage('vr_error: ' + err);
+        }
+    });
 </script>
 
 </body>
@@ -167,6 +179,15 @@ export default function Amenities() {
       cancelled = true;
     };
   }, []);
+
+  // Fail-safe: if the panorama never reports ready (e.g. a WebView quirk on
+  // some device), reveal the WebView after a few seconds anyway instead of
+  // sitting on the cover image forever.
+  useEffect(() => {
+    if (!is360Active || !panoUris || vrReady) return;
+    const timer = setTimeout(() => setVrReady(true), 8000);
+    return () => clearTimeout(timer);
+  }, [is360Active, panoUris, vrReady]);
 
   const handleSceneChange = (sceneId: string) => {
     setCurrentScene(sceneId);
@@ -226,6 +247,8 @@ export default function Amenities() {
           onMessage={(event) => {
             if (event.nativeEvent.data === 'vr_ready') {
               setVrReady(true);
+            } else if (String(event.nativeEvent.data).startsWith('vr_error')) {
+              console.warn('VR WebView:', event.nativeEvent.data);
             }
           }}
           onError={() => setWebViewError(true)}

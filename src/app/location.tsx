@@ -48,12 +48,22 @@ export default function LocationScreen() {
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
-  // ONE shared player for all five tab/network videos. Only one video is ever
-  // visible at a time, and five parallel ExoPlayer instances (each holding
-  // tens of MB of playback buffer) exhausted the Java heap and crashed the
-  // app the moment this screen opened on lower-memory devices.
-  const player = useVideoPlayer(null, p => { p.loop = true; p.muted = true; });
-  const loadedVideoRef = useRef<string | null>(null);
+  // Two players, both preloaded on mount so the Connectivity and Airport
+  // tabs start their video instantly: one cycles through the four
+  // Connectivity videos, the other holds the Airport video. Small forward
+  // buffers keep the combined footprint a fraction of the five full players
+  // that used to OOM-crash this screen.
+  const connectivityPlayer = useVideoPlayer(jvlrVideo, p => {
+    p.loop = true;
+    p.muted = true;
+    p.bufferOptions = { preferredForwardBufferDuration: 5 };
+  });
+  const transportPlayer = useVideoPlayer(transportVideo, p => {
+    p.loop = true;
+    p.muted = true;
+    p.bufferOptions = { preferredForwardBufferDuration: 5 };
+  });
+  const loadedVideoRef = useRef<string>('jvlr');
 
   // Shared values for cross-fade opacities
   const opacitySite = useSharedValue(1);
@@ -72,15 +82,26 @@ export default function LocationScreen() {
     opacityVideo.value = withTiming(activeVideoKey ? 1 : 0, { duration: 400 });
 
     if (activeVideoKey && isFocused) {
-      if (loadedVideoRef.current !== activeVideoKey) {
-        player.replace(videoSources[activeVideoKey]);
-        loadedVideoRef.current = activeVideoKey;
+      if (activeVideoKey === 'transport') {
+        connectivityPlayer.pause();
+        transportPlayer.currentTime = 0;
+        transportPlayer.play();
       } else {
-        player.currentTime = 0;
+        transportPlayer.pause();
+        if (loadedVideoRef.current !== activeVideoKey) {
+          loadedVideoRef.current = activeVideoKey;
+          connectivityPlayer.replaceAsync(videoSources[activeVideoKey]).then(
+            () => connectivityPlayer.play(),
+            () => {},
+          );
+        } else {
+          connectivityPlayer.currentTime = 0;
+          connectivityPlayer.play();
+        }
       }
-      player.play();
     } else {
-      player.pause();
+      connectivityPlayer.pause();
+      transportPlayer.pause();
     }
   }, [activeTab, activeVideoKey, isFocused]);
 
@@ -171,10 +192,15 @@ export default function LocationScreen() {
           <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
         </Animated.View>
 
-        {/* Active tab/network video — one shared player, one mounted view */}
+        {/* Active tab/network video — preloaded players, one mounted view */}
         {activeVideoKey && (
           <Animated.View style={[StyleSheet.absoluteFill, styleVideo]}>
-            <VideoView player={player} style={styles.backgroundImage} contentFit="contain" nativeControls={false} />
+            <VideoView
+              player={activeVideoKey === 'transport' ? transportPlayer : connectivityPlayer}
+              style={styles.backgroundImage}
+              contentFit="contain"
+              nativeControls={false}
+            />
           </Animated.View>
         )}
 

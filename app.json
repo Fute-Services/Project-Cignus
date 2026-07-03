@@ -57,7 +57,8 @@
         }
       ],
       "expo-web-browser",
-      "./plugins/with-png-crunch-disabled.js"
+      "./plugins/with-png-crunch-disabled.js",
+      "./plugins/with-large-heap.js"
     ],
     "experiments": {
       "typedRoutes": true,
