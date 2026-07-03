@@ -2,14 +2,16 @@ import type { Href, Router } from 'expo-router';
 
 let lastNavAt = 0;
 
-// Rapid double-taps on nav buttons used to stack the same route repeatedly.
-// Screens like Location create five video players per instance, so a few
-// stacked copies exhaust the device's hardware video decoders and crash the
-// app. Debounce taps and use navigate() (which re-focuses an existing route
-// instead of pushing a duplicate).
+// Debounce rapid double-taps, and use replace() so the previous screen
+// unmounts and releases its video players immediately. With push/navigate
+// every visited screen stayed mounted in the stack, so their ExoPlayer
+// buffers accumulated over a session until the Java heap overflowed
+// (reproduced: OOM on the third video screen in a row). The app never uses
+// the back stack — every screen has explicit back buttons — so replace is
+// safe here.
 export function safeNavigate(router: Router, path: Href) {
   const now = Date.now();
   if (now - lastNavAt < 700) return;
   lastNavAt = now;
-  router.navigate(path);
+  router.replace(path);
 }
