@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Asset } from 'expo-asset';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { reportError } from '../utils/crashReporting';
+import { loadVrUris } from '../utils/vrAssets';
 import { 
   useFonts,
   Outfit_300Light,
@@ -80,6 +81,13 @@ export default function RootLayout() {
         console.warn("Background asset preloading failed:", e);
         reportError(e instanceof Error ? e : new Error(String(e)), { stage: 'backgroundAssetPreload' });
       });
+    });
+
+    // 4. Warm the VR panoramas (cache copies for the WebView) so the 360 tour
+    // opens instantly instead of copying ~15 MB on first open.
+    loadVrUris().catch((e) => {
+      console.warn("VR asset preloading failed:", e);
+      reportError(e instanceof Error ? e : new Error(String(e)), { stage: 'vrAssetPreload' });
     });
   }, []);
 

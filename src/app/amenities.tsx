@@ -4,7 +4,6 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { WebView } from 'react-native-webview';
 import Svg, { Path } from 'react-native-svg';
-import { Asset } from 'expo-asset';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Offline Pannellum assets
@@ -17,34 +16,7 @@ import { safeNavigate } from '../utils/safeNavigate';
 const bgImg = require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg');
 const logo = require('../../assets/home/cignus-updated-logo.png');
 
-const vrPanoramas: Record<string, number> = {
-  dropoff: require('../../assets/vr/dropoff.webp'),
-  dropoff_left: require('../../assets/vr/dropoff-left.webp'),
-  dropoff_right: require('../../assets/vr/dropoff-right.webp'),
-  reception: require('../../assets/vr/reception.webp'),
-  cafeteria: require('../../assets/vr/cafeteria.webp'),
-  liftlobby: require('../../assets/vr/liftlobby.webp'),
-  top: require('../../assets/vr/top.webp'),
-};
-
-// In release builds Asset.uri is an android resource path the WebView cannot
-// read (dev builds masked this because the uri is a Metro http URL). The
-// panoramas must first be copied to the app's cache directory via
-// downloadAsync(), then referenced through localUri.
-let vrUris: Record<string, string> | null = null;
-
-async function loadVrUris(): Promise<Record<string, string>> {
-  if (vrUris) return vrUris;
-  const entries = await Promise.all(
-    Object.entries(vrPanoramas).map(async ([key, mod]) => {
-      const asset = Asset.fromModule(mod);
-      await asset.downloadAsync();
-      return [key, asset.localUri ?? asset.uri] as const;
-    }),
-  );
-  vrUris = Object.fromEntries(entries);
-  return vrUris;
-}
+import { loadVrUris, getCachedVrUris } from '../utils/vrAssets';
 
 // Extract origin for WebView baseUrl to prevent CORS/WebKit local file errors
 const getOrigin = (uri: string) => {
@@ -171,14 +143,14 @@ export default function Amenities() {
   const [currentScene, setCurrentScene] = useState<string>('dropoff');
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
-  const [panoUris, setPanoUris] = useState<Record<string, string> | null>(vrUris);
-  const [loadingAssets, setLoadingAssets] = useState(!vrUris);
+  const [panoUris, setPanoUris] = useState<Record<string, string> | null>(getCachedVrUris());
+  const [loadingAssets, setLoadingAssets] = useState(!getCachedVrUris());
   const [webViewError, setWebViewError] = useState(false);
   const [vrReady, setVrReady] = useState(false);
   const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
-    if (vrUris) return;
+    if (panoUris) return;
 
     let cancelled = false;
     loadVrUris()
