@@ -25,16 +25,16 @@ SplashScreen.preventAutoHideAsync();
 // fast so first paint isn't held up — anything only needed deeper in the app
 // (like the Amenities cover image) is warmed separately, in the background.
 const criticalImages = [
-  require('../../assets/intial/bg_img.png'),
-  require('../../assets/Home/cignus updated logo.png'),
-  require('../../assets/Home/K_Raheja_Corp 1.png'),
+  require('../../assets/initial/bg-img.png'),
+  require('../../assets/home/cignus-updated-logo.png'),
+  require('../../assets/home/k-raheja-corp-1.png'),
 ];
 
 // Not on the startup-blocking critical path: this image isn't shown until
 // the Amenities screen is opened, so it's cached in the background after
 // first paint instead of delaying app startup for every launch.
 const backgroundImages = [
-  require('../../assets/Project_Details/Amenities cover page updated image (1).jpg'),
+  require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg'),
 ];
 
 export default function RootLayout() {

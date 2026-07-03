@@ -1,6 +1,6 @@
 import VideoShowcaseScreen from '../components/VideoShowcaseScreen';
 
-const constructionVideo = require('../../assets/Home/construction_progress.mp4');
+const constructionVideo = require('../../assets/home/construction-progress.mp4');
 
 export default function Construction() {
   return (

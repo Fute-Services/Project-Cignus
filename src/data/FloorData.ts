@@ -1,10 +1,10 @@
 
 import type { ImageSourcePropType } from 'react-native';
-import floorGround from '../../assets/UnitPlan/2-d-floorplans/Ground_Floor.png';
-import floor7 from '../../assets/UnitPlan/2-d-floorplans/7th_Floor_Refuge.png';
-import floor8 from '../../assets/UnitPlan/2-d-floorplans/8_13&13_15_Typical.png';
-import floor21 from '../../assets/UnitPlan/2-d-floorplans/21_Refuge.png';
-import floor22 from '../../assets/UnitPlan/2-d-floorplans/22_25_Typical.png';
+import floorGround from '../../assets/unit-plan/2-d-floorplans/ground-floor.png';
+import floor7 from '../../assets/unit-plan/2-d-floorplans/7th-floor-refuge.png';
+import floor8 from '../../assets/unit-plan/2-d-floorplans/8-13-and-13-15-typical.png';
+import floor21 from '../../assets/unit-plan/2-d-floorplans/21-refuge.png';
+import floor22 from '../../assets/unit-plan/2-d-floorplans/22-25-typical.png';
 
 export interface SideContentPolygon {
     id: string;

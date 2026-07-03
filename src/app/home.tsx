@@ -10,8 +10,8 @@ import Header from '../components/Header';
 import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
 
-const bgImage = require('../../assets/Gallery/Night Aerial View1.jpeg'); // JPEG 1.1MB — avoids OOM crash from 13MB PNG
-const bottomLogoBtn = require('../../assets/Home/K_Raheja_Corp 1.png');
+const bgImage = require('../../assets/gallery/night-aerial-view1.jpeg'); // JPEG 1.1MB — avoids OOM crash from 13MB PNG
+const bottomLogoBtn = require('../../assets/home/k-raheja-corp-1.png');
 
 export default function Home() {
   const router = useRouter();

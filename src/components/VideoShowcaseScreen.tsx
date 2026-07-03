@@ -12,9 +12,9 @@ import RightNavbar from './RightNavbar';
 import VideoStatusOverlay from './VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
-const bgImage = require('../../assets/intial/bg_img.png');
-const logo1 = require('../../assets/Home/cignus updated logo.png');
-const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
+const bgImage = require('../../assets/initial/bg-img.png');
+const logo1 = require('../../assets/home/cignus-updated-logo.png');
+const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 interface VideoShowcaseScreenProps {
   title: string;

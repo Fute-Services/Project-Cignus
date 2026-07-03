@@ -18,10 +18,10 @@ import Animated, {
 import { floors } from '../../data/FloorData';
 import LeftNavbar from '../../components/LeftNavbar';
 
-const bgImage = require('../../../assets/intial/bg_img.png');
-const logoImg = require('../../../assets/Home/cignus updated logo.png');
-const unitPlan2D = require('../../../assets/Project_info/ProjectInfoimage.png');
-const floorGround = require('../../../assets/Project_Details/bg-image.png');
+const bgImage = require('../../../assets/initial/bg-img.png');
+const logoImg = require('../../../assets/home/cignus-updated-logo.png');
+const unitPlan2D = require('../../../assets/project-info/project-infoimage.png');
+const floorGround = require('../../../assets/project-details/bg-image.png');
 
 // Fallback image mapping
 const floorImageMap: Record<string, any> = {

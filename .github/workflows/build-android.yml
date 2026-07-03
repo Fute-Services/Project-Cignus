@@ -15,6 +15,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # These two videos exceed GitHub's 100 MB blob limit so they live in
+      # Git LFS; checkout leaves 132-byte pointer files behind. Fetch the
+      # real files from the video-assets release (free, unlike LFS bandwidth).
+      - name: Fetch large video assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "powai-walkthrough.mp4" \
+            --output assets/video/powai-walkthrough.mp4 --clobber
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "cignus-drone-shot-home-page-v1-1080p.mp4" \
+            --output assets/video/cignus-drone-shot-home-page-v1-1080p.mp4 --clobber
+          ls -la assets/video/
+
       # The repo carries ~800 MB of video assets and the build needs ~15 GB
       # more for gradle + Metro; the stock runner disk overflowed without
       # this ("No space left on device").

@@ -10,12 +10,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LeftNavbar from '../components/LeftNavbar';
 import RightNavbar from '../components/RightNavbar';
 
-const bgImage = require('../../assets/Project_info/project_info_bg_img.png');
-const leftImage = require('../../assets/Overview/overview_optimized.jpeg');
-const img1 = require('../../assets/Project_info/Projectinfo_left.png');
-const img2 = require('../../assets/Project_info/Projectinfo_right.png');
-const logo = require('../../assets/Home/cignus updated logo.png');
-const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
+const bgImage = require('../../assets/project-info/project-info-bg-img.png');
+const leftImage = require('../../assets/overview/overview-optimized.jpeg');
+const img1 = require('../../assets/project-info/projectinfo-left.png');
+const img2 = require('../../assets/project-info/projectinfo-right.png');
+const logo = require('../../assets/home/cignus-updated-logo.png');
+const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 const specifications = [
   { label: "SITE & ARCHITECTURE", value: "Landmark building located directly by the lake" },

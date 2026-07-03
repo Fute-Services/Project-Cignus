@@ -8,16 +8,16 @@ import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 
-const logo = require('../../assets/Home/cignus updated logo.png');
-const siteLocation = require('../../assets/Location/NEW FINAL SITE LOCATION IMG.jpeg');
-const neighborhood = require('../../assets/Location/img location.png');
+const logo = require('../../assets/home/cignus-updated-logo.png');
+const siteLocation = require('../../assets/location/new-final-site-location-img.jpeg');
+const neighborhood = require('../../assets/location/img-location.png');
 
 // Videos
-const jvlrVideo = require('../../assets/Location/Towards eastern & western expressway final (2) (2).mp4');
-const rambaughVideo = require('../../assets/Location/RAMBAUG METRO (3).mp4');
-const sakinakaVideo = require('../../assets/Location/SAKINAKA METRO (2).mp4');
-const aareyVideo = require('../../assets/Location/AAREY METRO (2).mp4');
-const transportVideo = require('../../assets/Location/Transport.mp4');
+const jvlrVideo = require('../../assets/location/towards-eastern-and-western-expressway-final-2-2.mp4');
+const rambaughVideo = require('../../assets/location/rambaug-metro-3.mp4');
+const sakinakaVideo = require('../../assets/location/sakinaka-metro-2.mp4');
+const aareyVideo = require('../../assets/location/aarey-metro-2.mp4');
+const transportVideo = require('../../assets/location/transport.mp4');
 
 const tabs = [
   { id: 'site', label: 'Site Location', type: 'image', src: siteLocation },

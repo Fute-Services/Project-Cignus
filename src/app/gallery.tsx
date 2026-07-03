@@ -11,23 +11,23 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const leftLogo = require('../../assets/Home/cignus updated logo.png');
-const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
+const leftLogo = require('../../assets/home/cignus-updated-logo.png');
+const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 
 // ── Gallery Images ──
-const ElevationView  = require('../../assets/Gallery/Elevation With LakeView.png');
-const AerialView     = require('../../assets/Gallery/Aerial View.png');
-const NightAerial    = require('../../assets/Gallery/Night Aerial View1.jpeg');   // JPEG 1.1MB ✓
-const FacadeView     = require('../../assets/Gallery/Facade View.png');
-const Amenity1       = require('../../assets/Gallery/Amenities View.png');
-const Amenity2       = require('../../assets/Gallery/Amenties View 2.jpeg');
-const Amenity3       = require('../../assets/Gallery/Amenities View 31.jpeg');   // JPEG 939KB ✓
+const ElevationView  = require('../../assets/gallery/elevation-with-lake-view.png');
+const AerialView     = require('../../assets/gallery/aerial-view.png');
+const NightAerial    = require('../../assets/gallery/night-aerial-view1.jpeg');   // JPEG 1.1MB ✓
+const FacadeView     = require('../../assets/gallery/facade-view.png');
+const Amenity1       = require('../../assets/gallery/amenities-view.png');
+const Amenity2       = require('../../assets/gallery/amenities-view-2.jpeg');
+const Amenity3       = require('../../assets/gallery/amenities-view-31.jpeg');   // JPEG 939KB ✓
 
-const Reception2     = require('../../assets/Gallery/Reception (2).jpeg');
-const Reception1     = require('../../assets/Gallery/Reception (3).jpeg');
-const SeatingArea    = require('../../assets/Gallery/Seating Area.jpeg');
-const Cafetaria      = require('../../assets/Gallery/Cafeteria (2).jpeg');
-const LiftLobby      = require('../../assets/Gallery/Lift Lobby.jpeg');
+const Reception2     = require('../../assets/gallery/reception-2.jpeg');
+const Reception1     = require('../../assets/gallery/reception-3.jpeg');
+const SeatingArea    = require('../../assets/gallery/seating-area.jpeg');
+const Cafetaria      = require('../../assets/gallery/cafeteria-2.jpeg');
+const LiftLobby      = require('../../assets/gallery/lift-lobby.jpeg');
 
 type GalleryImage = { image: number; title: string };
 

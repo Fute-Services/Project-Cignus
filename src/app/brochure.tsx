@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getLocalPdfJsUris } from '../utils/localPdfJs';
 import { escapeHtmlAttribute } from '../utils/htmlEscape';
 
-const brochurePdf = require('../../assets/Broucher/Cignus Tower 2 1.pdf');
+const brochurePdf = require('../../assets/brochure/cignus-tower-2-1.pdf');
 
 const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => {
   return `

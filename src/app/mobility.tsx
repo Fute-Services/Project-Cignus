@@ -15,10 +15,10 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 import ProjectBottomNav from '../components/ProjectBottomNav';
 import { theme } from '../theme';
 
-const bgImage = require('../../assets/Project_Details/bg-image.png');
-const lowerImg = require('../../assets/Project_Details/building-image.png');
-const midImg = require('../../assets/Project_Details/buiding-image.png');
-const upperImg = require('../../assets/Project_Details/project_details.png');
+const bgImage = require('../../assets/project-details/bg-image.png');
+const lowerImg = require('../../assets/project-details/building-image.png');
+const midImg = require('../../assets/project-details/buiding-image.png');
+const upperImg = require('../../assets/project-details/project-details.png');
 
 const staticData = [
   { title: 'Lower Zone', url: lowerImg },

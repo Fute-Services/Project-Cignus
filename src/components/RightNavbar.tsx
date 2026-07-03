@@ -7,12 +7,12 @@ import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 
-const infoIcon = require('../../assets/Home/icons/project_inco_icon.svg');
-const progressIcon = require('../../assets/Home/icons/construction_icon.svg');
-const videoIcon = require('../../assets/Home/icons/walkthrogh.svg');
-const galleryIcon = require('../../assets/Home/icons/gallery.svg');
-const circulationIcon = require('../../assets/Home/icons/Circulation.svg');
-const droneviewIcon = require('../../assets/Home/icons/Droneview.png');
+const infoIcon = require('../../assets/home/icons/project-info-icon.svg');
+const progressIcon = require('../../assets/home/icons/construction-icon.svg');
+const videoIcon = require('../../assets/home/icons/walkthrough.svg');
+const galleryIcon = require('../../assets/home/icons/gallery.svg');
+const circulationIcon = require('../../assets/home/icons/circulation.svg');
+const droneviewIcon = require('../../assets/home/icons/droneview.png');
 
 type NavItem = { path: Href; label: string; icon: any };
 

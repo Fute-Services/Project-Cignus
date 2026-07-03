@@ -5,11 +5,11 @@ import { usePathname, useRouter, type Href } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const homeIcon = require('../../assets/Home/icons/home.icon.svg');
-const amenitiesIcon = require('../../assets/Home/icons/amenities_icon.svg');
-const detailsIcon = require('../../assets/Home/icons/Project_dteails_icon.png');
-const vrIcon = require('../../assets/Home/icons/Vr_icon.svg');
-const brochureIcon = require('../../assets/Home/icons/Brocher_icon1 (2).png');
+const homeIcon = require('../../assets/home/icons/home-icon.svg');
+const amenitiesIcon = require('../../assets/home/icons/amenities-icon.svg');
+const detailsIcon = require('../../assets/home/icons/project-details-icon.png');
+const vrIcon = require('../../assets/home/icons/vr-icon.svg');
+const brochureIcon = require('../../assets/home/icons/brochure-icon1-2.png');
 
 // Custom MapPin SVG component
 const MapPinIcon = ({ color }: { color: string }) => (

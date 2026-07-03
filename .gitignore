@@ -41,6 +41,3 @@ example
 # generated native folders
 /ios
 /android
-
-# large videos
-assets/video/POWAI_walkthrough.mp4

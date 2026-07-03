@@ -22,8 +22,6 @@ yarn-error.*
 example
 /ios
 /android
-assets/video/POWAI_walkthrough.mp4
-assets/Home/drone_view.mp4
 
 # EAS-only: keep the lockfile out of the build archive so EAS runs
 # `npm install` instead of `npm ci`. npm 11 on Windows prunes

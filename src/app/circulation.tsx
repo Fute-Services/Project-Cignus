@@ -13,8 +13,8 @@ import ProjectBottomNav from '../components/ProjectBottomNav';
 import VideoStatusOverlay from '../components/VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
-const bgImage = require('../../assets/intial/bg_img.png');
-const circulationVideo = require('../../assets/Circulation/Powai-Site-plan Circulation.mp4');
+const bgImage = require('../../assets/initial/bg-img.png');
+const circulationVideo = require('../../assets/circulation/powai-site-plan-circulation.mp4');
 
 export default function Circulation() {
   const router = useRouter();

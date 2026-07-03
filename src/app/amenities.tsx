@@ -13,13 +13,13 @@ import { pannellumCss, pannellumJs } from '../data/pannellum_assets';
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
 
-const bgImg = require('../../assets/Project_Details/Amenities cover page updated image (1).jpg');
-const logo = require('../../assets/Home/cignus updated logo.png');
+const bgImg = require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg');
+const logo = require('../../assets/home/cignus-updated-logo.png');
 
 // Resolve the panorama assets dynamically
 const dropoffUri = Asset.fromModule(require('../../assets/vr/dropoff.webp')).uri;
-const dropoffLeftUri = Asset.fromModule(require('../../assets/vr/dropoff_left.webp')).uri;
-const dropoffRightUri = Asset.fromModule(require('../../assets/vr/dropoff_right.webp')).uri;
+const dropoffLeftUri = Asset.fromModule(require('../../assets/vr/dropoff-left.webp')).uri;
+const dropoffRightUri = Asset.fromModule(require('../../assets/vr/dropoff-right.webp')).uri;
 const receptionUri = Asset.fromModule(require('../../assets/vr/reception.webp')).uri;
 const cafeteriaUri = Asset.fromModule(require('../../assets/vr/cafeteria.webp')).uri;
 const liftlobbyUri = Asset.fromModule(require('../../assets/vr/liftlobby.webp')).uri;
@@ -166,8 +166,8 @@ export default function Amenities() {
       try {
         const assets = [
           require('../../assets/vr/dropoff.webp'),
-          require('../../assets/vr/dropoff_left.webp'),
-          require('../../assets/vr/dropoff_right.webp'),
+          require('../../assets/vr/dropoff-left.webp'),
+          require('../../assets/vr/dropoff-right.webp'),
           require('../../assets/vr/reception.webp'),
           require('../../assets/vr/cafeteria.webp'),
           require('../../assets/vr/liftlobby.webp'),

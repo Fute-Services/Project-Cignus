@@ -12,7 +12,7 @@ import Animated, {
 
 import { VIEWBOX_W, VIEWBOX_H, type FloorData } from '../data/FloorData';
 
-const buildingImage = require('../../assets/Project_Details/project_details.png');
+const buildingImage = require('../../assets/project-details/project-details.png');
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 

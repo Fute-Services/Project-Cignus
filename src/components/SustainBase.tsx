@@ -13,10 +13,10 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const bgVideo = require('../../assets/Project_Details/animated_Video.mp4');
-const linesImg = require('../../assets/Project_Details/lines.png');
-const buildingImg = require('../../assets/Project_Details/animated.png');
-const logo = require('../../assets/Home/cignus updated logo.png');
+const bgVideo = require('../../assets/project-details/animated-video.mp4');
+const linesImg = require('../../assets/project-details/lines.png');
+const buildingImg = require('../../assets/project-details/animated.png');
+const logo = require('../../assets/home/cignus-updated-logo.png');
 
 interface SustainBaseProps {
   initialMode: 'sustainability' | 'concept';

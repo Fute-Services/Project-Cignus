@@ -7,14 +7,14 @@ import Animated, { FadeInUp, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
-const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
-const cignusLogo = require('../../assets/Home/cignus updated logo.png');
-const exploreBtn = require('../../assets/intial/Primary button.png');
-const linesImg = require('../../assets/Project_Details/lines.png');
-const lakePlaceholder = require('../../assets/Home/lake_placeholder.webp');
+const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
+const cignusLogo = require('../../assets/home/cignus-updated-logo.png');
+const exploreBtn = require('../../assets/initial/primary-button.png');
+const linesImg = require('../../assets/project-details/lines.png');
+const lakePlaceholder = require('../../assets/home/lake-placeholder.webp');
 
 // Local video asset
-const bgVideoAsset = require('../../assets/Home/Masterplan page vdo.mp4');
+const bgVideoAsset = require('../../assets/home/masterplan-page-video.mp4');
 
 export default function Initial2() {
   const router = useRouter();

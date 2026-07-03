@@ -109,22 +109,22 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
 };
 
 // Images
-const leftLogo = require('../../assets/Home/cignus updated logo.png');
-const rightLogo = require('../../assets/Home/K_Raheja_Corp 1.png');
-const exploreBtn = require('../../assets/intial/Primary button.png');
-const bottomLayer = require('../../assets/intial/bottom_layer.png');
-const cardImg1 = require('../../assets/intial/1.png');
-const cardImg2 = require('../../assets/intial/2.png');
-const cardImg3 = require('../../assets/intial/3.png');
-const cardImg4 = require('../../assets/intial/4.png');
-const cardImg6 = require('../../assets/intial/6.png');
+const leftLogo = require('../../assets/home/cignus-updated-logo.png');
+const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
+const exploreBtn = require('../../assets/initial/primary-button.png');
+const bottomLayer = require('../../assets/initial/bottom-layer.png');
+const cardImg1 = require('../../assets/initial/1.png');
+const cardImg2 = require('../../assets/initial/2.png');
+const cardImg3 = require('../../assets/initial/3.png');
+const cardImg4 = require('../../assets/initial/4.png');
+const cardImg6 = require('../../assets/initial/6.png');
 
 // PDFs
-const officePdf = require('../../assets/intial/Office.pdf');
-const hospitalityPdf = require('../../assets/intial/Hospitality_compressed.pdf');
-const mallsPdf = require('../../assets/intial/Malls_compressed.pdf');
-const residentialPdf = require('../../assets/intial/Residential_compressed.pdf');
-const retailPdf = require('../../assets/intial/Retail_compressed.pdf');
+const officePdf = require('../../assets/initial/office.pdf');
+const hospitalityPdf = require('../../assets/initial/hospitality-compressed.pdf');
+const mallsPdf = require('../../assets/initial/malls-compressed.pdf');
+const residentialPdf = require('../../assets/initial/residential-compressed.pdf');
+const retailPdf = require('../../assets/initial/retail-compressed.pdf');
 
 const RahejaLogoSvg = () => (
   <Svg width="180" height="230" viewBox="0 0 372 484" fill="none">

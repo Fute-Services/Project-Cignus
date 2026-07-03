@@ -17,8 +17,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const bgImage = require('../../assets/Project_Details/bg-image.png');
-const bgVideo = require('../../assets/Project_Details/animated_Video.mp4');
+const bgImage = require('../../assets/project-details/bg-image.png');
+const bgVideo = require('../../assets/project-details/animated-video.mp4');
 
 const sections = [
   { id: '1', label: 'VT STRATEGY SECTION 01', video: bgVideo },

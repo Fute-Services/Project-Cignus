@@ -29,10 +29,10 @@ import VideoStatusOverlay from '../components/VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 import { theme } from '../theme';
 
-const bgVideo = require('../../assets/Overview/overview.mp4');
-const overviewImg = require('../../assets/Overview/overview.png');
-const logo = require('../../assets/Home/cignus updated logo.png');
-const logo2 = require('../../assets/Home/K_Raheja_Corp 1.png');
+const bgVideo = require('../../assets/overview/overview.mp4');
+const overviewImg = require('../../assets/overview/overview.png');
+const logo = require('../../assets/home/cignus-updated-logo.png');
+const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 const sections = [
   {
