@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { usePathname, useRouter, type Href } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const homeIcon = require('../../assets/home/icons/home-icon.svg');
 const amenitiesIcon = require('../../assets/home/icons/amenities-icon.svg');
@@ -54,7 +55,7 @@ export default function LeftNavbar() {
       <TouchableOpacity
         key={item.key}
         activeOpacity={0.7}
-        onPress={() => router.push(item.path)}
+        onPress={() => safeNavigate(router, item.path)}
         accessibilityRole="button"
         accessibilityLabel={item.label.replace('\n', ' ')}
         accessibilityState={{ selected: isThemeActive }}

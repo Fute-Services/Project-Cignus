@@ -12,18 +12,39 @@ import { pannellumCss, pannellumJs } from '../data/pannellum_assets';
 
 // Shared Components
 import LeftNavbar from '../components/LeftNavbar';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImg = require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg');
 const logo = require('../../assets/home/cignus-updated-logo.png');
 
-// Resolve the panorama assets dynamically
-const dropoffUri = Asset.fromModule(require('../../assets/vr/dropoff.webp')).uri;
-const dropoffLeftUri = Asset.fromModule(require('../../assets/vr/dropoff-left.webp')).uri;
-const dropoffRightUri = Asset.fromModule(require('../../assets/vr/dropoff-right.webp')).uri;
-const receptionUri = Asset.fromModule(require('../../assets/vr/reception.webp')).uri;
-const cafeteriaUri = Asset.fromModule(require('../../assets/vr/cafeteria.webp')).uri;
-const liftlobbyUri = Asset.fromModule(require('../../assets/vr/liftlobby.webp')).uri;
-const topUri = Asset.fromModule(require('../../assets/vr/top.webp')).uri;
+const vrPanoramas: Record<string, number> = {
+  dropoff: require('../../assets/vr/dropoff.webp'),
+  dropoff_left: require('../../assets/vr/dropoff-left.webp'),
+  dropoff_right: require('../../assets/vr/dropoff-right.webp'),
+  reception: require('../../assets/vr/reception.webp'),
+  cafeteria: require('../../assets/vr/cafeteria.webp'),
+  liftlobby: require('../../assets/vr/liftlobby.webp'),
+  top: require('../../assets/vr/top.webp'),
+};
+
+// In release builds Asset.uri is an android resource path the WebView cannot
+// read (dev builds masked this because the uri is a Metro http URL). The
+// panoramas must first be copied to the app's cache directory via
+// downloadAsync(), then referenced through localUri.
+let vrUris: Record<string, string> | null = null;
+
+async function loadVrUris(): Promise<Record<string, string>> {
+  if (vrUris) return vrUris;
+  const entries = await Promise.all(
+    Object.entries(vrPanoramas).map(async ([key, mod]) => {
+      const asset = Asset.fromModule(mod);
+      await asset.downloadAsync();
+      return [key, asset.localUri ?? asset.uri] as const;
+    }),
+  );
+  vrUris = Object.fromEntries(entries);
+  return vrUris;
+}
 
 // Extract origin for WebView baseUrl to prevent CORS/WebKit local file errors
 const getOrigin = (uri: string) => {
@@ -38,7 +59,7 @@ const getOrigin = (uri: string) => {
   return '';
 };
 
-const getHtmlContent = (firstScene: string) => `
+const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,31 +101,31 @@ const getHtmlContent = (firstScene: string) => `
         },
         "scenes": {
             "dropoff": {
-                "panorama": ${JSON.stringify(dropoffUri)},
+                "panorama": ${JSON.stringify(uris.dropoff)},
                 "yaw": -140
             },
             "dropoff_left": {
-                "panorama": ${JSON.stringify(dropoffLeftUri)},
+                "panorama": ${JSON.stringify(uris.dropoff_left)},
                 "yaw": 60
             },
             "dropoff_right": {
-                "panorama": ${JSON.stringify(dropoffRightUri)},
+                "panorama": ${JSON.stringify(uris.dropoff_right)},
                 "yaw": -90
             },
             "reception": {
-                "panorama": ${JSON.stringify(receptionUri)},
+                "panorama": ${JSON.stringify(uris.reception)},
                 "pitch": -10
             },
             "cafeteria": {
-                "panorama": ${JSON.stringify(cafeteriaUri)},
+                "panorama": ${JSON.stringify(uris.cafeteria)},
                 "pitch": -25
             },
             "liftlobby": {
-                "panorama": ${JSON.stringify(liftlobbyUri)},
+                "panorama": ${JSON.stringify(uris.liftlobby)},
                 "pitch": 0
             },
             "top": {
-                "panorama": ${JSON.stringify(topUri)},
+                "panorama": ${JSON.stringify(uris.top)},
                 "pitch": -10
             }
         }
@@ -134,10 +155,6 @@ const getHtmlContent = (firstScene: string) => `
 </html>
 `;
 
-// Set once the VR panoramas have been preloaded for the first time this app
-// session, so revisiting this screen doesn't re-show the full loading screen.
-let vrAssetsPreloaded = false;
-
 const navItems = [
   { id: 'dropoff', label: 'Drop Off' },
   { id: 'dropoff_left', label: 'Outdoor Seating 1' },
@@ -154,34 +171,29 @@ export default function Amenities() {
   const [currentScene, setCurrentScene] = useState<string>('dropoff');
   const [initialScene, setInitialScene] = useState<string>('dropoff');
   const [is360Active, setIs360Active] = useState<boolean>(true);
-  const [loadingAssets, setLoadingAssets] = useState(!vrAssetsPreloaded);
+  const [panoUris, setPanoUris] = useState<Record<string, string> | null>(vrUris);
+  const [loadingAssets, setLoadingAssets] = useState(!vrUris);
   const [webViewError, setWebViewError] = useState(false);
   const [vrReady, setVrReady] = useState(false);
   const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
-    if (vrAssetsPreloaded) return;
+    if (vrUris) return;
 
-    async function preloadVR() {
-      try {
-        const assets = [
-          require('../../assets/vr/dropoff.webp'),
-          require('../../assets/vr/dropoff-left.webp'),
-          require('../../assets/vr/dropoff-right.webp'),
-          require('../../assets/vr/reception.webp'),
-          require('../../assets/vr/cafeteria.webp'),
-          require('../../assets/vr/liftlobby.webp'),
-          require('../../assets/vr/top.webp'),
-        ];
-        await Asset.loadAsync(assets);
-        vrAssetsPreloaded = true;
-      } catch (e) {
-        console.warn("Failed to preload VR assets:", e);
-      } finally {
-        setLoadingAssets(false);
-      }
-    }
-    preloadVR();
+    let cancelled = false;
+    loadVrUris()
+      .then((uris) => {
+        if (!cancelled) setPanoUris(uris);
+      })
+      .catch((e) => {
+        console.warn('Failed to preload VR assets:', e);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingAssets(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleSceneChange = (sceneId: string) => {
@@ -223,12 +235,13 @@ export default function Amenities() {
 
       {/* 2. Pannellum Offline VR WebView Layer */}
       <View style={[StyleSheet.absoluteFill, { zIndex: is360Active ? 10 : -1, opacity: is360Active && vrReady ? 1 : 0 }]}>
+        {panoUris && (
         <WebView
           ref={webViewRef}
           originWhitelist={['file://*']}
           source={{
-            html: getHtmlContent(initialScene),
-            baseUrl: getOrigin(dropoffUri)
+            html: getHtmlContent(initialScene, panoUris),
+            baseUrl: getOrigin(panoUris.dropoff)
           }}
           style={styles.webView}
           allowFileAccess={true}
@@ -246,6 +259,7 @@ export default function Amenities() {
           onError={() => setWebViewError(true)}
           onHttpError={() => setWebViewError(true)}
         />
+        )}
         {webViewError && (
           <View style={styles.webViewErrorOverlay} pointerEvents="none">
             <Text style={styles.webViewErrorText}>The VR tour couldn't be loaded</Text>
@@ -267,7 +281,7 @@ export default function Amenities() {
       {!is360Active && (
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push('/home')}
+          onPress={() => safeNavigate(router, '/home')}
           accessibilityRole="button"
           accessibilityLabel="Back to home"
           style={[styles.homeButton, { bottom: 32 + insets.bottom, left: 100 + insets.left }]}

@@ -13,6 +13,8 @@ import Animated, {
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { safeNavigate } from '../utils/safeNavigate';
+
 const bgVideo = require('../../assets/project-details/animated-video.mp4');
 const linesImg = require('../../assets/project-details/lines.png');
 const buildingImg = require('../../assets/project-details/animated.png');
@@ -113,7 +115,7 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
       {/* ── 3. Back Button ── */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => router.push('/overview')}
+        onPress={() => safeNavigate(router, '/overview')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

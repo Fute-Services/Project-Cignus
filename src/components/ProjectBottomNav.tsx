@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { usePathname, useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeNavigate } from '../utils/safeNavigate';
 
 type NavItem = { path: Href; label: string };
 
@@ -26,7 +27,7 @@ export default function ProjectBottomNav() {
             <TouchableOpacity
               key={item.label}
               activeOpacity={0.8}
-              onPress={() => router.push(item.path)}
+              onPress={() => safeNavigate(router, item.path)}
               accessibilityRole="button"
               accessibilityLabel={item.label}
               accessibilityState={{ selected: isActive }}

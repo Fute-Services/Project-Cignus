@@ -290,6 +290,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingVertical: 12,
     gap: 12,
   },

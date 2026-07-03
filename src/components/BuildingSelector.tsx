@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { VIEWBOX_W, VIEWBOX_H, type FloorData } from '../data/FloorData';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const buildingImage = require('../../assets/project-details/project-details.png');
 
@@ -110,7 +111,7 @@ export default function BuildingSelector({
 
   const handleFloorPress = (floor: FloorData) => {
     if (hoveredFloor?.id === floor.id) {
-      router.push(`/unitplan/${floor.id}`);
+      safeNavigate(router, `/unitplan/${floor.id}`);
     } else {
       setHoveredFloor(floor);
     }
@@ -169,7 +170,7 @@ export default function BuildingSelector({
           <Animated.View style={[styles.tooltipContainer, tooltipAnimatedStyle]}>
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() => router.push(`/unitplan/${activeTooltipFloor.id}`)}
+              onPress={() => safeNavigate(router, `/unitplan/${activeTooltipFloor.id}`)}
               accessibilityRole="button"
               accessibilityLabel={`View floor ${activeTooltipFloor.name} unit plan, ${activeTooltipFloor.area}`}
               style={styles.tooltipTouchable}

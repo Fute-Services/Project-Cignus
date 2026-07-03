@@ -6,6 +6,7 @@ import { BlurView } from 'expo-blur';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const infoIcon = require('../../assets/home/icons/project-info-icon.svg');
 const progressIcon = require('../../assets/home/icons/construction-icon.svg');
@@ -39,7 +40,7 @@ export default function RightNavbar() {
             <TouchableOpacity
               key={item.label}
               activeOpacity={0.7}
-              onPress={() => router.push(item.path)}
+              onPress={() => safeNavigate(router, item.path)}
               accessibilityRole="button"
               accessibilityLabel={item.label.replace('\n', ' ')}
               accessibilityState={{ selected: isActive }}

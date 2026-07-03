@@ -11,6 +11,7 @@ import LeftNavbar from './LeftNavbar';
 import RightNavbar from './RightNavbar';
 import VideoStatusOverlay from './VideoStatusOverlay';
 import { useVideoStatus } from '../hooks/useVideoStatus';
+import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/initial/bg-img.png');
 const logo1 = require('../../assets/home/cignus-updated-logo.png');
@@ -150,7 +151,7 @@ export default function VideoShowcaseScreen({
       {!isFullscreen && (
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => router.push('/home')}
+          onPress={() => safeNavigate(router, '/home')}
           accessibilityRole="button"
           accessibilityLabel="Back"
           style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

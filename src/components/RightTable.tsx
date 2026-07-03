@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 
 import { type FloorData } from '../data/FloorData';
+import { safeNavigate } from '../utils/safeNavigate';
 
 interface RightTableProps {
   floors: FloorData[];
@@ -34,14 +35,14 @@ export default function RightTable({
   const handleRowPress = (row: FloorData) => {
     // If the floor is tapped again, navigate to unit plan
     if (hoveredFloor?.id === row.id) {
-      router.push(`/unitplan/${row.id}`);
+      safeNavigate(router, `/unitplan/${row.id}`);
     } else {
       setHoveredFloor(row);
     }
   };
 
   const handleOverviewPress = () => {
-    router.push('/overview');
+    safeNavigate(router, '/overview');
   };
 
   return (
