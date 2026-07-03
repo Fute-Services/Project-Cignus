@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const navItems = [
+type NavItem = { path: Href; label: string };
+
+const navItems: NavItem[] = [
   { path: '/circulation', label: 'Circulation' },
   { path: '/mobility', label: 'Mobility' },
   { path: '/vertical-transport', label: 'vertical transport' },
@@ -22,9 +24,9 @@ export default function ProjectBottomNav() {
           const isActive = pathname === item.path;
           return (
             <TouchableOpacity
-              key={item.path}
+              key={item.label}
               activeOpacity={0.8}
-              onPress={() => router.push(item.path as any)}
+              onPress={() => router.push(item.path)}
               accessibilityRole="button"
               accessibilityLabel={item.label}
               accessibilityState={{ selected: isActive }}

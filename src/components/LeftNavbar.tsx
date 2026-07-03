@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Image } from 'expo-image';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter, type Href } from 'expo-router';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -21,7 +21,7 @@ const MapPinIcon = ({ color }: { color: string }) => (
 
 type NavItem = {
   key: string;
-  path: string;
+  path: Href;
   label: string;
   icon: any;
   isCustom: boolean;
@@ -52,9 +52,9 @@ export default function LeftNavbar() {
 
     return (
       <TouchableOpacity
-        key={item.key || item.path}
+        key={item.key}
         activeOpacity={0.7}
-        onPress={() => router.push(item.path as any)}
+        onPress={() => router.push(item.path)}
         accessibilityRole="button"
         accessibilityLabel={item.label.replace('\n', ' ')}
         accessibilityState={{ selected: isThemeActive }}

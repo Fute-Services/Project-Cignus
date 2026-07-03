@@ -38,7 +38,7 @@ export default function UnitPlanPage() {
 
   // Find the selected floor
   const selectedFloor = floors.find(
-    (floor: any) => floor.id === Number(id) || floor.floorname === id
+    (floor) => floor.id === Number(id) || floor.floorname === id
   );
 
   const [showLogo, setShowLogo] = useState(true);

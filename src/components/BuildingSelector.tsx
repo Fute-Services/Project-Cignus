@@ -110,7 +110,7 @@ export default function BuildingSelector({
 
   const handleFloorPress = (floor: FloorData) => {
     if (hoveredFloor?.id === floor.id) {
-      router.push(`/unitplan/${floor.id}` as any);
+      router.push(`/unitplan/${floor.id}`);
     } else {
       setHoveredFloor(floor);
     }
@@ -169,7 +169,7 @@ export default function BuildingSelector({
           <Animated.View style={[styles.tooltipContainer, tooltipAnimatedStyle]}>
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() => router.push(`/unitplan/${activeTooltipFloor.id}` as any)}
+              onPress={() => router.push(`/unitplan/${activeTooltipFloor.id}`)}
               accessibilityRole="button"
               accessibilityLabel={`View floor ${activeTooltipFloor.name} unit plan, ${activeTooltipFloor.area}`}
               style={styles.tooltipTouchable}

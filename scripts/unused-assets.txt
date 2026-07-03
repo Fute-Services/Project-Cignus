@@ -1,0 +1,67 @@
+﻿assets\back.png
+assets\Broucher\Cignus Tower 2 11.pdf
+assets\Gallery\Aerial View1.jpeg
+assets\Gallery\Amenities View 3.png
+assets\Gallery\Night Aerial View.png
+assets\Gallery\Night Aerial View1.png
+assets\Home\Cignus-White-final4x 1.png
+assets\Home\Construction-Progress.png
+assets\Home\day_bg.png
+assets\Home\nigth_bg.png
+assets\Home\icons\Brocher_icon.png
+assets\Home\icons\day.png
+assets\Home\icons\night.png
+assets\images\react-logo@2x.png
+assets\images\react-logo@3x.png
+assets\images\tabIcons\explore@2x.png
+assets\images\tabIcons\explore@3x.png
+assets\images\tabIcons\home@2x.png
+assets\images\tabIcons\home@3x.png
+assets\intial\5.png
+assets\intial\Office_compressed.pdf
+assets\Location\AAREY METRO (1).mp4
+assets\Location\hiranandani.mp4
+assets\Location\iit-bombay.mp4
+assets\Location\jvlr-metro.mp4
+assets\Location\L&T.mp4
+assets\Location\Neighbourhood-network-roads.png
+assets\Location\RAMBAUG METRO (1).mp4
+assets\Location\RAMBAUG METRO (2).mp4
+assets\Location\rambaugh metro.mp4
+assets\Location\saki-naka-metro.mp4
+assets\Location\SAKINAKA METRO (1).mp4
+assets\Location\Site-location.jpeg
+assets\Location\Site-location.png
+assets\Location\Towards eastern & western expressway final (1).mp4
+assets\Overview\logo.png
+assets\Overview\overview1.png
+assets\Project_Details\amenities_bg (1).png
+assets\Project_Details\amenities_bg.png
+assets\Project_Details\logo (1).png
+assets\Project_Details\logo.png
+assets\Project_Details\project_details2.png
+assets\Project_info\ProjectInfoimage (1).png
+assets\Project_info\Projectinfo_CignusTower.png
+assets\Project_info\Projectinfo_icon.png
+assets\UnitPlan\2-d-floorplans\1st_Floor.png
+assets\UnitPlan\2-d-floorplans\2nd_Floor.png
+assets\UnitPlan\2-d-floorplans\3rd_Floor.png
+assets\UnitPlan\2-d-floorplans\4th_Floor.png
+assets\UnitPlan\2-d-floorplans\5th_Floor.png
+assets\UnitPlan\2-d-floorplans\ground.png
+assets\UnitPlan\floorplans\14th_floor_refuge-removebg-preview 1.png
+assets\UnitPlan\floorplans\16th_floor-removebg-preview 1.png
+assets\UnitPlan\floorplans\17th_floor-removebg-preview 1.png
+assets\UnitPlan\floorplans\18th_floor-removebg-preview 1.png
+assets\UnitPlan\floorplans\19th_floor-removebg-preview 1.png
+assets\vr\arrow.png
+assets\vr\arrow1.png
+assets\vr\arrow2.png
+assets\vr\arrowfinal.png
+assets\vr\Cafeteria1.jpg
+assets\vr\drop off  left side1.jpg
+assets\vr\drop off right side1.jpg
+assets\vr\DropOff.jpg
+assets\vr\Liftlobby1.jpg
+assets\vr\Reception1.jpg
+assets\vr\top1.jpg

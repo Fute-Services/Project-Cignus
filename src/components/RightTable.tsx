@@ -34,7 +34,7 @@ export default function RightTable({
   const handleRowPress = (row: FloorData) => {
     // If the floor is tapped again, navigate to unit plan
     if (hoveredFloor?.id === row.id) {
-      router.push(`/unitplan/${row.id}` as any);
+      router.push(`/unitplan/${row.id}`);
     } else {
       setHoveredFloor(row);
     }

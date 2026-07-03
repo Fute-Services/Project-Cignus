@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Image } from 'expo-image';
-import { usePathname, useRouter } from 'expo-router';
+import { usePathname, useRouter, type Href } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +14,9 @@ const galleryIcon = require('../../assets/Home/icons/gallery.svg');
 const circulationIcon = require('../../assets/Home/icons/Circulation.svg');
 const droneviewIcon = require('../../assets/Home/icons/Droneview.png');
 
-const navItems = [
+type NavItem = { path: Href; label: string; icon: any };
+
+const navItems: NavItem[] = [
   { path: '/circulation', label: 'Circulation', icon: circulationIcon },
   { path: '/project-info', label: 'Project Info', icon: infoIcon },
   { path: '/construction', label: 'Construction\nProgress', icon: progressIcon },
@@ -35,9 +37,9 @@ export default function RightNavbar() {
           const isActive = pathname === item.path;
           return (
             <TouchableOpacity
-              key={item.path}
+              key={item.label}
               activeOpacity={0.7}
-              onPress={() => router.push(item.path as any)}
+              onPress={() => router.push(item.path)}
               accessibilityRole="button"
               accessibilityLabel={item.label.replace('\n', ' ')}
               accessibilityState={{ selected: isActive }}
