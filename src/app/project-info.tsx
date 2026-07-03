@@ -12,7 +12,7 @@ import RightNavbar from '../components/RightNavbar';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/project-info/project-info-bg-img.png');
-const leftImage = require('../../assets/overview/overview-optimized.jpeg');
+const leftImage = require('../../assets/overview/overview-projectinfo.jpg');
 const img1 = require('../../assets/project-info/projectinfo-left.png');
 const img2 = require('../../assets/project-info/projectinfo-right.png');
 const logo = require('../../assets/home/cignus-updated-logo.png');
@@ -100,10 +100,10 @@ export default function ProjectInfo() {
                     &quot;Designed to disappear into its surroundings... and stand apart from everything else.&quot;
                   </Text>
                   <Text style={styles.descText}>
-                    The curved glass façade wasn&apos;t a stylistic choice. It was a response to the site — to the way light moves off the lake, and the way the building needed to sit in its setting without competing with it. At different hours and from different angles, it looks like a completely different building.
+                    The curved glass façade wasn&apos;t a stylistic choice. It was a response to the site, to the way light moves off the lake, and the way the building needed to sit in its setting without competing with it. At different hours and from different angles, it looks like a completely different building.
                   </Text>
                   <Text style={styles.descTextEmphasis}>
-                    That&apos;s the point. A tower that belongs here — not transplanted from a business district.
+                    That&apos;s the point. A tower that belongs here, not transplanted from a business district.
                   </Text>
                 </View>
 
