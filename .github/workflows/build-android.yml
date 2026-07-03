@@ -45,6 +45,12 @@ jobs:
       - name: Generate Android Native Directory
         run: npx expo prebuild --platform android --clean
 
+      # AAPT2 times out crunching the 10-25 MB gallery PNGs on the 2-core
+      # runner ("Compile ... timed out"); skip PNG optimization — the images
+      # are shipped at full size anyway.
+      - name: Disable PNG crunching
+        run: echo "android.enablePngCrunchInReleaseBuilds=false" >> android/gradle.properties
+
       # assembleRelease, not assembleDebug: a debug APK does not embed the JS
       # bundle (it needs a Metro dev server), so it cannot run standalone.
       # The Expo template signs release builds with the debug keystore, so
