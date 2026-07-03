@@ -1,5 +1,14 @@
 import { Asset } from 'expo-asset';
+import { requireNativeModule } from 'expo-modules-core';
 import * as FileSystem from 'expo-file-system/legacy';
+
+// expo-asset's JS marks embedded Android images as already "downloaded" and
+// leaves only a bare resource name (e.g. 'assets_vr_dropoff') that no file
+// API accepts, so Asset.downloadAsync() never copies them. The ExpoAsset
+// native module handles all source forms (bare resource name, android_res
+// path, http/file URL) and copies them to a real cache file — call it
+// directly.
+const ExpoAssetNative = requireNativeModule('ExpoAsset');
 
 const vrPanoramas: Record<string, number> = {
   dropoff: require('../../assets/vr/dropoff.webp'),
@@ -22,8 +31,13 @@ let inflight: Promise<Record<string, string>> | null = null;
 
 async function toDataUri(mod: number): Promise<string> {
   const asset = Asset.fromModule(mod);
-  await asset.downloadAsync();
-  const src = asset.localUri ?? asset.uri;
+  let src: string;
+  try {
+    src = String(await ExpoAssetNative.downloadAsync(asset.uri, asset.hash, asset.type ?? 'webp'));
+  } catch {
+    await asset.downloadAsync();
+    src = asset.localUri ?? asset.uri;
+  }
   const base64 = await FileSystem.readAsStringAsync(src, { encoding: 'base64' });
   return `data:image/webp;base64,${base64}`;
 }
