@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   },
   imageCard: {
     width: '100%',
-    height: '92%',
+    aspectRatio: 16 / 9,
     borderRadius: 16,
     overflow: 'hidden',
     borderWidth: 1.5,
