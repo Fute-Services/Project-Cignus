@@ -9,21 +9,22 @@ version will lead to subtly incorrect code.
 # Before any release or CI/build/deploy work
 
 Read PREFLIGHT.md and run its checks first — every check there maps to a
-real production failure (documented in SMOOTHNESS-REPORT.md). The
-non-negotiable rules:
+real production failure (documented in SMOOTHNESS-REPORT.md). This is now a
+monorepo: the Expo Router app lives in `apps/mobile/`, the Electron desktop
+wrapper in `apps/desktop/`. The non-negotiable rules:
 
-- Navigation from buttons only via `safeNavigate()` (src/utils/safeNavigate.ts),
+- Navigation from buttons only via `safeNavigate()` (apps/mobile/src/utils/safeNavigate.ts),
   never raw `router.push`/`navigate` — raw pushes stacked screens and their
   video players until the app OOM-crashed.
 - Max 1-2 `useVideoPlayer` per screen, with small `bufferOptions`.
 - Never feed `Asset.uri`/`localUri` into a WebView; use the
-  src/utils/vrAssets.ts pattern (native ExpoAsset download → base64 data URI).
+  apps/mobile/src/utils/vrAssets.ts pattern (native ExpoAsset download → base64 data URI).
 - `.gitattributes` LFS rules stay limited to the two >100 MB videos; new big
   videos go to the `video-assets` GitHub release + workflow download step.
 - Asset filenames: lowercase kebab-case only (Linux CI is case-sensitive).
-- Do not remove: plugins/with-png-crunch-disabled.js, plugins/with-large-heap.js,
-  the `package-lock.json` line in .easignore, or the workflow's disk-space
-  and video-fetch steps.
+- Do not remove: apps/mobile/plugins/with-png-crunch-disabled.js,
+  apps/mobile/plugins/with-large-heap.js, the `package-lock.json` line in
+  apps/mobile/.easignore, or the workflow's disk-space and video-fetch steps.
 - A green CI build only proves compilation. Before calling a build good,
   inspect the APK (`unzip -l` — video entries must be MBs, not ~132-byte LFS
   pointers) and run the release-APK gauntlet from PREFLIGHT.md section C.

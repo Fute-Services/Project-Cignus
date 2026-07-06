@@ -24,11 +24,11 @@ jobs:
         run: |
           gh release download video-assets --repo "${{ github.repository }}" \
             --pattern "powai-walkthrough.mp4" \
-            --output assets/video/powai-walkthrough.mp4 --clobber
+            --output apps/mobile/assets/video/powai-walkthrough.mp4 --clobber
           gh release download video-assets --repo "${{ github.repository }}" \
             --pattern "cignus-drone-shot-home-page-v1-1080p.mp4" \
-            --output assets/video/cignus-drone-shot-home-page-v1-1080p.mp4 --clobber
-          ls -la assets/video/
+            --output apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4 --clobber
+          ls -la apps/mobile/assets/video/
 
       # The repo carries ~800 MB of video assets and the build needs ~15 GB
       # more for gradle + Metro; the stock runner disk overflowed without
@@ -58,12 +58,14 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Generate Android Native Directory
+        working-directory: apps/mobile
         run: npx expo prebuild --platform android --clean
 
       # AAPT2 times out crunching the 10-25 MB gallery PNGs on the 2-core
       # runner ("Compile ... timed out"); skip PNG optimization — the images
       # are shipped at full size anyway.
       - name: Disable PNG crunching
+        working-directory: apps/mobile
         run: echo "android.enablePngCrunchInReleaseBuilds=false" >> android/gradle.properties
 
       # assembleRelease, not assembleDebug: a debug APK does not embed the JS
@@ -71,9 +73,8 @@ jobs:
       # The Expo template signs release builds with the debug keystore, so
       # the output APK is directly installable.
       - name: Build Android Release APK
-        run: |
-          cd android
-          ./gradlew assembleRelease
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease
 
       # The APK is ~450 MB (bundled videos) — uploading it as an Actions
       # artifact would exhaust the 500 MB artifact quota of a private repo,
@@ -83,7 +84,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "build-${{ github.run_number }}" \
-            "android/app/build/outputs/apk/release/app-release.apk" \
+            "apps/mobile/android/app/build/outputs/apk/release/app-release.apk" \
             --target "${{ github.sha }}" \
             --title "Cignus APK build ${{ github.run_number }}" \
             --notes "Automated build of commit ${{ github.sha }}"
