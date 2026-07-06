@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, screen } = require('electron');
 const path = require('node:path');
 const http = require('node:http');
 const fs = require('node:fs');
@@ -68,9 +68,16 @@ async function createWindow() {
   const server = await startServer();
   const { port } = server.address();
 
+  // Size to whatever screen this launches on (kiosk displays, laptops, and
+  // ultrawide monitors all differ) instead of a fixed 1280x800 that either
+  // leaves letterboxing on large screens or gets clipped on small ones.
+  // The app content itself is a landscape-locked, flex-based layout, so it
+  // reflows correctly at any window size above the minimum.
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+
   const win = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: screenWidth,
+    height: screenHeight,
     minWidth: 1024,
     minHeight: 640,
     autoHideMenuBar: true,
