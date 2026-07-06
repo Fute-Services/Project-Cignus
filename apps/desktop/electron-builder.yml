@@ -30,7 +30,14 @@ asarUnpack:
 win:
   target: nsis
   icon: ../mobile/assets/images/icon.png
-  signAndEditExecutable: false
+  # NOT a code-signing toggle (that's separately auto-skipped when no cert is
+  # configured, regardless of this setting) — this controls whether
+  # electron-builder rewrites the exe's resources via rcedit, which includes
+  # the Per-Monitor-V2 DPI-awareness manifest. Leaving it false shipped a
+  # build with only Electron's legacy dpiAware=true manifest tag, which made
+  # the whole app render visibly softer than other Electron apps (VS Code,
+  # etc.) on 125%/150%-scaled displays.
+  signAndEditExecutable: true
 mac:
   target: dmg
   category: public.app-category.business
