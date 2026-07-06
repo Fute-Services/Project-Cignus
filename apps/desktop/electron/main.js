@@ -73,11 +73,21 @@ async function createWindow() {
   // leaves letterboxing on large screens or gets clipped on small ones.
   // The app content itself is a landscape-locked, flex-based layout, so it
   // reflows correctly at any window size above the minimum.
+  //
+  // Capped at 1920x1080: every looping background video in the app (home,
+  // masterplan, drone shots, construction progress) is authored at 1080p.
+  // Filling a screen larger than that (1440p/4K monitors) would upscale
+  // those videos past their native resolution and visibly blur them —
+  // capping here keeps 1:1 pixel density on anything up to a 1080p display
+  // and avoids unnecessary upscaling beyond it.
   const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+  const windowWidth = Math.min(screenWidth, 1920);
+  const windowHeight = Math.min(screenHeight, 1080);
 
   const win = new BrowserWindow({
-    width: screenWidth,
-    height: screenHeight,
+    title: 'Cignus Windows',
+    width: windowWidth,
+    height: windowHeight,
     minWidth: 1024,
     minHeight: 640,
     autoHideMenuBar: true,
