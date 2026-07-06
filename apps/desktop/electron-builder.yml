@@ -1,0 +1,29 @@
+appId: com.gautamjha.cignus.desktop
+productName: Cignus
+directories:
+  output: release
+files:
+  - electron/**/*
+  - package.json
+  - '!node_modules/**/*'
+# The Expo web export lives in the sibling apps/mobile package (built by
+# `npm run build:mobile-web`), not inside apps/desktop — pull it in as an
+# extra resource rather than `files` so it lands at a fixed packaged path
+# (resourcesPath/dist) regardless of the dev-time relative layout. See
+# electron/main.js's DIST_DIR for the matching packaged-vs-dev branch.
+extraResources:
+  - from: ../mobile/dist
+    to: dist
+asarUnpack:
+  - dist/assets/**
+win:
+  target: nsis
+  icon: ../mobile/assets/images/icon.png
+  signAndEditExecutable: false
+mac:
+  target: dmg
+  category: public.app-category.business
+  icon: ../mobile/assets/images/icon.png
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
