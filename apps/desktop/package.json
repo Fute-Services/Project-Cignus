@@ -9,7 +9,7 @@
   },
   "scripts": {
     "electron:start": "electron electron/main.js",
-    "build:mobile-web": "npm run build:web --workspace apps/mobile",
+    "build:mobile-web": "npm --prefix ../mobile run build:web",
     "build:desktop:win": "npm run build:mobile-web && electron-builder --win --x64",
     "build:desktop:mac": "npm run build:mobile-web && electron-builder --mac --x64 --arm64"
   }
