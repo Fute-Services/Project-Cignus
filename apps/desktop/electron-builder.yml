@@ -1,0 +1,40 @@
+appId: com.gautamjha.cignus.desktop
+productName: Cignus
+# electron-builder can't infer the electron devDependency version across an
+# npm workspace hoist (it only looks at this package's own node_modules) —
+# pin it explicitly to what's actually installed at the workspace root.
+electronVersion: 33.4.11
+# There are no native (compiled) dependencies to rebuild — this app is a
+# plain web bundle in an Electron shell. Skip electron-builder's "install
+# production dependencies" step: in an npm workspace it reinstalls scoped
+# to apps/desktop and prunes electron-builder's own hoisted runtime deps
+# (e.g. app-builder-bin) from the shared root node_modules, breaking the
+# very build step that's running.
+npmRebuild: false
+directories:
+  output: release
+files:
+  - electron/**/*
+  - package.json
+  - '!node_modules/**/*'
+# The Expo web export lives in the sibling apps/mobile package (built by
+# `npm run build:mobile-web`), not inside apps/desktop — pull it in as an
+# extra resource rather than `files` so it lands at a fixed packaged path
+# (resourcesPath/dist) regardless of the dev-time relative layout. See
+# electron/main.js's DIST_DIR for the matching packaged-vs-dev branch.
+extraResources:
+  - from: ../mobile/dist
+    to: dist
+asarUnpack:
+  - dist/assets/**
+win:
+  target: nsis
+  icon: ../mobile/assets/images/icon.png
+  signAndEditExecutable: false
+mac:
+  target: dmg
+  category: public.app-category.business
+  icon: ../mobile/assets/images/icon.png
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

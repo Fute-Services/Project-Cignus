@@ -1,3 +1,4 @@
+
 # Pre-Flight Checklist & AI Prompt — Cignus
 
 *Run these checks BEFORE shipping a build. Every check exists because its
@@ -11,11 +12,11 @@ bottom into any AI assistant to run the whole audit.*
 ```bash
 # 1. No LFS pointers hiding where real files should be
 #    (broken videos shipped in builds 1-9 because of this)
-git ls-files assets | grep -E "\.(mp4|webp|png|jpe?g|pdf)$" | while read f; do
+git ls-files apps/mobile/assets | grep -E "\.(mp4|webp|png|jpe?g|pdf)$" | while read f; do
   sz=$(git cat-file -s ":$f"); [ "$sz" -lt 1000 ] && echo "POINTER: $f ($sz bytes)"
 done
-# Expected: ONLY the two known LFS files (assets/video/powai-walkthrough.mp4,
-# assets/video/cignus-drone-shot-home-page-v1-1080p.mp4). Anything else = stop.
+# Expected: ONLY the two known LFS files (apps/mobile/assets/video/powai-walkthrough.mp4,
+# apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4). Anything else = stop.
 
 # 2. Lockfile works on LINUX npm, not just Windows
 #    (Windows npm 11 prunes @emnapi/* entries; EAS then fails "not in sync")
@@ -26,8 +27,8 @@ grep -c "canary" package-lock.json         # expected: 0
 npx expo install --check                   # expected: "Dependencies are up to date"
 
 # 4. Every asset referenced in code exists on disk (case-sensitively)
-grep -rEoh "assets/[A-Za-z0-9_ .&()@/-]+\.[a-z0-9]+" src app.json | sort -u \
-  | while read r; do [ -f "$r" ] || echo "MISSING: $r"; done
+(cd apps/mobile && grep -rEoh "assets/[A-Za-z0-9_ .&()@/-]+\.[a-z0-9]+" src app.json | sort -u \
+  | while read r; do [ -f "$r" ] || echo "MISSING: $r"; done)
 ```
 
 ## B. APK inspection (after every CI build, before telling anyone it works)
@@ -55,7 +56,7 @@ LFS pointers). The release APK is the only build that tells the truth.
 
 ## D. Code rules that keep it smooth (enforce in review)
 
-- **Navigation only via `safeNavigate()`** (`src/utils/safeNavigate.ts`) —
+- **Navigation only via `safeNavigate()`** (`apps/mobile/src/utils/safeNavigate.ts`) —
   never raw `router.push`/`navigate` from buttons. It debounces and uses
   `replace` so screens release their video players. Raw push once caused
   OOM crashes after three screens.
@@ -63,7 +64,7 @@ LFS pointers). The release APK is the only build that tells the truth.
   players on Location once ate the entire Java heap on open.
 - **Never feed `Asset.uri`/`localUri` to a WebView** — in release builds it
   can be a bare resource name (`assets_vr_dropoff`). Use the pattern in
-  `src/utils/vrAssets.ts` (native ExpoAsset.downloadAsync → base64 data URI).
+  `apps/mobile/src/utils/vrAssets.ts` (native ExpoAsset.downloadAsync → base64 data URI).
   Do not "simplify" it back.
 - **Keep `.gitattributes` limited to the two >100 MB videos.** New videos
   ≥100 MB go into the `video-assets` GitHub release + a workflow download
@@ -72,10 +73,10 @@ LFS pointers). The release APK is the only build that tells the truth.
   case-sensitive even though Windows isn't.
 - **One person per working copy.** Concurrent edits in this folder corrupted
   an EAS archive and deleted files mid-task once.
-- Don't remove: `plugins/with-png-crunch-disabled.js` (AAPT2 timeout),
-  `plugins/with-large-heap.js` (OOM headroom), `.easignore`'s
-  `package-lock.json` line (Windows npm bug), the workflow's disk-space and
-  video-fetch steps.
+- Don't remove: `apps/mobile/plugins/with-png-crunch-disabled.js` (AAPT2
+  timeout), `apps/mobile/plugins/with-large-heap.js` (OOM headroom),
+  `apps/mobile/.easignore`'s `package-lock.json` line (Windows npm bug), the
+  workflow's disk-space and video-fetch steps.
 
 ---
 

@@ -1,0 +1,137 @@
+name: Build Desktop (Windows/Mac)
+on:
+  workflow_dispatch: # Manual trigger only for v1 — desktop builds are heavier/slower and less frequently needed than the Android APK.
+
+permissions:
+  contents: write # needed to upload installers to a GitHub Release
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # These two videos exceed GitHub's 100 MB blob limit so they live in
+      # Git LFS; checkout leaves 132-byte pointer files behind. Fetch the
+      # real files from the video-assets release (free, unlike LFS bandwidth),
+      # same mechanism as build-android.yml.
+      - name: Fetch large video assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "powai-walkthrough.mp4" \
+            --output apps/mobile/assets/video/powai-walkthrough.mp4 --clobber
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "cignus-drone-shot-home-page-v1-1080p.mp4" \
+            --output apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4 --clobber
+
+      # A silent LFS/release-fetch failure would ship 132-byte pointer stubs
+      # as "videos" — fail loudly instead, matching the real file sizes.
+      - name: Verify video assets are real files, not LFS pointers
+        shell: bash
+        run: |
+          for f in apps/mobile/assets/video/powai-walkthrough.mp4 apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4; do
+            size=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f")
+            if [ "$size" -lt 1000000 ]; then
+              echo "::error::$f is only $size bytes — looks like an LFS pointer, not real video data"
+              exit 1
+            fi
+          done
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build web export
+        working-directory: apps/mobile
+        run: npm run build:web
+
+      - name: Build Windows installer
+        working-directory: apps/desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false' # no code-signing cert available for v1 — SmartScreen will warn on first run
+        run: npx electron-builder --win --x64 --publish never
+
+      # Installers exceed the 500 MB Actions-artifact quota of a private
+      # repo once bundled assets are included — publish to a GitHub Release
+      # instead, same pattern as the Android APK.
+      - name: Upload Windows installer to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "desktop-build-${{ github.run_number }}" \
+            apps/desktop/release/*.exe \
+            --target "${{ github.sha }}" \
+            --title "Cignus Desktop build ${{ github.run_number }}" \
+            --notes "Automated desktop build of commit ${{ github.sha }}. Windows: unsigned — SmartScreen will warn on first run. Mac: unsigned/ad-hoc — Gatekeeper will warn; internal distribution only." \
+            || gh release upload "desktop-build-${{ github.run_number }}" apps/desktop/release/*.exe --clobber
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch large video assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "powai-walkthrough.mp4" \
+            --output apps/mobile/assets/video/powai-walkthrough.mp4 --clobber
+          gh release download video-assets --repo "${{ github.repository }}" \
+            --pattern "cignus-drone-shot-home-page-v1-1080p.mp4" \
+            --output apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4 --clobber
+
+      - name: Verify video assets are real files, not LFS pointers
+        run: |
+          for f in apps/mobile/assets/video/powai-walkthrough.mp4 apps/mobile/assets/video/cignus-drone-shot-home-page-v1-1080p.mp4; do
+            size=$(stat -f%z "$f")
+            if [ "$size" -lt 1000000 ]; then
+              echo "::error::$f is only $size bytes — looks like an LFS pointer, not real video data"
+              exit 1
+            fi
+          done
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build web export
+        working-directory: apps/mobile
+        run: npm run build:web
+
+      # No Apple Developer ID / notarization credentials configured — this
+      # produces an unsigned/ad-hoc .dmg for internal distribution only.
+      # Gatekeeper will show an "unidentified developer" warning on first
+      # launch; add signing/notarization secrets here before public release.
+      - name: Build macOS installer
+        working-directory: apps/desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --mac --x64 --arm64 --publish never
+
+      - name: Upload macOS installer to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "desktop-build-${{ github.run_number }}" \
+            apps/desktop/release/*.dmg \
+            --target "${{ github.sha }}" \
+            --title "Cignus Desktop build ${{ github.run_number }}" \
+            --notes "Automated desktop build of commit ${{ github.sha }}. Windows: unsigned — SmartScreen will warn on first run. Mac: unsigned/ad-hoc — Gatekeeper will warn; internal distribution only." \
+            || gh release upload "desktop-build-${{ github.run_number }}" apps/desktop/release/*.dmg --clobber
