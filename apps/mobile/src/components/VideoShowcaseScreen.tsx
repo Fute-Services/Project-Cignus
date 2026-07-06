@@ -176,7 +176,7 @@ export default function VideoShowcaseScreen({
           <VideoView
             player={player}
             style={StyleSheet.absoluteFill}
-            contentFit="contain"
+            contentFit="cover"
             nativeControls={true}
             allowsFullscreen={false}
           />

@@ -129,11 +129,14 @@ export default function BuildingSelector({
       <ImageBackground
         source={buildingImage}
         style={styles.imageBg}
-        resizeMode="contain"
+        resizeMode="cover"
       >
         {/* ── Interactive SVG layer ── */}
+        {/* preserveAspectRatio "slice" matches the image's "cover" fit so the
+            floor polygons stay aligned with the (now cropped) building photo. */}
         <Svg
           viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
+          preserveAspectRatio="xMidYMid slice"
           style={StyleSheet.absoluteFill}
         >
           <Defs>

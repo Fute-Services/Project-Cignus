@@ -184,12 +184,12 @@ export default function LocationScreen() {
       <View style={StyleSheet.absoluteFill}>
         {/* Site Location Image */}
         <Animated.View style={[StyleSheet.absoluteFill, styleSite]}>
-          <Image source={siteLocation} style={styles.backgroundImage} contentFit="contain" />
+          <Image source={siteLocation} style={styles.backgroundImage} contentFit="cover" />
         </Animated.View>
 
         {/* Neighbourhood Image */}
         <Animated.View style={[StyleSheet.absoluteFill, styleNeighbourhood]}>
-          <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
+          <Image source={neighborhood} style={styles.backgroundImage} contentFit="cover" />
         </Animated.View>
 
         {/* Active tab/network video — preloaded players, one mounted view */}
@@ -198,7 +198,7 @@ export default function LocationScreen() {
             <VideoView
               player={activeVideoKey === 'transport' ? transportPlayer : connectivityPlayer}
               style={styles.backgroundImage}
-              contentFit="contain"
+              contentFit="cover"
               nativeControls={false}
             />
           </Animated.View>
