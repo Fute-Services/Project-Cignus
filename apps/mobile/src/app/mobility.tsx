@@ -17,9 +17,9 @@ import { theme } from '../theme';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/project-details/bg-image.png');
-const lowerImg = require('../../assets/project-details/building-image.png');
-const midImg = require('../../assets/project-details/buiding-image.png');
-const upperImg = require('../../assets/project-details/project-details.png');
+const lowerImg = require('../../assets/project-details/building-image.webp');
+const midImg = require('../../assets/project-details/buiding-image.webp');
+const upperImg = require('../../assets/project-details/project-details.webp');
 
 const staticData = [
   { title: 'Lower Zone', url: lowerImg },
@@ -106,6 +106,7 @@ export default function Mobility() {
             source={selectedItem?.url}
             style={styles.mediaImg}
             contentFit="cover"
+            cachePolicy="memory-disk"
           />
         </Animated.View>
       </View>
@@ -128,7 +129,7 @@ export default function Mobility() {
                   isActive ? styles.activeThumbnailCard : styles.inactiveThumbnailCard
                 ]}
               >
-                <Image source={item.url} style={styles.thumbnailImg} contentFit="cover" />
+                <Image source={item.url} style={styles.thumbnailImg} contentFit="cover" cachePolicy="memory-disk" />
                 <View style={styles.thumbnailLabel}>
                   <Text style={styles.thumbnailLabelText}>{item.title}</Text>
                 </View>
@@ -163,11 +164,10 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0.7,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   titleContainer: {
     position: 'absolute',

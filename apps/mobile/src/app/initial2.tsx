@@ -5,10 +5,11 @@ import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, { FadeInUp, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
-const cignusLogo = require('../../assets/home/cignus-updated-logo.png');
+const cignusLogo = require('../../assets/overview/logo.png');
 const exploreBtn = require('../../assets/initial/primary-button.png');
 const linesImg = require('../../assets/project-details/lines.png');
 const lakePlaceholder = require('../../assets/home/lake-placeholder.webp');
@@ -27,6 +28,27 @@ export default function Initial2() {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  // On web/Electron, expo-video's play() call above is a no-op — it runs
+  // before the VideoView's <video> element has mounted, so there's nothing
+  // for it to call .play() on yet. Re-triggering play() here, once the
+  // component (and thus the video element) has actually mounted, is what
+  // starts playback on that platform; native ignores the redundant call.
+  useEffect(() => {
+    player.play();
+  }, [player]);
+
+  // Pause the background video while this screen isn't focused instead of
+  // leaving it decoding frames unseen — matches the pattern every other
+  // video screen in the app uses.
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }, [isFocused, player]);
 
   // Fade out the placeholder once the video is actually ready to play,
   // rather than guessing with a fixed timer.
@@ -53,13 +75,13 @@ export default function Initial2() {
 
         {/* Static Placeholder Thumbnail (fades out when video plays) */}
         {!videoLoaded && (
-          <Animated.View exiting={FadeOut.duration(800)} style={StyleSheet.absoluteFill}>
+          <Animated.View exiting={FadeOut.duration(800)} style={StyleSheet.absoluteFill} pointerEvents="none">
             <Image source={lakePlaceholder} style={styles.placeholderImg} contentFit="cover" />
           </Animated.View>
         )}
-        
+
         {/* Dark opacity overlay for readability */}
-        <View style={styles.videoOverlay} />
+        <View style={styles.videoOverlay} pointerEvents="none" />
       </View>
 
       {/* 2. Top Decorative Lines */}
@@ -121,6 +143,11 @@ const styles = StyleSheet.create({
   },
   backgroundVideo: {
     ...StyleSheet.absoluteFillObject,
+    // <video> is a replaced element: with only inset (no explicit
+    // width/height), browsers size it to native content resolution instead
+    // of stretching to fill — hence the explicit 100%/100% here.
+    width: '100%',
+    height: '100%',
   },
   placeholderImg: {
     ...StyleSheet.absoluteFillObject,

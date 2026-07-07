@@ -31,8 +31,9 @@ import { theme } from '../theme';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgVideo = require('../../assets/overview/overview.mp4');
-const overviewImg = require('../../assets/overview/overview.png');
+const overviewImg = require('../../assets/overview/overview.webp');
 const logo = require('../../assets/home/cignus-updated-logo.png');
+const logoBadge = require('../../assets/overview/logo.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 const sections = [
@@ -152,7 +153,7 @@ export default function Overview() {
 
       {/* ── 2. Static overview background crossfade overlay ── */}
       <Animated.View style={[StyleSheet.absoluteFill, overlayAnimatedStyle]} pointerEvents="none">
-        <Image source={overviewImg} style={styles.overviewImage} contentFit="cover" />
+        <Image source={overviewImg} style={styles.overviewImage} contentFit="cover" cachePolicy="memory-disk" />
       </Animated.View>
 
       {/* INITIAL LOGO TRANSITION */}
@@ -170,7 +171,7 @@ export default function Overview() {
 
           {/* Top Branding Badge */}
           <View style={[styles.topLeftLogo, { top: 32 + insets.top, left: 32 + insets.left }]}>
-            <Image source={logo} style={styles.logoImg} contentFit="contain" />
+            <Image source={logoBadge} style={styles.logoImg} contentFit="contain" />
           </View>
           <View style={[styles.topRightLogo, { top: 32 + insets.top, right: 32 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
@@ -271,10 +272,15 @@ const styles = StyleSheet.create({
   },
   videoView: {
     ...StyleSheet.absoluteFillObject,
+    // <video> is a replaced element: with only inset (no explicit
+    // width/height), browsers size it to native content resolution instead
+    // of stretching to fill — hence the explicit 100%/100% here.
+    width: '100%',
+    height: '100%',
   },
   videoOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0, 0, 0, 0.17)',
   },
   overviewImage: {
     ...StyleSheet.absoluteFillObject,

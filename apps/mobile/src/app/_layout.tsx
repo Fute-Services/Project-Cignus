@@ -28,6 +28,7 @@ SplashScreen.preventAutoHideAsync();
 const criticalImages = [
   require('../../assets/initial/bg-img.png'),
   require('../../assets/home/cignus-updated-logo.png'),
+  require('../../assets/overview/logo.png'),
   require('../../assets/home/k-raheja-corp-1.png'),
 ];
 

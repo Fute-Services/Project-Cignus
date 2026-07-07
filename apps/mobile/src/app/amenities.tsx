@@ -14,7 +14,7 @@ import LeftNavbar from '../components/LeftNavbar';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImg = require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg');
-const logo = require('../../assets/home/cignus-updated-logo.png');
+const logo = require('../../assets/overview/logo.png');
 
 import { loadVrUris, getCachedVrUris } from '../utils/vrAssets';
 
@@ -77,6 +77,19 @@ const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
     window.onerror = function (message, source, line) {
         sendToHost('vr_error: ' + message + ' @' + line);
     };
+    // Defined once and referenced (not re-embedded) by both the scene config
+    // below and the background preloader, so the multi-MB base64 strings
+    // aren't duplicated in the page.
+    var panoramas = {
+        "dropoff": ${JSON.stringify(uris.dropoff)},
+        "dropoff_left": ${JSON.stringify(uris.dropoff_left)},
+        "dropoff_right": ${JSON.stringify(uris.dropoff_right)},
+        "reception": ${JSON.stringify(uris.reception)},
+        "cafeteria": ${JSON.stringify(uris.cafeteria)},
+        "liftlobby": ${JSON.stringify(uris.liftlobby)},
+        "top": ${JSON.stringify(uris.top)}
+    };
+
     var viewer = pannellum.viewer('panorama', {
         "default": {
             "firstScene": ${JSON.stringify(firstScene || 'dropoff')},
@@ -84,38 +97,24 @@ const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
             "sceneFadeDuration": 500,
             "showControls": false,
             "mouseZoom": true,
+            // These are single 4096px-wide equirectangular images (no
+            // multires/tiled fallback for extra zoomed-in detail), so without
+            // a floor here users can pinch/scroll-zoom well past the point
+            // where the source texture actually has detail, which reads as
+            // "bad quality" even though the panorama itself is a normal
+            // resolution for this format.
+            "minHfov": 50,
             "autoRotate": 2,
             "autoRotateInactivityDelay": 5000
         },
         "scenes": {
-            "dropoff": {
-                "panorama": ${JSON.stringify(uris.dropoff)},
-                "yaw": -140
-            },
-            "dropoff_left": {
-                "panorama": ${JSON.stringify(uris.dropoff_left)},
-                "yaw": 60
-            },
-            "dropoff_right": {
-                "panorama": ${JSON.stringify(uris.dropoff_right)},
-                "yaw": -90
-            },
-            "reception": {
-                "panorama": ${JSON.stringify(uris.reception)},
-                "pitch": -10
-            },
-            "cafeteria": {
-                "panorama": ${JSON.stringify(uris.cafeteria)},
-                "pitch": -25
-            },
-            "liftlobby": {
-                "panorama": ${JSON.stringify(uris.liftlobby)},
-                "pitch": 0
-            },
-            "top": {
-                "panorama": ${JSON.stringify(uris.top)},
-                "pitch": -10
-            }
+            "dropoff": { "panorama": panoramas.dropoff, "yaw": -140 },
+            "dropoff_left": { "panorama": panoramas.dropoff_left, "yaw": 60 },
+            "dropoff_right": { "panorama": panoramas.dropoff_right, "yaw": -90 },
+            "reception": { "panorama": panoramas.reception, "pitch": -10 },
+            "cafeteria": { "panorama": panoramas.cafeteria, "pitch": -25 },
+            "liftlobby": { "panorama": panoramas.liftlobby, "pitch": 0 },
+            "top": { "panorama": panoramas.top, "pitch": -10 }
         }
     });
 
@@ -134,6 +133,18 @@ const getHtmlContent = (firstScene: string, uris: Record<string, string>) => `
     // without a black flash while the panorama texture decodes.
     viewer.on('load', function () {
         sendToHost('vr_ready');
+
+        // Warm the browser's decoded-image cache for every OTHER scene now,
+        // in the background, while the user is looking at the first one.
+        // Without this, switching scenes calls loadScene() which has to
+        // base64-decode + image-decode a multi-MB panorama cold, right at
+        // the moment of the switch — that decode-on-demand is what showed up
+        // as a stutter/freeze each time the location was changed.
+        Object.keys(panoramas).forEach(function (key) {
+            if (key === (${JSON.stringify(firstScene || 'dropoff')})) return;
+            var img = new Image();
+            img.src = panoramas[key];
+        });
     });
     viewer.on('error', function (err) {
         sendToHost('vr_error: ' + err);

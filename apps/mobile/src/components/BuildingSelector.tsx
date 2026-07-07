@@ -13,7 +13,7 @@ import Animated, {
 import { VIEWBOX_W, VIEWBOX_H, type FloorData } from '../data/FloorData';
 import { safeNavigate } from '../utils/safeNavigate';
 
-const buildingImage = require('../../assets/project-details/project-details.png');
+const buildingImage = require('../../assets/project-details/project-details.webp');
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 

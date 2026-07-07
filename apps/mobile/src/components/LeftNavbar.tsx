@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   inactiveIconWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    borderColor: 'rgba(255, 255, 255, 0.35)',
   },
   label: {
     fontSize: 8.5,

@@ -12,6 +12,7 @@ import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/home/project-info.png');
 const logo = require('../../assets/home/cignus-updated-logo.png');
+const logoBadge = require('../../assets/overview/logo.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 const imgTop = require('../../assets/home/project-info-img1.png');
 const imgBottom = require('../../assets/home/project-info-img2.png');
@@ -66,7 +67,7 @@ export default function Specification() {
 
           {/* Top Branding Logos */}
           <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
-            <Image source={logo} style={styles.logo1Img} contentFit="contain" />
+            <Image source={logoBadge} style={styles.logo1Img} contentFit="contain" />
           </View>
           <View style={[styles.topRightLogo, { top: 24 + insets.top, right: 24 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   initialLogoWrapper: {
     ...StyleSheet.absoluteFillObject,

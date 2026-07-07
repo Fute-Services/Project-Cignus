@@ -3,6 +3,22 @@ const path = require('node:path');
 const http = require('node:http');
 const fs = require('node:fs');
 
+// Without this, Chromium's internal GPU driver blocklist silently falls back
+// to the bundled software renderer (SwiftShader) on machines whose driver
+// version it doesn't recognize — video/canvas rendering still "works" but
+// looks visibly softer/blurrier since it's no longer hardware-scaled.
+app.commandLine.appendSwitch('ignore-gpu-blocklist');
+
+// On hybrid-graphics laptops (integrated + discrete GPU), Chromium's
+// automatic ANGLE backend selection can fail to bind to either adapter and
+// silently fall back to SwiftShader even with the blocklist ignored above —
+// forcing the D3D11 backend explicitly (the standard, best-supported ANGLE
+// path on Windows) avoids that failed auto-detection.
+app.commandLine.appendSwitch('use-angle', 'd3d11');
+// Prefer the higher-performance (discrete) GPU on Optimus/switchable-graphics
+// laptops instead of whichever adapter the OS defaults to for this process.
+app.commandLine.appendSwitch('force_high_performance_gpu');
+
 // The Expo web export uses absolute asset paths ("/_expo/..."), which don't
 // resolve under file://. Serve dist/ over a loopback-only HTTP server so
 // expo-router's client-side history and asset URLs behave exactly as they do
@@ -52,9 +68,43 @@ function startServer() {
           // SPA fallback: unknown paths resolve to index.html so
           // expo-router's client-side navigation always has something to render.
           filePath = path.join(DIST_DIR, 'index.html');
+          try {
+            stat = fs.statSync(filePath);
+          } catch {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('dist/ is missing or incomplete — run "npm run build:mobile-web" first.');
+            return;
+          }
         }
         const ext = path.extname(filePath).toLowerCase();
-        res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
+        const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+
+        // <video> issues Range requests to seek/buffer incrementally instead
+        // of pulling the whole file — without honoring them (206 + the
+        // requested byte slice) Chromium has to wait on a full-file 200
+        // response before it can start playing, which stalls badly on the
+        // multi-MB videos this app serves.
+        const range = req.headers.range;
+        if (range) {
+          const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+          const start = match && match[1] ? parseInt(match[1], 10) : 0;
+          const end = match && match[2] ? parseInt(match[2], 10) : stat.size - 1;
+
+          res.writeHead(206, {
+            'Content-Type': contentType,
+            'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': end - start + 1,
+          });
+          fs.createReadStream(filePath, { start, end }).pipe(res);
+          return;
+        }
+
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': stat.size,
+        });
         fs.createReadStream(filePath).pipe(res);
       });
     });
@@ -84,8 +134,14 @@ async function createWindow() {
   const windowWidth = Math.min(screenWidth, 1920);
   const windowHeight = Math.min(screenHeight, 1080);
 
+  // In dev the window/taskbar icon must be set explicitly; a packaged build
+  // gets it from the exe resources (electron-builder win.icon) instead, and
+  // this source path doesn't exist there — hence the existence check.
+  const devIconPath = path.join(__dirname, '..', '..', 'mobile', 'assets', 'images', 'icon.png');
+
   const win = new BrowserWindow({
-    title: 'Cignus Windows',
+    title: 'CIGNUS',
+    ...(fs.existsSync(devIconPath) ? { icon: devIconPath } : {}),
     width: windowWidth,
     height: windowHeight,
     minWidth: 1024,

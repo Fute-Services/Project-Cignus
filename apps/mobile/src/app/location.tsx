@@ -3,15 +3,15 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import Animated, { FadeInUp, FadeIn, useSharedValue, useAnimatedStyle, withTiming, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import { safeNavigate } from '../utils/safeNavigate';
 
-const logo = require('../../assets/home/cignus-updated-logo.png');
+const logo = require('../../assets/overview/logo.png');
 const siteLocation = require('../../assets/location/new-final-site-location-img.jpeg');
-const neighborhood = require('../../assets/location/img-location.png');
+const neighborhood = require('../../assets/location/img-location.webp');
 
 // Videos
 const jvlrVideo = require('../../assets/location/towards-eastern-and-western-expressway-final-2-2.mp4');
@@ -42,28 +42,53 @@ const videoSources: Record<string, number> = {
   transport: transportVideo,
 };
 
+// Resolves once the player is actually presenting frames (currentTime is
+// advancing after play()), which is the only swap signal that's reliable on
+// both native and web — on web the player's statusChange often never fires
+// across a source swap. The timeout keeps a failed load from wedging the
+// cross-fade.
+function waitForFirstFrame(player: { currentTime: number }, timeoutMs = 1500): Promise<void> {
+  return new Promise(resolve => {
+    const startedAt = Date.now();
+    const timer = setInterval(() => {
+      if (player.currentTime > 0.03 || Date.now() - startedAt > timeoutMs) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 50);
+  });
+}
+
 export default function LocationScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('site');
   const [activeNetworkVideo, setActiveNetworkVideo] = useState('jvlr');
 
-  // Two players, both preloaded on mount so the Connectivity and Airport
-  // tabs start their video instantly: one cycles through the four
-  // Connectivity videos, the other holds the Airport video. Small forward
-  // buffers keep the combined footprint a fraction of the five full players
-  // that used to OOM-crash this screen.
-  const connectivityPlayer = useVideoPlayer(jvlrVideo, p => {
+  // Two players used as a front/back pair: the visible video keeps playing
+  // on the front player while the next source loads invisibly on the back
+  // player, then the two cross-fade — so a switch never shows a black frame.
+  // Still only 2 players with small buffers (five full players used to
+  // OOM-crash this screen).
+  const playerA = useVideoPlayer(jvlrVideo, p => {
     p.loop = true;
     p.muted = true;
     p.bufferOptions = { preferredForwardBufferDuration: 5 };
   });
-  const transportPlayer = useVideoPlayer(transportVideo, p => {
+  const playerB = useVideoPlayer(transportVideo, p => {
     p.loop = true;
     p.muted = true;
     p.bufferOptions = { preferredForwardBufferDuration: 5 };
   });
-  const loadedVideoRef = useRef<string>('jvlr');
+  // Which video key each player currently holds, and which player is visible.
+  const playerSourceRef = useRef<{ A: string; B: string }>({ A: 'jvlr', B: 'transport' });
+  const frontPlayerRef = useRef<'A' | 'B'>('A');
+  // Bumped on every switch so a slow load that finishes after the user has
+  // already clicked something newer doesn't fade in a stale video.
+  const switchSeqRef = useRef(0);
+
+  const opacityPlayerA = useSharedValue(1);
+  const opacityPlayerB = useSharedValue(0);
 
   // Shared values for cross-fade opacities
   const opacitySite = useSharedValue(1);
@@ -81,33 +106,66 @@ export default function LocationScreen() {
     opacityNeighbourhood.value = withTiming(activeTab === 'neighbourhood' ? 1 : 0, { duration: 400 });
     opacityVideo.value = withTiming(activeVideoKey ? 1 : 0, { duration: 400 });
 
-    if (activeVideoKey && isFocused) {
-      if (activeVideoKey === 'transport') {
-        connectivityPlayer.pause();
-        transportPlayer.currentTime = 0;
-        transportPlayer.play();
-      } else {
-        transportPlayer.pause();
-        if (loadedVideoRef.current !== activeVideoKey) {
-          loadedVideoRef.current = activeVideoKey;
-          connectivityPlayer.replaceAsync(videoSources[activeVideoKey]).then(
-            () => connectivityPlayer.play(),
-            () => {},
-          );
-        } else {
-          connectivityPlayer.currentTime = 0;
-          connectivityPlayer.play();
+    const seq = ++switchSeqRef.current;
+
+    if (!activeVideoKey || !isFocused) {
+      playerA.pause();
+      playerB.pause();
+      return;
+    }
+
+    const players = { A: playerA, B: playerB } as const;
+    const opacities = { A: opacityPlayerA, B: opacityPlayerB } as const;
+    const front = frontPlayerRef.current;
+    const back = front === 'A' ? 'B' : 'A';
+
+    if (playerSourceRef.current[front] === activeVideoKey) {
+      // Same video re-selected (or screen re-focused): just restart it.
+      players[front].currentTime = 0;
+      players[front].play();
+      players[back].pause();
+      opacities[front].value = withTiming(1, { duration: 250 });
+      opacities[back].value = withTiming(0, { duration: 250 });
+      return;
+    }
+
+    // Load the new video on the hidden back player, wait until it is
+    // actually rendering frames, then cross-fade the two players so the old
+    // video stays on screen the whole time.
+    (async () => {
+      const backPlayer = players[back];
+      if (playerSourceRef.current[back] !== activeVideoKey) {
+        playerSourceRef.current[back] = activeVideoKey;
+        try {
+          await backPlayer.replaceAsync(videoSources[activeVideoKey]);
+        } catch {
+          return;
         }
       }
-    } else {
-      connectivityPlayer.pause();
-      transportPlayer.pause();
-    }
+      backPlayer.currentTime = 0;
+      backPlayer.play();
+      await waitForFirstFrame(backPlayer);
+      if (switchSeqRef.current !== seq) return; // superseded by a newer click
+      frontPlayerRef.current = back;
+      opacities[back].value = withTiming(1, { duration: 350 });
+      opacities[front].value = withTiming(0, { duration: 350 });
+      // Let the fade finish before pausing the outgoing video.
+      setTimeout(() => {
+        if (switchSeqRef.current !== seq) return;
+        try {
+          players[front].pause();
+        } catch {
+          // player may already be released if the screen unmounted
+        }
+      }, 400);
+    })();
   }, [activeTab, activeVideoKey, isFocused]);
 
   const styleSite = useAnimatedStyle(() => ({ opacity: opacitySite.value }));
   const styleNeighbourhood = useAnimatedStyle(() => ({ opacity: opacityNeighbourhood.value }));
   const styleVideo = useAnimatedStyle(() => ({ opacity: opacityVideo.value }));
+  const stylePlayerA = useAnimatedStyle(() => ({ opacity: opacityPlayerA.value }));
+  const stylePlayerB = useAnimatedStyle(() => ({ opacity: opacityPlayerB.value }));
 
   const renderMarkers = () => {
     let markersList: any[] = [];
@@ -160,8 +218,8 @@ export default function LocationScreen() {
     return markersList.map((m, idx) => (
       <Animated.View
         key={m.id}
-        entering={ZoomIn.duration(350).delay(idx * 80)}
-        exiting={ZoomOut.duration(200)}
+        entering={FadeIn.duration(350).delay(idx * 80)}
+        exiting={FadeOut.duration(200)}
         style={[styles.markerContainer, { top: m.top, left: m.left }]}
       >
         <View style={styles.markerContent}>
@@ -184,23 +242,34 @@ export default function LocationScreen() {
       <View style={StyleSheet.absoluteFill}>
         {/* Site Location Image */}
         <Animated.View style={[StyleSheet.absoluteFill, styleSite]}>
-          <Image source={siteLocation} style={styles.backgroundImage} contentFit="contain" />
+          <Image source={siteLocation} style={styles.backgroundImage} contentFit="cover" cachePolicy="memory-disk" />
         </Animated.View>
 
         {/* Neighbourhood Image */}
         <Animated.View style={[StyleSheet.absoluteFill, styleNeighbourhood]}>
-          <Image source={neighborhood} style={styles.backgroundImage} contentFit="contain" />
+          <Image source={neighborhood} style={styles.backgroundImage} contentFit="cover" cachePolicy="memory-disk" />
         </Animated.View>
 
-        {/* Active tab/network video — preloaded players, one mounted view */}
+        {/* Active tab/network video — front/back player pair that cross-fades
+            on every switch so no black frame is ever visible */}
         {activeVideoKey && (
           <Animated.View style={[StyleSheet.absoluteFill, styleVideo]}>
-            <VideoView
-              player={activeVideoKey === 'transport' ? transportPlayer : connectivityPlayer}
-              style={styles.backgroundImage}
-              contentFit="contain"
-              nativeControls={false}
-            />
+            <Animated.View style={[StyleSheet.absoluteFill, stylePlayerA]}>
+              <VideoView
+                player={playerA}
+                style={styles.backgroundImage}
+                contentFit="cover"
+                nativeControls={false}
+              />
+            </Animated.View>
+            <Animated.View style={[StyleSheet.absoluteFill, stylePlayerB]}>
+              <VideoView
+                player={playerB}
+                style={styles.backgroundImage}
+                contentFit="cover"
+                nativeControls={false}
+              />
+            </Animated.View>
           </Animated.View>
         )}
 
@@ -279,6 +348,11 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
+    // <video>/<img> are replaced elements: with only inset (no explicit
+    // width/height), browsers size them to native content resolution
+    // instead of stretching to fill — hence the explicit 100%/100% here.
+    width: '100%',
+    height: '100%',
   },
   markerContainer: {
     position: 'absolute',

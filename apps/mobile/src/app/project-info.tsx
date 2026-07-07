@@ -16,6 +16,7 @@ const leftImage = require('../../assets/overview/overview-projectinfo.jpg');
 const img1 = require('../../assets/project-info/projectinfo-left.png');
 const img2 = require('../../assets/project-info/projectinfo-right.png');
 const logo = require('../../assets/home/cignus-updated-logo.png');
+const logoBadge = require('../../assets/overview/logo.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 const specifications = [
@@ -62,7 +63,7 @@ export default function ProjectInfo() {
 
           {/* Top Branding Badges */}
           <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
-            <Image source={logo} style={styles.logoImg} contentFit="contain" />
+            <Image source={logoBadge} style={styles.logoImg} contentFit="contain" />
           </View>
           <View style={[styles.topRightLogo, { top: 24 + insets.top, right: 24 + insets.right }]}>
             <Image source={logo2} style={styles.logo2Img} contentFit="contain" />
@@ -83,11 +84,7 @@ export default function ProjectInfo() {
             {/* Left Column: Image Card */}
             <Animated.View entering={FadeInLeft.delay(200).duration(800)} style={styles.leftColumn}>
               <View style={styles.imageCard}>
-                {/* Blurred cover fill so the tall card has no empty space... */}
-                <Image source={leftImage} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={18} />
-                <View style={styles.imageCardScrim} />
-                {/* ...while the full building render is shown sharp and un-cropped on top */}
-                <Image source={leftImage} style={styles.towerImg} contentFit="contain" />
+                <Image source={leftImage} style={styles.towerImg} contentFit="cover" />
               </View>
             </Animated.View>
 
@@ -167,7 +164,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   initialLogoWrapper: {
     ...StyleSheet.absoluteFillObject,
@@ -267,14 +264,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 6,
-  },
-  imageCardScrim: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(12, 15, 18, 0.35)',
   },
   towerImg: {
     width: '100%',

@@ -1,5 +1,5 @@
 appId: com.gautamjha.cignus.desktop
-productName: Cignus
+productName: CIGNUS
 # electron-builder can't infer the electron devDependency version across an
 # npm workspace hoist (it only looks at this package's own node_modules) —
 # pin it explicitly to what's actually installed at the workspace root.
@@ -45,3 +45,5 @@ mac:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  # Explicit name (electron-builder's default would be "CIGNUS Setup 1.0.0.exe")
+  artifactName: 'CIGNUS Windows Setup.exe'

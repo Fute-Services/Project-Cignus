@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, PanResponder } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useVideoPlayer, VideoView, type VideoSource } from 'expo-video';
@@ -14,7 +14,7 @@ import { useVideoStatus } from '../hooks/useVideoStatus';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImage = require('../../assets/initial/bg-img.png');
-const logo1 = require('../../assets/home/cignus-updated-logo.png');
+const logo1 = require('../../assets/overview/logo.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 interface VideoShowcaseScreenProps {
@@ -56,6 +56,93 @@ export default function VideoShowcaseScreen({
 
   const { isReady, hasError } = useVideoStatus(player);
 
+  const [isPlaying, setIsPlaying] = React.useState(true);
+  React.useEffect(() => {
+    const subscription = player.addListener('playingChange', ({ isPlaying: playing }) => {
+      setIsPlaying(playing);
+    });
+    return () => subscription.remove();
+  }, [player]);
+
+  const togglePlayback = () => {
+    if (player.playing) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  };
+
+  const skipBy = (seconds: number) => {
+    player.seekBy(seconds);
+  };
+
+  // Seek bar: currentTime/duration polled via timeUpdate (expo-video has no
+  // "duration became known" event, and it's 0 until the source loads) so the
+  // bar can render as soon as metadata is available. While the user is
+  // dragging, the bar shows the drag position instead of the live time so
+  // the thumb doesn't jump back and fight their finger/mouse.
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
+  const [dragFraction, setDragFraction] = React.useState<number | null>(null);
+  const barRef = React.useRef<View>(null);
+  const barWidthRef = React.useRef(0);
+  const barPageXRef = React.useRef(0);
+
+  // pageX (used below) is page-absolute, so the bar's own page-absolute left
+  // edge is needed to turn a touch/mouse position into a 0..1 fraction.
+  // Re-measured on every layout and at gesture start (covers resize/scroll).
+  const measureBar = () => {
+    barRef.current?.measureInWindow((x) => {
+      barPageXRef.current = x;
+    });
+  };
+
+  React.useEffect(() => {
+    player.timeUpdateEventInterval = 0.25;
+    const subscription = player.addListener('timeUpdate', ({ currentTime: t }) => {
+      setCurrentTime(t);
+      setDuration(player.duration || 0);
+    });
+    return () => subscription.remove();
+  }, [player]);
+
+  const seekToFraction = (fraction: number) => {
+    const clamped = Math.max(0, Math.min(1, fraction));
+    if (duration > 0) {
+      player.currentTime = clamped * duration;
+    }
+  };
+
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (evt) => {
+          measureBar();
+          if (barWidthRef.current > 0) {
+            const fraction = (evt.nativeEvent.pageX - barPageXRef.current) / barWidthRef.current;
+            setDragFraction(Math.max(0, Math.min(1, fraction)));
+          }
+        },
+        onPanResponderMove: (evt) => {
+          if (barWidthRef.current <= 0) return;
+          const fraction = (evt.nativeEvent.pageX - barPageXRef.current) / barWidthRef.current;
+          setDragFraction(Math.max(0, Math.min(1, fraction)));
+        },
+        onPanResponderRelease: (evt) => {
+          if (barWidthRef.current > 0) {
+            seekToFraction((evt.nativeEvent.pageX - barPageXRef.current) / barWidthRef.current);
+          }
+          setDragFraction(null);
+        },
+        onPanResponderTerminate: () => setDragFraction(null),
+      }),
+    [duration],
+  );
+
+  const displayFraction = dragFraction ?? (duration > 0 ? currentTime / duration : 0);
+
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
@@ -74,6 +161,85 @@ export default function VideoShowcaseScreen({
       player.volume = isMuted ? 0 : 1;
     }
   }, [player, isMuted]);
+
+  // Entering/exiting fullscreen swaps in a whole new VideoView (below), which
+  // on web/Electron means a fresh <video> element — the player's earlier
+  // play() call was against the now-unmounted element, so playback needs to
+  // be re-triggered against the new one or it just sits frozen.
+  React.useEffect(() => {
+    player.play();
+  }, [isFullscreen, player]);
+
+  // Draggable scrub bar: tap or drag anywhere on the track to jump straight
+  // to that point instead of repeatedly tapping the 10s skip buttons.
+  const renderSeekBar = () => (
+    <View
+      ref={barRef}
+      onLayout={(e) => {
+        barWidthRef.current = e.nativeEvent.layout.width;
+        measureBar();
+      }}
+      style={styles.seekBarTrack}
+      {...panResponder.panHandlers}
+    >
+      <View style={styles.seekBarBase} />
+      <View style={[styles.seekBarFill, { width: `${displayFraction * 100}%` }]} />
+      <View style={[styles.seekBarThumb, { left: `${displayFraction * 100}%` }]} />
+    </View>
+  );
+
+  // Shared rewind / play-pause / forward bar — rendered once in the card
+  // view and again over the fullscreen overlay.
+  const renderPlaybackControls = () => (
+    <View style={styles.playbackControlsWrapper} pointerEvents="box-none">
+      {renderSeekBar()}
+      <View style={styles.playbackControls} pointerEvents="box-none">
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => skipBy(-10)}
+        accessibilityRole="button"
+        accessibilityLabel="Rewind 10 seconds"
+        style={styles.playbackBtn}
+      >
+        <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <Path d="M11 17L6 12l5-5" />
+          <Path d="M18 17l-5-5 5-5" />
+        </Svg>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={togglePlayback}
+        accessibilityRole="button"
+        accessibilityLabel={isPlaying ? 'Pause video' : 'Play video'}
+        style={[styles.playbackBtn, styles.playPauseBtn]}
+      >
+        {isPlaying ? (
+          <Svg width="18" height="18" viewBox="0 0 24 24" fill="#111827">
+            <Path d="M7 5h3v14H7zM14 5h3v14h-3z" />
+          </Svg>
+        ) : (
+          <Svg width="18" height="18" viewBox="0 0 24 24" fill="#111827">
+            <Path d="M7 5l12 7-12 7V5z" />
+          </Svg>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => skipBy(10)}
+        accessibilityRole="button"
+        accessibilityLabel="Forward 10 seconds"
+        style={styles.playbackBtn}
+      >
+        <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <Path d="M13 17l5-5-5-5" />
+          <Path d="M6 17l5-5-5-5" />
+        </Svg>
+      </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -105,10 +271,11 @@ export default function VideoShowcaseScreen({
               player={player}
               style={styles.videoView}
               contentFit="cover"
-              nativeControls={true}
+              nativeControls={false}
               allowsFullscreen={false}
             />
             <VideoStatusOverlay isReady={isReady} hasError={hasError} />
+            {renderPlaybackControls()}
             {/* Custom Mute/Unmute Overlay Button */}
             <TouchableOpacity
               activeOpacity={0.8}
@@ -175,12 +342,13 @@ export default function VideoShowcaseScreen({
         <View style={StyleSheet.absoluteFill}>
           <VideoView
             player={player}
-            style={StyleSheet.absoluteFill}
+            style={[StyleSheet.absoluteFill, styles.fullscreenVideoView]}
             contentFit="contain"
-            nativeControls={true}
+            nativeControls={false}
             allowsFullscreen={false}
           />
           <VideoStatusOverlay isReady={isReady} hasError={hasError} />
+          {renderPlaybackControls()}
           {/* Floating sound toggle in fullscreen */}
           <TouchableOpacity
             activeOpacity={0.8}
@@ -233,7 +401,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   topLeftLogo: {
     position: 'absolute',
@@ -294,6 +462,81 @@ const styles = StyleSheet.create({
   videoView: {
     width: '100%',
     height: '100%',
+  },
+  // <video> is a replaced element: StyleSheet.absoluteFill alone (inset
+  // only, no explicit width/height) sizes it to native content resolution
+  // instead of stretching to fill — hence the explicit 100%/100% here.
+  fullscreenVideoView: {
+    width: '100%',
+    height: '100%',
+  },
+  playbackControlsWrapper: {
+    position: 'absolute',
+    bottom: 16,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    gap: 10,
+    zIndex: 100,
+  },
+  seekBarTrack: {
+    width: '80%',
+    height: 14,
+    justifyContent: 'center',
+  },
+  seekBarBase: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: '50%',
+    marginTop: -2,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  seekBarFill: {
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    marginTop: -2,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#FFCF77',
+  },
+  seekBarThumb: {
+    position: 'absolute',
+    top: '50%',
+    width: 12,
+    height: 12,
+    marginTop: -6,
+    marginLeft: -6,
+    borderRadius: 6,
+    backgroundColor: '#FFCF77',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  playbackControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
+  },
+  playbackBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  playPauseBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#FFCF77',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   muteButton: {
     position: 'absolute',

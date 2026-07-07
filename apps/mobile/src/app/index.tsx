@@ -111,6 +111,7 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
 
 // Images
 const leftLogo = require('../../assets/home/cignus-updated-logo.png');
+const leftLogoBadge = require('../../assets/overview/logo.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 const exploreBtn = require('../../assets/initial/primary-button.png');
 const bottomLayer = require('../../assets/initial/bottom-layer.png');
@@ -347,7 +348,7 @@ export default function InitialPage() {
           
           {/* Header Logos */}
           <View style={styles.header}>
-            <Image source={leftLogo} style={styles.headerLeftLogo} contentFit="contain" />
+            <Image source={leftLogoBadge} style={styles.headerLeftLogo} contentFit="contain" />
             <Image source={rightLogo} style={styles.headerRightLogo} contentFit="contain" />
           </View>
 

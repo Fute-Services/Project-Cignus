@@ -12,7 +12,7 @@ import RightTable from '../components/RightTable';
 
 // Data & Assets
 import { type FloorData, floors } from '../data/FloorData';
-const leftLogo = require('../../assets/home/cignus-updated-logo.png');
+const leftLogo = require('../../assets/overview/logo.png');
 
 export default function ProjectDetails() {
   const router = useRouter();

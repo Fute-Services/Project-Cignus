@@ -469,6 +469,10 @@ export const floors: FloorData[] = [
                         },
                         {
                             id: "dummy_1",
+                            polygon: "888,503,954,503,956,603,888,604"
+                        },
+                        {
+                            id: "dummy_1",
                             polygon: "461,142,564,122,577,185,473,207"
                         },
                     ]

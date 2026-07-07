@@ -21,6 +21,7 @@ import { safeNavigate } from '../../utils/safeNavigate';
 
 const bgImage = require('../../../assets/initial/bg-img.png');
 const logoImg = require('../../../assets/home/cignus-updated-logo.png');
+const logoBadge = require('../../../assets/overview/logo.png');
 const unitPlan2D = require('../../../assets/project-info/project-infoimage.png');
 const floorGround = require('../../../assets/project-details/bg-image.png');
 
@@ -134,7 +135,7 @@ export default function UnitPlanPage() {
         <Animated.View style={[StyleSheet.absoluteFill, mainContentAnimatedStyle]}>
           {/* Top Left logo badge */}
           <View style={[styles.topLeftLogo, { top: 24 + insets.top, left: 24 + insets.left }]}>
-            <Image source={logoImg} style={styles.logoImg} contentFit="contain" />
+            <Image source={logoBadge} style={styles.logoImg} contentFit="contain" />
           </View>
 
           {/* Left Navbar Overlay */}
@@ -153,7 +154,7 @@ export default function UnitPlanPage() {
               {/* Svg polygon highlight overlay */}
               <Svg
                 viewBox="0 0 1484 1050"
-                style={StyleSheet.absoluteFill}
+                style={[StyleSheet.absoluteFill, styles.highlightOverlay]}
                 pointerEvents="none"
               >
                 {selectedAreaObj && (
@@ -318,13 +319,22 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  // <svg> is a replaced element: with only inset (no explicit width/height),
+  // browsers give it the container's width and derive height from the
+  // viewBox aspect ratio, so it overflows the wrapper and every polygon
+  // lands off-target. Explicit 100%/100% makes its letterboxing (default
+  // preserveAspectRatio "meet") match the blueprint image's contentFit
+  // "contain" exactly — the images are 1484x1050, same as the viewBox.
+  highlightOverlay: {
+    width: '100%',
+    height: '100%',
+  },
+  // No shadow here: the blueprint is letterboxed (contain) inside this box,
+  // so a box shadow hugs the invisible box edges — it showed as a faint
+  // vertical seam beside the plan, not around the visible drawing.
   floorBlueprint: {
     width: '100%',
     height: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
   },
   rightPanel: {
     position: 'absolute',

@@ -12,7 +12,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const leftLogo = require('../../assets/home/cignus-updated-logo.png');
+const leftLogo = require('../../assets/overview/logo.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 
 // ── Gallery Images ──
@@ -87,7 +87,7 @@ export default function Gallery() {
           <Image
             source={currentImage}
             style={styles.backgroundImage}
-            contentFit="contain"
+            contentFit="cover"
             transition={{ duration: 300, effect: 'cross-dissolve' }}
           />
         )}

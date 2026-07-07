@@ -12,13 +12,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
 
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgVideo = require('../../assets/project-details/animated-video.mp4');
 const linesImg = require('../../assets/project-details/lines.png');
 const buildingImg = require('../../assets/project-details/animated.png');
-const logo = require('../../assets/home/cignus-updated-logo.png');
+const logo = require('../../assets/overview/logo.png');
 
 interface SustainBaseProps {
   initialMode: 'sustainability' | 'concept';
@@ -36,6 +37,27 @@ export default function SustainBase({ initialMode }: SustainBaseProps) {
     playerInstance.muted = true;
     playerInstance.play();
   });
+
+  // On web/Electron, play() above is a no-op — it runs before the
+  // VideoView's <video> element has mounted, so there's nothing for it to
+  // call .play() on yet. Re-triggering play() here, once the component (and
+  // thus the video element) has actually mounted, is what starts playback
+  // on that platform; native ignores the redundant call.
+  useEffect(() => {
+    player.play();
+  }, [player]);
+
+  // Pause the background video while this screen isn't focused (e.g. user
+  // navigated to another tab/screen) instead of leaving it decoding frames
+  // unseen — matches the pattern every other video screen in the app uses.
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }, [isFocused, player]);
 
   // Reanimated shared values for building shifts
   const buildingX = useSharedValue(mode === 'concept' ? width * 0.35 : -width * 0.12);
@@ -265,10 +287,15 @@ const styles = StyleSheet.create({
   },
   videoView: {
     ...StyleSheet.absoluteFillObject,
+    // <video> is a replaced element: with only inset (no explicit
+    // width/height), browsers size it to native content resolution instead
+    // of stretching to fill — hence the explicit 100%/100% here.
+    width: '100%',
+    height: '100%',
   },
   videoOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   linesWrapper: {
     position: 'absolute',
