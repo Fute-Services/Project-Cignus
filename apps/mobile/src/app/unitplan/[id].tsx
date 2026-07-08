@@ -125,7 +125,7 @@ export default function UnitPlanPage() {
 
       {/* INITIAL LOGO TRANSITION */}
       {showLogo && (
-        <Animated.View exiting={FadeOut.duration(800)} style={styles.initialLogoWrapper}>
+        <Animated.View exiting={FadeOut.duration(800)} style={styles.initialLogoWrapper} pointerEvents="none">
           <Image source={logoImg} style={styles.initialLogo} contentFit="contain" />
         </Animated.View>
       )}

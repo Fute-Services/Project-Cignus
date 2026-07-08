@@ -49,7 +49,7 @@ export default function ProjectInfo() {
 
       {/* INITIAL LOGO TRANSITION */}
       {showLogo && (
-        <Animated.View exiting={FadeOut.duration(800)} style={styles.initialLogoWrapper}>
+        <Animated.View exiting={FadeOut.duration(800)} style={styles.initialLogoWrapper} pointerEvents="none">
           <Image source={logo} style={styles.initialLogo} contentFit="contain" />
         </Animated.View>
       )}
