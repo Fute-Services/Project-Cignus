@@ -75,7 +75,7 @@ export default function Circulation() {
       {/* 4. Left Back Button (Bottom Left) */}
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => safeNavigate(router, '/project-details')}
+        onPress={() => safeNavigate(router, '/home')}
         accessibilityRole="button"
         accessibilityLabel="Back"
         style={[styles.backButton, { bottom: 32 + insets.bottom, left: 32 + insets.left }]}

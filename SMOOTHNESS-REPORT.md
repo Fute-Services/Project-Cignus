@@ -198,3 +198,4 @@ whole effort.
 
 *Written after builds 6–18, 2026-07-04. Every claim in this document
 corresponds to a commit on `main` and a verifiable emulator test.*
+

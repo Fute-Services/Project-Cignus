@@ -330,7 +330,18 @@ export default function VideoShowcaseScreen({
         </View>
       </View>
 
-      {/* 4. Left Back Button (Bottom Left) */}
+      {/* 4. Navbars overlays */}
+      {!isFullscreen && (
+        <>
+          {showLeftNavbar && <LeftNavbar />}
+          <RightNavbar />
+        </>
+      )}
+
+      {/* 5. Left Back Button (Bottom Left) — must render after the navbars:
+          LeftNavbar's outer container is full-height and same zIndex, so on
+          web/Electron (equal-zIndex ties break by DOM order) it would paint
+          over and swallow clicks on this button if rendered first. */}
       {!isFullscreen && (
         <TouchableOpacity
           activeOpacity={0.8}
@@ -344,15 +355,6 @@ export default function VideoShowcaseScreen({
           </Svg>
         </TouchableOpacity>
       )}
-
-      {/* 5. Navbars overlays */}
-      {!isFullscreen && (
-        <>
-          {showLeftNavbar && <LeftNavbar />}
-          <RightNavbar />
-        </>
-      )}
-
     </View>
   );
 }
