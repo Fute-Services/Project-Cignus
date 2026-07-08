@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npm run mobile:build:web",
+  "outputDirectory": "apps/mobile/dist",
+  "installCommand": "npx npm@10 install",
+  "framework": null
+}
