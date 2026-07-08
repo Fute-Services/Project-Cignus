@@ -3,6 +3,17 @@ const path = require('node:path');
 const http = require('node:http');
 const fs = require('node:fs');
 
+// A closed/broken stdout or stderr must never crash the app. The renderer
+// console forwarder below writes to stdout on a hot path (every renderer
+// console message — video play()/pause() races in fullscreen emit these), so
+// if whatever launched us stops reading (a piped `head` exits, the parent
+// shell closes) the next write throws EPIPE and surfaces as an uncaught
+// exception in the main process — popping Electron's fatal-error dialog. There
+// is no meaningful stdout consumer in a packaged GUI build anyway, so swallow
+// write errors on the std streams rather than letting them propagate.
+process.stdout.on('error', () => {});
+process.stderr.on('error', () => {});
+
 // Without this, Chromium's internal GPU driver blocklist silently falls back
 // to the bundled software renderer (SwiftShader) on machines whose driver
 // version it doesn't recognize — video/canvas rendering still "works" but

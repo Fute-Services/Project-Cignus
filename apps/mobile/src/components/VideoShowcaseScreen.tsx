@@ -162,14 +162,6 @@ export default function VideoShowcaseScreen({
     }
   }, [player, isMuted]);
 
-  // Entering/exiting fullscreen swaps in a whole new VideoView (below), which
-  // on web/Electron means a fresh <video> element — the player's earlier
-  // play() call was against the now-unmounted element, so playback needs to
-  // be re-triggered against the new one or it just sits frozen.
-  React.useEffect(() => {
-    player.play();
-  }, [isFullscreen, player]);
-
   // Draggable scrub bar: tap or drag anywhere on the track to jump straight
   // to that point instead of repeatedly tapping the 10s skip buttons.
   const renderSeekBar = () => (
@@ -261,44 +253,68 @@ export default function VideoShowcaseScreen({
         </>
       )}
 
-      {/* 3. Center Content stack */}
-      {!isFullscreen && (
-        <View style={styles.contentWrapper}>
-          <Text style={styles.pageTitle}>{title}</Text>
+      {/* 3. The video block — a SINGLE, always-mounted VideoView whose wrapper
+           style toggles between the centered card and a fullscreen overlay.
+           Keeping one <video> element mounted (rather than swapping a card
+           view out for a separate fullscreen view) means entering/exiting
+           fullscreen just resizes it via CSS, so playback continues seamlessly
+           instead of the element remounting and the video stopping. */}
+      <View style={isFullscreen ? styles.videoBlockFullscreen : styles.contentWrapper}>
+        {!isFullscreen && <Text style={styles.pageTitle}>{title}</Text>}
 
-          <View style={styles.videoCard}>
-            <VideoView
-              player={player}
-              style={styles.videoView}
-              contentFit="cover"
-              nativeControls={false}
-              allowsFullscreen={false}
-            />
-            <VideoStatusOverlay isReady={isReady} hasError={hasError} />
-            {renderPlaybackControls()}
-            {/* Custom Mute/Unmute Overlay Button */}
+        <View style={isFullscreen ? styles.videoCardFullscreen : styles.videoCard}>
+          <VideoView
+            player={player}
+            style={styles.videoView}
+            contentFit="cover"
+            nativeControls={false}
+            allowsFullscreen={false}
+          />
+          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
+          {renderPlaybackControls()}
+
+          {/* Mute/Unmute — bottom-right in the card, floated top-right under
+              the safe-area inset in fullscreen. */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={toggleMute}
+            accessibilityRole="button"
+            accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
+            style={
+              isFullscreen
+                ? [styles.muteButton, { top: 24 + insets.top, right: 24 + insets.right, bottom: undefined }]
+                : styles.muteButton
+            }
+          >
+            {isMuted ? (
+              <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFCF77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <Path d="M11 5L6 9H2v6h4l5 4V5z" />
+                <Path d="M23 9l-6 6M17 9l6 6" />
+              </Svg>
+            ) : (
+              <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <Path d="M11 5L6 9H2v6h4l5 4V5z" />
+                <Path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <Path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </Svg>
+            )}
+          </TouchableOpacity>
+
+          {/* Fullscreen toggle — collapse (top-left) in fullscreen, expand
+              (top-right) in the card. */}
+          {isFullscreen ? (
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={toggleMute}
+              onPress={() => setIsFullscreen(false)}
               accessibilityRole="button"
-              accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
-              style={styles.muteButton}
+              accessibilityLabel="Exit fullscreen"
+              style={[styles.fullscreenBackBtn, { top: 24 + insets.top, left: 24 + insets.left }]}
             >
-              {isMuted ? (
-                <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFCF77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <Path d="M11 5L6 9H2v6h4l5 4V5z" />
-                  <Path d="M23 9l-6 6M17 9l6 6" />
-                </Svg>
-              ) : (
-                <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <Path d="M11 5L6 9H2v6h4l5 4V5z" />
-                  <Path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                  <Path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                </Svg>
-              )}
+              <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
+                <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
+              </Svg>
             </TouchableOpacity>
-
-            {/* Custom Fullscreen Expand Button */}
+          ) : (
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setIsFullscreen(true)}
@@ -310,9 +326,9 @@ export default function VideoShowcaseScreen({
                 <Path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
               </Svg>
             </TouchableOpacity>
-          </View>
+          )}
         </View>
-      )}
+      </View>
 
       {/* 4. Left Back Button (Bottom Left) */}
       {!isFullscreen && (
@@ -337,54 +353,6 @@ export default function VideoShowcaseScreen({
         </>
       )}
 
-      {/* ── 6. Fullscreen Video View Overlay (Absolute Root Level) ── */}
-      {isFullscreen && (
-        <View style={StyleSheet.absoluteFill}>
-          <VideoView
-            player={player}
-            style={[StyleSheet.absoluteFill, styles.fullscreenVideoView]}
-            contentFit="cover"
-            nativeControls={false}
-            allowsFullscreen={false}
-          />
-          <VideoStatusOverlay isReady={isReady} hasError={hasError} />
-          {renderPlaybackControls()}
-          {/* Floating sound toggle in fullscreen */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={toggleMute}
-            accessibilityRole="button"
-            accessibilityLabel={isMuted ? 'Unmute video' : 'Mute video'}
-            style={[styles.muteButton, { top: 24 + insets.top, right: 24 + insets.right, bottom: undefined }]}
-          >
-            {isMuted ? (
-              <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFCF77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <Path d="M11 5L6 9H2v6h4l5 4V5z" />
-                <Path d="M23 9l-6 6M17 9l6 6" />
-              </Svg>
-            ) : (
-              <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <Path d="M11 5L6 9H2v6h4l5 4V5z" />
-                <Path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                <Path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              </Svg>
-            )}
-          </TouchableOpacity>
-
-          {/* Custom Fullscreen Collapse Back Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setIsFullscreen(false)}
-            accessibilityRole="button"
-            accessibilityLabel="Exit fullscreen"
-            style={[styles.fullscreenBackBtn, { top: 24 + insets.top, left: 24 + insets.left }]}
-          >
-            <Svg width="14" height="24" viewBox="0 0 17 28" fill="none">
-              <Path d="M15.4143 27V14C15.4143 10.6863 12.728 8 9.41431 8H1.41431M7.41431 14L1.41431 8L8.41431 1" stroke="#483E2D" strokeWidth="2.5" strokeLinecap="round" />
-            </Svg>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
@@ -463,12 +431,19 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  // <video> is a replaced element: StyleSheet.absoluteFill alone (inset
-  // only, no explicit width/height) sizes it to native content resolution
-  // instead of stretching to fill — hence the explicit 100%/100% here.
-  fullscreenVideoView: {
+  // Fullscreen: the same mounted video block covers the whole screen as an
+  // absolute overlay (above the background layer), and the card chrome —
+  // rounded border, 16/9 aspect ratio, drop shadow — is dropped so the
+  // <video> fills edge to edge. Only the styles change; the element stays
+  // mounted, so playback never stops on the transition.
+  videoBlockFullscreen: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 500,
+  },
+  videoCardFullscreen: {
     width: '100%',
     height: '100%',
+    backgroundColor: '#000',
   },
   playbackControlsWrapper: {
     position: 'absolute',
