@@ -9,7 +9,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useVideoStatus } from '../hooks/useVideoStatus';
 
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
-const cignusLogo = require('../../assets/overview/logo.png');
+const cignusLogo = require('../../assets/project-details/logo_new.png');
 const exploreBtn = require('../../assets/initial/primary-button.png');
 const linesImg = require('../../assets/project-details/lines.png');
 const lakePlaceholder = require('../../assets/home/lake-placeholder.webp');

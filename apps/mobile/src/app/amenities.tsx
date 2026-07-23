@@ -14,7 +14,7 @@ import LeftNavbar from '../components/LeftNavbar';
 import { safeNavigate } from '../utils/safeNavigate';
 
 const bgImg = require('../../assets/project-details/amenities-cover-page-updated-image-1.jpg');
-const logo = require('../../assets/overview/logo.png');
+const logo = require('../../assets/project-details/logo_new.png');
 
 import { loadVrUris, getCachedVrUris } from '../utils/vrAssets';
 

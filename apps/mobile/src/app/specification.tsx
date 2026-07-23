@@ -12,7 +12,7 @@ import RightNavbar from '../components/RightNavbar';
 
 const bgImage = require('../../assets/home/project-info.png');
 const logo = require('../../assets/home/cignus-updated-logo.png');
-const logoBadge = require('../../assets/overview/logo.png');
+const logoBadge = require('../../assets/project-details/logo_new.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 const imgTop = require('../../assets/home/project-info-img1.png');
 const imgBottom = require('../../assets/home/project-info-img2.png');
