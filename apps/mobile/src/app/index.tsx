@@ -111,7 +111,7 @@ const getPdfHtml = (pdfPath: string, pdfJsUri: string, pdfWorkerUri: string) => 
 
 // Images
 const leftLogo = require('../../assets/home/cignus-updated-logo.png');
-const leftLogoBadge = require('../../assets/overview/logo.png');
+const leftLogoBadge = require('../../assets/project-details/logo_new.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 const exploreBtn = require('../../assets/initial/primary-button.png');
 const bottomLayer = require('../../assets/initial/bottom-layer.png');

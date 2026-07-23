@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const leftLogo = require('../../assets/overview/logo.png');
+const leftLogo = require('../../assets/project-details/logo_new.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 
 export default function Header() {
