@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
   leftLogoImg: {
     height: 60,
     width: 140,
+    filter: [{ brightness: 1.4 }],
   },
   rightLogoImg: {
     height: 52,

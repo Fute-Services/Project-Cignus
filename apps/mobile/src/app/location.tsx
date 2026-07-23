@@ -383,6 +383,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 4,
     paddingHorizontal: 4,
+    filter: [{ brightness: 1.4 }],
   },
   markerText: {
     color: '#ffffff',

@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
   logo1Img: {
     width: '100%',
     height: '100%',
+    filter: [{ brightness: 1.4 }],
   },
   logo2Img: {
     width: '100%',

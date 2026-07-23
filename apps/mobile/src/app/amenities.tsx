@@ -420,6 +420,7 @@ const styles = StyleSheet.create({
   logoImg: {
     width: '100%',
     height: '100%',
+    filter: [{ brightness: 1.4 }],
   },
   backButton: {
     position: 'absolute',

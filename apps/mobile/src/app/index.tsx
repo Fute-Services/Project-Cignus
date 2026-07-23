@@ -574,6 +574,7 @@ const styles = StyleSheet.create({
   headerLeftLogo: {
     height: 65,
     width: 180,
+    filter: [{ brightness: 1.4 }],
   },
   headerRightLogo: {
     height: 75,
