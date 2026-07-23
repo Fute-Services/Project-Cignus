@@ -33,7 +33,7 @@ import { safeNavigate } from '../utils/safeNavigate';
 const bgVideo = require('../../assets/overview/overview.mp4');
 const overviewImg = require('../../assets/overview/overview.webp');
 const logo = require('../../assets/home/cignus-updated-logo.png');
-const logoBadge = require('../../assets/overview/logo.png');
+const logoBadge = require('../../assets/project-details/logo_new.png');
 const logo2 = require('../../assets/home/k-raheja-corp-1.png');
 
 const sections = [
