@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import { safeNavigate } from '../utils/safeNavigate';
 
-const logo = require('../../assets/overview/logo.png');
+const logo = require('../../assets/project-details/logo_new.png');
 const siteLocation = require('../../assets/location/new-final-site-location-img.jpeg');
 const neighborhood = require('../../assets/location/img-location.webp');
 
@@ -383,6 +383,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 4,
     paddingHorizontal: 4,
+    filter: [{ brightness: 1.4 }],
   },
   markerText: {
     color: '#ffffff',

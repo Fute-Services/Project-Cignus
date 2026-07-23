@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   leftLogoImg: {
     height: 60,
     width: 160,
+    filter: [{ brightness: 1.4 }],
   },
   rightLogoWrapper: {
     marginRight: 10,

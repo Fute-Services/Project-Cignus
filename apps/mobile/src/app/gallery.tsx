@@ -12,7 +12,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const leftLogo = require('../../assets/overview/logo.png');
+const leftLogo = require('../../assets/project-details/logo_new.png');
 const rightLogo = require('../../assets/home/k-raheja-corp-1.png');
 
 // ── Gallery Images ──
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
   leftLogoImg: {
     height: 60,
     width: 140,
+    filter: [{ brightness: 1.4 }],
   },
   rightLogoImg: {
     height: 52,
